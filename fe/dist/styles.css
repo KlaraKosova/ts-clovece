@@ -1,0 +1,193 @@
+:root {
+    --color-red: #ed2121;
+    --color-red-hover: #D71818;
+    --color-green: #12A110;
+    --color-green-hover: #108C0E;
+    --color-gray: #cacaca;
+    --color-yellow: #d6c66d;
+}
+
+html, body, h1 {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+header {
+    background-color: var(--color-green);
+    color: white;
+
+    position: relative;
+}
+
+header .red-border {
+    position: absolute;
+    left: -20px;
+    border-bottom: var(--color-red) solid 10px;
+    border-right: var(--color-red) solid 10px;
+}
+
+header .yellow-border {
+    position: absolute;
+    top: 10px;
+    left: -10px;
+    border-bottom: 10px solid var(--color-yellow);
+    border-right: 10px solid var(--color-yellow);
+}
+
+header .border {
+    z-index: 10;
+    min-height: 100%;
+    width: 100%;
+}
+
+/* header :not(.border) {
+    position: initial;
+    left: initial   ;
+}
+*/
+.btn-full {
+    margin-top: 10px;
+    border-radius: 20px;
+    font-size: larger;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.btn-icon {
+    cursor: pointer;
+    border-radius: 50px;
+    font-size: 1.2em;
+    width: 1.7em;
+    height: 1.7em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-red {
+    background-color: var(--color-red);
+    border: 2px solid var(--color-red-hover);
+    color: white;
+}
+
+.btn-red:hover {
+    background-color: var(--color-red-hover);
+}
+
+.btn-green {
+    background-color: var(--color-green);
+    border: 2px solid var(--color-green-hover);
+    color: white;
+}
+
+.btn-green:hover {
+    background-color: var(--color-green-hover);
+}
+
+.game-card:first-child {
+    width: 15%;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: var(--color-green);
+    border: 2px solid var(--color-green-hover);
+    color: white;
+}
+
+.game-card:first-child:hover {
+    background-color: var(--color-green-hover);
+}
+
+.game-card {
+    width: 20%;
+    cursor: default;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    border: 2px solid var(--color-gray);
+}
+
+.game-card:hover {
+    transform: scale(1.1);
+}
+
+.game-card .game-name {
+    font-size: larger;
+    font-weight: bold;
+}
+
+.game-cards-container {
+    padding: 5%;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5%;
+    background-color: #eaeaea;
+}
+
+.modal-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(100, 100, 100, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-wrapper {
+    background-color: white;
+    border-radius: 10px;
+    border: 5px solid var(--color-gray);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.modal-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding-top: 0;
+}
+
+.modal-content button {
+    width: 100%;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+}
+
+.input-text {
+    height: 1.5em;
+}
+
+.input-label {
+    align-self: flex-start;
+}
+
+.modal-close-btn {
+    position:relative;
+    right: -0.85rem;
+    top: -0.85rem;
+}
+
+#app {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+#svgContainer {
+    width: min-content;
+}
