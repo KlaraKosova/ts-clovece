@@ -1,36 +1,78 @@
+import { GameElement } from "./GameElement";
 import Consts from "../helpers/svgBoardConstants";
-import { SvgElement } from "./SvgElement";
 
-export class StaticBackground extends SvgElement {
+export class StaticBackground extends GameElement {
     render(): void {
         // Green frame
-        /* this.draw.rect(Consts.BOARD.FRAMES.GREEN.SIZE * Consts.K, Consts.BOARD.FRAMES.GREEN.SIZE * Consts.K)
-            .fill(Consts.BOARD.FRAMES.GREEN.COLOR)
+        this.svg.createChild({
+            type: 'rect',
+            center: { x: Consts.BOARD.SIZE / 2, y: Consts.BOARD.SIZE / 2 },
+            color: Consts.BOARD.FRAMES.GREEN.COLOR,
+            size: { x: Consts.BOARD.FRAMES.GREEN.SIZE, y: Consts.BOARD.FRAMES.GREEN.SIZE }
+        })
+
         // Red frame
-        this.draw.rect(Consts.BOARD.FRAMES.RED.SIZE * Consts.K, Consts.BOARD.FRAMES.RED.SIZE * Consts.K)
-            .fill(Consts.BOARD.FRAMES.RED.COLOR)
-            .center(Consts.BOARD.SIZE / 2 * Consts.K, Consts.BOARD.SIZE / 2 * Consts.K)
-        this.draw.circle(Consts.BOARD.FRAMES.RED.CORNERS.DIAMETER * Consts.K)
-            .fill(Consts.BOARD.FRAMES.RED.COLOR)
-            .center(Consts.BOARD.FRAMES.RED.CORNERS.OFFSET * Consts.K, Consts.BOARD.FRAMES.RED.CORNERS.OFFSET * Consts.K)
-        this.draw.circle(Consts.BOARD.FRAMES.RED.CORNERS.DIAMETER * Consts.K, Consts.BOARD.FRAMES.RED.CORNERS.DIAMETER * Consts.K)
-            .fill(Consts.BOARD.FRAMES.RED.COLOR)
-            .center((Consts.BOARD.SIZE - Consts.BOARD.FRAMES.RED.CORNERS.OFFSET) * Consts.K, Consts.BOARD.FRAMES.RED.CORNERS.OFFSET * Consts.K)
-        this.draw.circle(Consts.BOARD.FRAMES.RED.CORNERS.DIAMETER * Consts.K, Consts.BOARD.FRAMES.RED.CORNERS.DIAMETER * Consts.K)
-            .fill(Consts.BOARD.FRAMES.RED.COLOR)
-            .center(Consts.BOARD.FRAMES.RED.CORNERS.OFFSET * Consts.K, (Constants.BOARD_SIZE - Constants.FRAMES.RED.CORNERS.OFFSET) * Consts.K)
-        this.draw.circle(Consts.BOARD.FRAMES.RED.CORNERS.DIAMETER * Consts.K, Constants.FRAMES.RED.CORNERS.DIAMETER * Consts.K)
-            .fill(Consts.BOARD.FRAMES.RED.COLOR).center((Consts.BOARD.SIZE - Constants.FRAMES.RED.CORNERS.OFFSET) * Consts.K, (Constants.BOARD_SIZE - Constants.FRAMES.RED.CORNERS.OFFSET) * Consts.K)
+        this.svg.createChild({
+            type: 'rect',
+            center: { x: Consts.BOARD.SIZE / 2, y: Consts.BOARD.SIZE / 2 },
+            color: Consts.BOARD.FRAMES.RED.COLOR,
+            size: { x: Consts.BOARD.FRAMES.RED.SIZE, y: Consts.BOARD.FRAMES.RED.SIZE }
+        })
+        this.svg.createChild({
+            type: 'circle',
+            diameter: Consts.BOARD.FRAMES.RED.CORNERS.DIAMETER,
+            center: { x: Consts.BOARD.FRAMES.RED.CORNERS.OFFSET, y: Consts.BOARD.FRAMES.RED.CORNERS.OFFSET },
+            color: Consts.BOARD.FRAMES.RED.COLOR
+        })
+        this.svg.createChild({
+            type: 'circle',
+            diameter: Consts.BOARD.FRAMES.RED.CORNERS.DIAMETER,
+            center: { x: Consts.BOARD.SIZE - Consts.BOARD.FRAMES.RED.CORNERS.OFFSET, y: Consts.BOARD.FRAMES.RED.CORNERS.OFFSET },
+            color: Consts.BOARD.FRAMES.RED.COLOR
+        })
+        this.svg.createChild({
+            type: 'circle',
+            diameter: Consts.BOARD.FRAMES.RED.CORNERS.DIAMETER,
+            center: { x: Consts.BOARD.SIZE - Consts.BOARD.FRAMES.RED.CORNERS.OFFSET, y: Consts.BOARD.SIZE - Consts.BOARD.FRAMES.RED.CORNERS.OFFSET },
+            color: Consts.BOARD.FRAMES.RED.COLOR
+        })
+        this.svg.createChild({
+            type: 'circle',
+            diameter: Consts.BOARD.FRAMES.RED.CORNERS.DIAMETER,
+            center: { x: Consts.BOARD.FRAMES.RED.CORNERS.OFFSET, y: Consts.BOARD.SIZE - Consts.BOARD.FRAMES.RED.CORNERS.OFFSET },
+            color: Consts.BOARD.FRAMES.RED.COLOR
+        })
+
         // Yellow frame
-        this.draw.rect(Constants.FRAMES.YELLOW.SIZE * Consts.K, Constants.FRAMES.YELLOW.SIZE * Consts.K)
-            .fill(Constants.FRAMES.YELLOW.COLOR).center(Constants.BOARD_SIZE / 2 * Consts.K, Constants.BOARD_SIZE / 2 * Consts.K)
-        this.draw.circle(Constants.FRAMES.YELLOW.CORNERS.DIAMETER * Consts.K, Constants.FRAMES.YELLOW.CORNERS.DIAMETER * Consts.K)
-            .fill(Constants.FRAMES.YELLOW.COLOR).center(Constants.FRAMES.YELLOW.CORNERS.OFFSET * Consts.K, Constants.FRAMES.YELLOW.CORNERS.OFFSET * Consts.K)
-        this.draw.circle(Constants.FRAMES.YELLOW.CORNERS.DIAMETER * Consts.K, Constants.FRAMES.YELLOW.CORNERS.DIAMETER * Consts.K)
-            .fill(Constants.FRAMES.YELLOW.COLOR).center((Constants.BOARD_SIZE - Constants.FRAMES.YELLOW.CORNERS.OFFSET) * Consts.K, Constants.FRAMES.YELLOW.CORNERS.OFFSET * Consts.K)
-        this.draw.circle(Constants.FRAMES.YELLOW.CORNERS.DIAMETER * Consts.K, Constants.FRAMES.YELLOW.CORNERS.DIAMETER * Consts.K)
-            .fill(Constants.FRAMES.YELLOW.COLOR).center(Constants.FRAMES.YELLOW.CORNERS.OFFSET * Consts.K, (Constants.BOARD_SIZE - Constants.FRAMES.YELLOW.CORNERS.OFFSET) * Consts.K)
-        this.draw.circle(Constants.FRAMES.YELLOW.CORNERS.DIAMETER * Consts.K, Constants.FRAMES.YELLOW.CORNERS.DIAMETER * Consts.K)
-            .fill(Constants.FRAMES.YELLOW.COLOR).center((Constants.BOARD_SIZE - Constants.FRAMES.YELLOW.CORNERS.OFFSET) * Consts.K, (Constants.BOARD_SIZE - Constants.FRAMES.YELLOW.CORNERS.OFFSET) * Consts.K)
-    */}
+        this.svg.createChild({
+            type: 'rect',
+            center: { x: Consts.BOARD.SIZE / 2, y: Consts.BOARD.SIZE / 2 },
+            color: Consts.BOARD.FRAMES.YELLOW.COLOR,
+            size: { x: Consts.BOARD.FRAMES.YELLOW.SIZE, y: Consts.BOARD.FRAMES.YELLOW.SIZE }
+        })
+        this.svg.createChild({
+            type: 'circle',
+            diameter: Consts.BOARD.FRAMES.YELLOW.CORNERS.DIAMETER,
+            center: { x: Consts.BOARD.FRAMES.YELLOW.CORNERS.OFFSET, y: Consts.BOARD.FRAMES.YELLOW.CORNERS.OFFSET },
+            color: Consts.BOARD.FRAMES.YELLOW.COLOR
+        })
+        this.svg.createChild({
+            type: 'circle',
+            diameter: Consts.BOARD.FRAMES.YELLOW.CORNERS.DIAMETER,
+            center: { x: Consts.BOARD.SIZE - Consts.BOARD.FRAMES.YELLOW.CORNERS.OFFSET, y: Consts.BOARD.FRAMES.YELLOW.CORNERS.OFFSET },
+            color: Consts.BOARD.FRAMES.YELLOW.COLOR
+        })
+        this.svg.createChild({
+            type: 'circle',
+            diameter: Consts.BOARD.FRAMES.YELLOW.CORNERS.DIAMETER,
+            center: { x: Consts.BOARD.SIZE - Consts.BOARD.FRAMES.YELLOW.CORNERS.OFFSET, y: Consts.BOARD.SIZE - Consts.BOARD.FRAMES.YELLOW.CORNERS.OFFSET },
+            color: Consts.BOARD.FRAMES.YELLOW.COLOR
+        })
+        this.svg.createChild({
+            type: 'circle',
+            diameter: Consts.BOARD.FRAMES.YELLOW.CORNERS.DIAMETER,
+            center: { x: Consts.BOARD.FRAMES.YELLOW.CORNERS.OFFSET, y: Consts.BOARD.SIZE - Consts.BOARD.FRAMES.YELLOW.CORNERS.OFFSET },
+            color: Consts.BOARD.FRAMES.YELLOW.COLOR
+        })
+    }
 }

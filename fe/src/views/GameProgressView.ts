@@ -1,19 +1,19 @@
 import { SVG } from "@svgdotjs/svg.js";
-import { Constants, k } from "../helpers/svgBoardConstants";
-import { StaticBackground } from "../svgElements/StaticBackground";
+import { BoardController } from "../BoardController";
+import Consts from "../helpers/svgBoardConstants";
 import { View } from "./View";
 
 export class GameProgressView extends View {
-    private background: StaticBackground;
+    private boardController: BoardController
 
     public render(): void {
         const container = document.createElement("div");
         container.id = "svgContainer";
         this.rootElem.replaceChildren(container);
 
-        const draw = SVG().addTo("#svgContainer").size(Constants.BOARD_SIZE * k, Constants.BOARD_SIZE * k);
-        this.background = new StaticBackground(draw);
-        this.background.render();
+        const draw = SVG().addTo("#svgContainer").size(Consts.BOARD.SIZE * Consts.K, Consts.BOARD.SIZE * Consts.K);
+        this.boardController = new BoardController(draw)
+        this.boardController.init()
     }
     public removeListeners(): void { }
     public registerListeners(): void { }

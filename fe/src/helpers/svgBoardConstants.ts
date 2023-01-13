@@ -1,25 +1,27 @@
+import { PlayerColors } from "../types"
+
 export default {
     K: 2.75,
     COLORS: {
-        RED: {
+        [PlayerColors.RED]: {
             front: '#de0000',
             back: '#730505',
             highlight: '#ef8b8b',
             shadow: '#ff4d4d'
         },
-        GREEN: {
-            front: '#088714', // '#099617',
+        [PlayerColors.GREEN]: {
+            front: '#088714',
             back: '#03540b',
             figureTop: '#84ca8b',
             figureBottom: '#3aab45'
         },
-        YELLOW: {
+        [PlayerColors.YELLOW]: {
             front: '#bab70d',
             back: '#7a5f05',
             figureTop: '#f4f287',
             figureBottom: '#dfd91b'
         },
-        BLUE: {
+        [PlayerColors.BLUE]: {
             front: '#0576ab',
             back: '#023852',
             figureTop: '#7feeee',
@@ -36,22 +38,22 @@ export default {
         FRAMES: {
             GREEN: {
                 COLOR: '#108c0e',
-                SIZE: 328
+                SIZE: 315
             },
             RED: {
                 COLOR: '#ed2121',
-                SIZE: 294,
+                SIZE: 286,
                 CORNERS: {
-                    DIAMETER: 69,
-                    OFFSET: 40
+                    DIAMETER: 61,
+                    OFFSET: 34
                 }
             },
             YELLOW: {
-                SIZE: 282,
+                SIZE: 274,
                 COLOR: '#d6c66d',
                 CORNERS: {
-                    DIAMETER: 57,
-                    OFFSET: 40
+                    DIAMETER: 49,
+                    OFFSET: 34
                 }
             }
         }

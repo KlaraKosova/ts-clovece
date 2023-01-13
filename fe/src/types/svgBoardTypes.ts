@@ -13,3 +13,4 @@ export type ColorInfo = {
     back: string,
     backShadow: string
 }
+

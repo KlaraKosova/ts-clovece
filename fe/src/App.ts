@@ -1,4 +1,4 @@
-import { UserInfo, ViewName } from "./types/types";
+import { UserInfo, ViewName } from "./types";
 import { GameProgressView } from "./views/GameProgressView";
 import { GameSelectView } from "./views/GameSelectView";
 import { GameWaitingView } from "./views/GameWaitingView";
