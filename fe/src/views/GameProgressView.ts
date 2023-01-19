@@ -15,6 +15,19 @@ export class GameProgressView extends View {
         this.boardController = new BoardController(draw)
         this.boardController.init()
     }
-    public removeListeners(): void { }
-    public registerListeners(): void { }
+    public viewInit(): void {
+
+    }
+    public registerHtmlListeners(): void {
+
+    }
+    public registerSocketListeners(): void {
+
+    }
+    public removeHtmlListeners(): void {
+
+    }
+    public removeSocketListeners(): void {
+
+    }
 }

@@ -6,10 +6,19 @@ export class LoadingView extends View {
         container.textContent = 'tady by se hodila animace' // TODO
         this.rootElem.replaceChildren(container)
     }
-    public removeListeners(): void {
-        
+    public viewInit(): void {
+
     }
-    public registerListeners(): void {
-        
+    public registerHtmlListeners(): void {
+
+    }
+    public registerSocketListeners(): void {
+
+    }
+    public removeHtmlListeners(): void {
+
+    }
+    public removeSocketListeners(): void {
+
     }
 }

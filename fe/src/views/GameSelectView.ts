@@ -1,3 +1,5 @@
+import { SocketIOClientInstance } from "../socketio/SocketClient";
+import { GamePreview } from "../types";
 import { View } from "./View";
 
 const games = [
@@ -12,48 +14,27 @@ const games = [
 ]
 
 export class GameSelectView extends View {
+    private games: GamePreview[] = [];
     render() {
+        this.removeHtmlListeners();
         let resultHtml =
             `<div class="game-cards-container">
                 <div class="game-card">
                     <div>+ Vytvořit</div>
                 </div>`
-        /* const container = document.createElement('div')
-        container.classList.add('game-cards-container')
-        const newGameContainer = document.createElement('div')
-        newGameContainer.classList.add('game-card')
-        const newGameLabel = document.createElement('div')
-        newGameLabel.textContent = 'Nová hra'
-        newGameLabel.classList.add('game-name')
-        const newGameButton = document.createElement('button')
-        newGameButton.textContent = 'Vytvořit'
-        newGameContainer.replaceChildren(newGameLabel, newGameButton)
-        const gameContainers = [] */
 
-        for (let i = 0; i < games.length; i++) {
+        for (let i = 0; i < this.games.length; i++) {
             resultHtml +=
-                `<div class="game-card" data-gameId="${games[i].gameId}">
-                    <div class="game-name">ID: ${games[i].gameId}</div>
-                    <div>Hráči: ${games[i].players}/4</div>
+                `<div class="game-card" data-gameId="${this.games[i]._id}">
+                    <div class="game-name">ID: ${this.games[i].name}</div>
+                    <div>Hráči: ${this.games[i].players}/4</div>
                     <button class="btn-full btn-green">Přidat se</button>
                 </div>`;
-            /* const gameContainerElement = document.createElement('div')
-            const joinButtonElement = document.createElement('button')
-            const headerElement = document.createElement('div')
-            const subheaderElement = document.createElement('div')
-            subheaderElement.textContent = `Hráči: ${games[i].players}/4`
-            headerElement.textContent = `ID: ${games[i].gameId}`
-            headerElement.classList.add('game-name')
-            joinButtonElement.textContent = 'Přidat se'
-
-            gameContainerElement.replaceChildren(headerElement, subheaderElement, joinButtonElement);
-            gameContainerElement.classList.add('game-card')
-            gameContainers.push(gameContainerElement); */
         }
 
-        // container.replaceChildren(newGameContainer, ...gameContainers)
         resultHtml += "</div>";
         this.rootElem.innerHTML = resultHtml;
+        this.registerHtmlListeners();
     }
 
     private renderNewGameDialog() {
@@ -64,14 +45,15 @@ export class GameSelectView extends View {
                     <div class="modal-content">
                         <h2>Nová hra</h2>
                         <label class="input-label">Název</label>
-                        <input class="input-text" />
-                        <button class="btn-full btn-green">Vytvořit</button>
+                        <input class="input-text" placeholder="Hra bez názvu" />
+                        <button class="btn-full btn-green" id="new-game-btn">Vytvořit</button>
                     </div>
                 </div>
             </div>
         `
 
         document.querySelector(".modal-close-btn").addEventListener('click', this.removeNewGameDialog.bind(this))
+        document.querySelector("#new-game-btn").addEventListener('click', this.emitNewGame.bind(this))
     }
 
     private removeNewGameDialog() {
@@ -79,11 +61,34 @@ export class GameSelectView extends View {
         document.body.removeChild(modalElement)
     }
 
-    public registerListeners(): void {
+    private emitNewGame() {
+        const inputElement = document.querySelector("#new-game-btn") as HTMLInputElement | null
+
+        SocketIOClientInstance.socket.emit("NEW_GAME", {
+            name: inputElement?.value || "Hra bez názvu"
+        })
+    }
+
+    private onGameSelectResponse(data: { games: GamePreview[] }) {
+        this.games = data.games
+        this.render()
+    }
+
+    public viewInit(): void {
+        SocketIOClientInstance.socket.emit("GAME_SELECT_REQUEST")
+    }
+    public registerHtmlListeners(): void {
         document.querySelector(".game-card:first-child").addEventListener('click', this.renderNewGameDialog.bind(this))
     }
-    public removeListeners(): void {
+    public registerSocketListeners(): void {
+        SocketIOClientInstance.socket.on("GAME_SELECT_RESPONSE", this.onGameSelectResponse.bind(this))
+    }
+    public removeHtmlListeners(): void {
         document.querySelector(".game-card:first-child").removeEventListener('click', this.renderNewGameDialog)
         document.querySelector(".modal-close-btn")?.removeEventListener('click', this.removeNewGameDialog)
+        document.querySelector("#new-game-btn")?.removeEventListener('click', this.emitNewGame)
+    }
+    public removeSocketListeners(): void {
+        SocketIOClientInstance.socket.off("GAME_SELECT_RESPONSE")
     }
 }

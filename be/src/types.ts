@@ -1,12 +1,3 @@
-export type UserInfo = {
-    userId: string,
-    gameId: string
-}
-
-export type ViewName = "LOADING" | "GAME_PROGRESS" | "GAME_SELECT" | "GAME_WAITING"
-
-export type Coordinates = { x: number, y: number }
-
 export const PlayerColors = {
     RED: '0',
     YELLOW: '1',
@@ -22,9 +13,26 @@ export type FieldInfo = {
     playerIndex: PlayerIndex | null
 }
 
+export type PlayerStatus = {
+    token: string
+    figures: FieldInfo[]
+}
+
+export type GameProgress = {
+    _id: string
+    name: string
+    playerStatuses: Partial<Record<PlayerIndex, PlayerStatus>>
+    lastDiceSequence: number[]
+    currentPlayerIndex: PlayerIndex
+}
 
 export type GamePreview = {
     _id: string
     name: string
     players: number
+}
+
+export type UserInfo = {
+    userId: string,
+    gameId: string
 }

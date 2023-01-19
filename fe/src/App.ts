@@ -4,9 +4,10 @@ import { GameSelectView } from "./views/GameSelectView";
 import { GameWaitingView } from "./views/GameWaitingView";
 import { LoadingView } from "./views/LoadingView";
 import { View } from "./views/View";
+import { SocketIOClientInstance } from "./socketio/SocketClient";
 
 export class App {
-    private userInfo: UserInfo = null;
+    private userInfo: UserInfo | null = null;
     private currentView: View;
     private viewsDict: Record<ViewName, View>;
     constructor() {
@@ -18,6 +19,8 @@ export class App {
         }
         this.currentView = this.viewsDict.LOADING
         // TODO ostatni
+        this.registerSocketListeners()
+
     }
     /**
      * getUserInfo
@@ -37,30 +40,50 @@ export class App {
 
     /**
      * init
+     * vola se po po 'connect' socket serveru
      */
-    /* public init() {
+    public async init() {
         this.getUserInfo();
         if (this.userInfo) {
+            SocketIOClientInstance.socket.emit("INIT", this.userInfo)
         } else {
             this.currentView = this.viewsDict.GAME_SELECT;
+            this.currentView.render()
+            this.currentView.registerHtmlListeners()
         }
 
-        this.currentView.render()
-    } */
+    }
     /**
      * force renderPage
      */
-    public render() {
-        this.currentView.removeListeners()
-        this.getUserInfo();
-        if (this.userInfo) {
-        } else {
-            this.currentView = this.viewsDict.GAME_SELECT;
-        }
-
-        this.currentView = this.viewsDict.GAME_PROGRESS
-
+    public start() {
         this.currentView.render()
-        this.currentView.registerListeners()
+        this.currentView.registerHtmlListeners()
+    }
+
+    private registerSocketListeners() {
+        SocketIOClientInstance.socket.on("REDIRECT_GAME_WAIT", this.onRedirectGameWait);
+        SocketIOClientInstance.socket.on("REDIRECT_GAME_SELECT", this.onRedirectGameSelect);
+    }
+
+    private onRedirectGameWait(data: UserInfo) {
+        this.userInfo = data;
+        localStorage.setItem('userId', this.userInfo.userId)
+        localStorage.setItem('gameId', this.userInfo.gameId)
+        this.renderNewView("GAME_WAITING")
+    }
+
+    private onRedirectGameSelect() {
+        localStorage.removeItem('userId')
+        localStorage.removeItem('gameId')
+        this.renderNewView("GAME_SELECT")
+    }
+
+    private renderNewView(view: ViewName) {
+        this.currentView.removeHtmlListeners()
+        this.currentView = this.viewsDict[view]
+        this.currentView.viewInit()
+        this.currentView.render()
+        this.currentView.registerHtmlListeners()
     }
 }
