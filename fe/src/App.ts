@@ -6,7 +6,7 @@ import { LoadingView } from "./views/LoadingView";
 import { View } from "./views/View";
 import { SocketIOClientInstance } from "./socketio/SocketClient";
 
-export class App {
+class App {
     private userInfo: UserInfo | null = null;
     private currentView: View;
     private viewsDict: Record<ViewName, View>;
@@ -18,7 +18,7 @@ export class App {
             LOADING: new LoadingView()
         }
         this.currentView = this.viewsDict.LOADING
-        // TODO ostatni
+        this.currentView.mount()
         this.registerSocketListeners()
 
     }
@@ -26,7 +26,7 @@ export class App {
      * getUserInfo
      * Loads user information from local storage and returns it.
      */
-    public getUserInfo(): UserInfo {
+    private loadUserInfo(): UserInfo {
         const localStorageInfo = JSON.parse(localStorage.getItem('user'));
 
         if (localStorageInfo && typeof localStorageInfo.userId === 'number' && typeof localStorageInfo.gameId === 'number') {
@@ -43,27 +43,18 @@ export class App {
      * vola se po po 'connect' socket serveru
      */
     public async init() {
-        this.getUserInfo();
+        this.loadUserInfo();
         if (this.userInfo) {
             SocketIOClientInstance.socket.emit("INIT", this.userInfo)
         } else {
             this.currentView = this.viewsDict.GAME_SELECT;
-            this.currentView.render()
-            this.currentView.registerHtmlListeners()
+            this.currentView.mount()
         }
-
-    }
-    /**
-     * force renderPage
-     */
-    public start() {
-        this.currentView.render()
-        this.currentView.registerHtmlListeners()
     }
 
     private registerSocketListeners() {
-        SocketIOClientInstance.socket.on("REDIRECT_GAME_WAIT", this.onRedirectGameWait);
-        SocketIOClientInstance.socket.on("REDIRECT_GAME_SELECT", this.onRedirectGameSelect);
+        SocketIOClientInstance.socket.on("REDIRECT_GAME_WAIT", this.onRedirectGameWait.bind(this));
+        SocketIOClientInstance.socket.on("REDIRECT_GAME_SELECT", this.onRedirectGameSelect.bind(this));
     }
 
     private onRedirectGameWait(data: UserInfo) {
@@ -80,10 +71,10 @@ export class App {
     }
 
     private renderNewView(view: ViewName) {
-        this.currentView.removeHtmlListeners()
+        this.currentView.unmount()
         this.currentView = this.viewsDict[view]
-        this.currentView.viewInit()
-        this.currentView.render()
-        this.currentView.registerHtmlListeners()
+        this.currentView.mount()
     }
 }
+
+export default new App()

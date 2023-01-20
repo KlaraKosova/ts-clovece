@@ -5,8 +5,9 @@ import {ObjectId} from "mongodb"
 import {v4 as uuidv4} from 'uuid'
 import {GameDocument} from "../../db/types/Game"
 import {extractGameInfo, generateDiceSequence} from "../../helpers";
+import { Server } from "socket.io"
 
-export default async function (socket: SocketIO, data: { gameId: string }) {
+export default async function (io: Server, socket: SocketIO, data: { gameId: string }) {
     console.log('Socket: on joinGame')
     const client = await Client.getClient()
     const games = client.collection('games')

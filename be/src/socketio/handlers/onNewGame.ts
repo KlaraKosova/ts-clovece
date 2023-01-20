@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { Server } from "socket.io";
 import { GameProgress, PlayerColors } from "../../types";
 
-export default async function (socket: SocketIO, data: { name: string }) {
+export default async function (io: Server, socket: SocketIO, data: { name: string }) {
     console.log('Socket: on newGame')
     const client = await Client.getClient()
     const games = client.collection('games')
@@ -28,28 +28,26 @@ export default async function (socket: SocketIO, data: { name: string }) {
     }
     const result = await games.insertOne(newGame)
     console.log('Socket: emit GameWait')
-    socket.join(result.insertedId.toString())
+    await socket.join(result.insertedId.toString())
     socket.emit("REDIRECT_GAME_WAIT", {
         gameId: result.insertedId.toString(),
         userId: userId
     })
-
+   
     const cursor = games.find({
-        players: {
-            $not: {
-                $size: 4
-            }
+        [`playerStatuses.${PlayerColors.BLUE}`]: {
+            $exists: false
         }
     })
     const response = await cursor.map((game) => {
         return {
             _id: game._id.toString(),
-            players: game.players.length
+            name: game.name,
+            players: Object.keys(game.playerStatuses).length
         }
-
     }).toArray()
 
-    socket.emit('REDIRECT_GAME_SELECT')
-    await client.disconnect()
 
+    io.emit('GAME_SELECT_RESPONSE', { games: response })
+    await client.disconnect()
 }

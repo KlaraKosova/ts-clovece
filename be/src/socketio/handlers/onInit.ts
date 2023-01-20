@@ -5,13 +5,13 @@ import { UserInfo } from "../../types";
 import { SocketIO } from "../types";
 import { extractGameInfo } from "../../helpers";
 
-export default async function (socket: SocketIO, data: UserInfo) {
+export default async function (socket: SocketIO, data: UserInfo | null) {
     console.log('Socket: on init')
 
     const client = await Client.getClient()
     const games = client.collection('games')
 
-    if (data.gameId && data.userId) {
+    if (data && data.gameId && data.userId) {
         const result = await games.findOne({
             $and: [
                 { _id: new ObjectId(data.gameId) },
@@ -32,7 +32,7 @@ export default async function (socket: SocketIO, data: UserInfo) {
 
             if (result.players.length === 4) {
                 console.log('Socket: emit redirectGameState')
-                socket.emit("GAME_PROGRESS", extractGameInfo(result, data.userId))
+                // socket.emit("GAME_PROGRESS", extractGameInfo(result, data.userId))
             } else {
                 console.log('Socket: emit redirectGameWait')
                 socket.emit("REDIRECT_GAME_WAIT", {

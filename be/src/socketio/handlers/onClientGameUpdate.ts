@@ -1,4 +1,3 @@
-import {FieldNumber} from "../../types";
 import {SocketIO} from "../types";
 import Client from "../../core/db/Client";
 import {extractGameInfo, generateDiceSequence} from "../../helpers";

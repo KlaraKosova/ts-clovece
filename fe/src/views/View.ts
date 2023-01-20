@@ -7,10 +7,16 @@ export abstract class View {
         }
         this.registerSocketListeners()
     }
-    public abstract viewInit(): void;
-    public abstract render(): void;
-    public abstract registerSocketListeners(): void;
-    public abstract removeSocketListeners(): void;
-    public abstract registerHtmlListeners(): void;
-    public abstract removeHtmlListeners(): void;
+    protected abstract render(): void;
+    protected registerSocketListeners() {};
+    protected removeSocketListeners() {};
+    protected registerHtmlListeners() {};
+    protected removeHtmlListeners() {};
+    public mount() {
+        this.render()
+        this.registerHtmlListeners()
+    };
+    public unmount() {
+        this.removeHtmlListeners()
+    };
 }

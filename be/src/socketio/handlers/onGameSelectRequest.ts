@@ -1,14 +1,16 @@
+import { Server } from "socket.io";
 import Client from "../../core/db/Client";
+import { PlayerColors } from "../../types";
 import { SocketIO } from "../types";
 
-export async function onGameSelectRequest(socket: SocketIO) {
+export async function onGameSelectRequest(io: Server, socket: SocketIO) {
     console.log("Socket: onGameSelectRequest");
 
     const client = await Client.getClient()
     const games = client.collection('games')
 
     const cursor = games.find({
-        "playerStatuses.4": {
+        [`playerStatuses.${PlayerColors.BLUE}`]: {
             $exists: false
         }
     })

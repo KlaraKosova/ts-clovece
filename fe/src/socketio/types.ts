@@ -11,7 +11,7 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
-    INIT: (data: { gameId: string | null, userId: string | null }) => void,
+    INIT: (data: UserInfo | null) => void,
     GAME_SELECT_REQUEST: () => void,
     NEW_GAME: (data: { name: string }) => void,
     JOIN_GAME: (data: { gameId: string }) => void,

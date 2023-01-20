@@ -29,101 +29,19 @@ io.on("connection", (socket: SocketIO) => {
         onInit(socket, data)
     })
 
-    /* socket.on("INIT", async (data) => {
-        console.log('Socket: on init')
-
-        const client = await Client.getClient()
-        const games = client.collection('games')
-        if (data.gameId && data.userId) {
-            const result = await games.findOne({
-                $and: [
-                    {_id: new ObjectId(data.gameId)},
-                    {
-                        players: {
-                            $elemMatch: {
-                                token: data.userId
-                            }
-                        }
-                    }
-                ]
-            }) as GameDocument | null
-
-            console.log(result)
-            if (!result) {
-                console.log('Socket: emit GameSelect')
-                const cursor = games.find({
-                    players: {
-                        $not: {
-                            $size: 4
-                        }
-                    }
-                })
-                const response = await cursor.map((game) => {
-                    return {
-                        _id: game._id.toString(),
-                        playersCount: game.players.length
-                    }
-
-                }).toArray()
-
-                socket.emit('GAME_SELECT', response)
-            } else {
-                socket.join(data.gameId)
-                if (result.players.length === 4) {
-                    console.log('Socket: emit redirectGameState')
-                    // socket.emit("redirectGameState")
-                } else {
-                    console.log('Socket: emit redirectGameWait')
-                    socket.emit("GAME_WAIT", {
-                        gameId: data.gameId,
-                        userId: data.userId
-                    })
-                }
-
-            }
-            client.disconnect()
-            return
-        }
-
-        client.disconnect()
-        console.log('Socket: emit redirectGameSelect')
-        socket.emit("redirectGameSelect")
-    }) */
-    /* socket.on('newGame', async () => {
-        console.log('Socket: on newGame')
-        const client = await Client.getClient()
-        const games = client.collection('games')
-        const userId = uuidv4()
-
-        const result = await games.insertOne({
-            players: [
-                {
-                    token: userId,
-                    figurePositions: ['H0', 'H1', 'H2', 'H3']
-                }
-            ]
-        })
-        console.log('Socket: emit redirectGameWait')
-        socket.join(result.insertedId.toString())
-        socket.emit("GAME_WAIT", {
-            gameId: result.insertedId.toString(),
-            userId: userId
-        })
-    }) */
-
-    socket.on('NEW_GAME', () => {
-        onNewGame(io, socket)
+    socket.on('NEW_GAME', data => {
+        onNewGame(io, socket, data)
     })
     socket.on('JOIN_GAME', data => {
-        onJoinGame(socket, data)
+        onJoinGame(io, socket, data)
     })
 
-    socket.on('CLIENT_GAME_UPDATE', data => {
+    /* socket.on('CLIENT_GAME_UPDATE', data => {
         onClientGameUpdate(socket, data)
-    })
+    }) */
 
     socket.on("GAME_SELECT_REQUEST", () => {
-        onGameSelectRequest(socket)
+        onGameSelectRequest(io, socket)
     })
     /* socket.on('joinGame', async data => {
         console.log('Socket: on joinGame')
