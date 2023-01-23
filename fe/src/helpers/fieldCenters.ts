@@ -4,59 +4,58 @@ import { Coordinates, PlayerColors, PlayerIndex } from '../types'
 const centers = [] as Coordinates[]
 
 // TODO constants
-const startCenters: Map<PlayerIndex, Coordinates[]> = new Map([
-  [PlayerColors.RED, [
+const startCenters: Record<PlayerIndex, Coordinates[]> = {
+  [PlayerColors.RED]: [
     { x: 54, y: 34 },
     { x: 74 + 4, y: 34 },
     { x: 34, y: 54 },
     { x: 34, y: 74 + 4 }
-  ]],
-  [PlayerColors.YELLOW, [
+  ],
+  [PlayerColors.YELLOW]: [
     { x: 315 - 54, y: 34 },
     { x: 315 - 74 - 4, y: 34 },
     { x: 315 - 34, y: 54 },
     { x: 315 - 34, y: 74 + 4 }
-  ]],
-  [PlayerColors.GREEN, [
+  ],
+  [PlayerColors.GREEN]: [
     { x: 315 - 54, y: 315 - 34 },
     { x: 315 - 74 - 4, y: 315 - 34 },
     { x: 315 - 34, y: 315 - 54 },
     { x: 315 - 34, y: 315 - 74 - 4 }
-  ]],
-  [PlayerColors.BLUE, [
+  ],
+  [PlayerColors.BLUE]: [
     { x: 54, y: 315 - 34 },
     { x: 74 + 4, y: 315 - 34 },
     { x: 34, y: 315 - 54 },
     { x: 34, y: 315 - 74 - 4 }
-  ]]
-])
+  ]}
 
-const homeCenters: Map<PlayerIndex, Coordinates[]> = new Map([
-  [PlayerColors.RED, [
+const homeCenters: Record<PlayerIndex, Coordinates[]> = {
+  [PlayerColors.RED]: [
     { x: 38 + Consts.BOARD.FIELDS.OUTER_SIZE + Consts.BOARD.FIELDS.GAP, y: 157.5 },
     { x: 38 + 40 + 8, y: 157.5 },
     { x: 38 + 60 + 12, y: 157.5 },
     { x: 38 + 80 + 16, y: 157.5 }
-  ]],
-  [PlayerColors.YELLOW, [
+  ],
+  [PlayerColors.YELLOW]: [
     { x: 157.5, y: 38 + Consts.BOARD.FIELDS.OUTER_SIZE + Consts.BOARD.FIELDS.GAP },
     { x: 157.5, y: 38 + 40 + 8 },
     { x: 157.5, y: 38 + 60 + 12 },
     { x: 157.5, y: 38 + 80 + 16 }
-  ]],
-  [PlayerColors.GREEN, [
+  ],
+  [PlayerColors.GREEN]: [
     { x: 315 - (38 + Consts.BOARD.FIELDS.OUTER_SIZE + Consts.BOARD.FIELDS.GAP), y: 157.5 },
     { x: 315 - (38 + 40 + 8), y: 157.5 },
     { x: 315 - (38 + 60 + 12), y: 157.5 },
     { x: 315 - (38 + 80 + 16), y: 157.5 }
-  ]],
-  [PlayerColors.BLUE, [
+  ],
+  [PlayerColors.BLUE]: [
     { x: 157.5, y: 315 - (38 + Consts.BOARD.FIELDS.OUTER_SIZE + 4) },
     { x: 157.5, y: 315 - (38 + 40 + 8) },
     { x: 157.5, y: 315 - (38 + 60 + 12) },
     { x: 157.5, y: 315 - (38 + 80 + 16) }
-  ]]
-])
+  ]
+}
 
 // TODO refactor
 const iterator = {

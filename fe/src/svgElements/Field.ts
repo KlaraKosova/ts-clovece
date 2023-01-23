@@ -19,9 +19,9 @@ export class Field extends GameElement /* implements HasHighlightAnimation */ {
         this.animationRunner = new Runner()
 
         if (info.isHome) {
-            this.center = homeCenters.get(info.playerIndex)[info.index]
+            this.center = homeCenters[info.playerIndex][info.index]
         } else if (info.isStart) {
-            this.center = startCenters.get(info.playerIndex)[info.index]
+            this.center = startCenters[info.playerIndex][info.index]
         } else {
             this.center = centers[info.index]
             if (info.index % 10 === 0) {

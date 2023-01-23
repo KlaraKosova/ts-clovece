@@ -26,16 +26,16 @@ class App {
      * getUserInfo
      * Loads user information from local storage and returns it.
      */
-    private loadUserInfo(): UserInfo {
+    private loadUserInfo() {
+        this.userInfo = null
         const localStorageInfo = JSON.parse(localStorage.getItem('user'));
 
-        if (localStorageInfo && typeof localStorageInfo.userId === 'number' && typeof localStorageInfo.gameId === 'number') {
+        if (localStorageInfo && typeof localStorageInfo.userId === 'string' && typeof localStorageInfo.gameId === 'string') {
             this.userInfo = {
                 userId: localStorageInfo.userId,
                 gameId: localStorageInfo.gameId,
             }
         }
-        return this.userInfo;
     }
 
     /**
@@ -43,31 +43,37 @@ class App {
      * vola se po po 'connect' socket serveru
      */
     public async init() {
+        console.log('init');
         this.loadUserInfo();
+        console.log(this.userInfo);
         if (this.userInfo) {
             SocketIOClientInstance.socket.emit("INIT", this.userInfo)
         } else {
-            this.currentView = this.viewsDict.GAME_SELECT;
-            this.currentView.mount()
+            this.renderNewView("GAME_SELECT")
         }
     }
 
     private registerSocketListeners() {
         SocketIOClientInstance.socket.on("REDIRECT_GAME_WAIT", this.onRedirectGameWait.bind(this));
         SocketIOClientInstance.socket.on("REDIRECT_GAME_SELECT", this.onRedirectGameSelect.bind(this));
+        SocketIOClientInstance.socket.on("REDIRECT_GAME_PROGRESS", this.onRedirectGameProgress.bind(this))
     }
 
     private onRedirectGameWait(data: UserInfo) {
         this.userInfo = data;
-        localStorage.setItem('userId', this.userInfo.userId)
-        localStorage.setItem('gameId', this.userInfo.gameId)
+        console.log('here');
+        console.log(data);
+        localStorage.setItem('user', JSON.stringify(this.userInfo))
         this.renderNewView("GAME_WAITING")
     }
 
     private onRedirectGameSelect() {
-        localStorage.removeItem('userId')
-        localStorage.removeItem('gameId')
+        localStorage.removeItem('user')
         this.renderNewView("GAME_SELECT")
+    }
+
+    private onRedirectGameProgress() {
+        this.renderNewView("GAME_PROGRESS")
     }
 
     private renderNewView(view: ViewName) {

@@ -15,8 +15,11 @@ export abstract class View {
     public mount() {
         this.render()
         this.registerHtmlListeners()
+        this.registerSocketListeners()
     };
     public unmount() {
         this.removeHtmlListeners()
+        this.removeSocketListeners()
+        this.rootElem.replaceChildren()
     };
 }

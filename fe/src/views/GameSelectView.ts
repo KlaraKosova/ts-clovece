@@ -5,6 +5,13 @@ import { View } from "./View";
 export class GameSelectView extends View {
     private games: GamePreview[] = [];
     render() {
+        const container = document.createElement('div')
+        container.classList.add('game-cards-container')
+        const createGameCard = document.createElement('div')
+        createGameCard.classList.add('game-card')
+        createGameCard.innerHTML = '<div>+ Vytvořit</div>'
+
+        container.appendChild(createGameCard)
         let resultHtml =
             `<div class="game-cards-container">
                 <div class="game-card">
@@ -12,16 +19,24 @@ export class GameSelectView extends View {
                 </div>`
 
         for (let i = 0; i < this.games.length; i++) {
-            resultHtml +=
-                `<div class="game-card" data-gameId="${this.games[i]._id}">
-                    <div class="game-name">ID: ${this.games[i].name}</div>
-                    <div>Hráči: ${this.games[i].players}/4</div>
-                    <button class="btn-full btn-green">Přidat se</button>
-                </div>`;
+            const wrapper = document.createElement('div')
+            wrapper.classList.add('game-card')
+
+            const nameWrapper = document.createElement('div')
+            nameWrapper.classList.add('game-name')
+            nameWrapper.textContent = this.games[i].name
+            const playersWrapper = document.createElement('div')
+            playersWrapper.textContent = `Hráči: ${this.games[i].players}/4`
+            const joinButton = document.createElement('button')
+            joinButton.classList.add('btn-full', 'btn-green')
+            joinButton.textContent= 'Přidat se'
+            joinButton.addEventListener('click', this.joinGame.bind(this, this.games[i]._id))
+
+            wrapper.append(nameWrapper, playersWrapper, joinButton)
+            container.append(wrapper)
         }
 
-        resultHtml += "</div>";
-        this.rootElem.innerHTML = resultHtml;
+        this.rootElem.replaceChildren(container);
         this.registerHtmlListeners();
     }
 
@@ -39,14 +54,14 @@ export class GameSelectView extends View {
                 </div>
             </div>
         `
-        document.body.appendChild(modalElement)
+        this.rootElem.appendChild(modalElement)
         document.querySelector(".modal-close-btn").addEventListener('click', this.removeNewGameDialog.bind(this))
         document.querySelector("#new-game-btn").addEventListener('click', this.emitNewGame.bind(this))
     }
 
     private removeNewGameDialog() {
         const modalElement = document.querySelector('.modal')
-        document.body.removeChild(modalElement)
+        this.rootElem.removeChild(modalElement)
     }
 
     private emitNewGame() {
@@ -58,9 +73,11 @@ export class GameSelectView extends View {
         })
     }
 
+    private joinGame(gameId: string) {
+        SocketIOClientInstance.socket.emit("JOIN_GAME", { gameId });
+    }
+
     private onGameSelectResponse(data: { games: GamePreview[] }) {
-        console.log(JSON.parse(JSON.stringify(this)));
-        console.log(data);
         this.games = data.games
         this.render()
     }

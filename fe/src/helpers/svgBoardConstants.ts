@@ -12,20 +12,20 @@ export default {
         [PlayerColors.GREEN]: {
             front: '#088714',
             back: '#03540b',
-            figureTop: '#84ca8b',
-            figureBottom: '#3aab45'
+            highlight: '#84ca8b',
+            shadow: '#3aab45'
         },
         [PlayerColors.YELLOW]: {
             front: '#bab70d',
             back: '#7a5f05',
-            figureTop: '#f4f287',
-            figureBottom: '#dfd91b'
+            highlight: '#f4f287',
+            shadow: '#dfd91b'
         },
         [PlayerColors.BLUE]: {
             front: '#0576ab',
             back: '#023852',
-            figureTop: '#7feeee',
-            figureBottom: '#0698dd'
+            highlight: '#7feeee',
+            shadow: '#0698dd'
         }
     },
     BOARD: {
