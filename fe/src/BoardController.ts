@@ -3,87 +3,90 @@ import { centers, homeCenters } from "./helpers/fieldCenters";
 import { Field } from "./svgElements/Field";
 import { Figure } from "./svgElements/Figure";
 import { StaticBackground } from "./svgElements/StaticBackground";
-import { FieldInfo, PlayersOrder, PlayerIndex, SvgBoardStates, GameProgress, PlayerColors } from "./types";
+import { FieldInfo, PlayersOrder, PlayerColor, SvgBoardStates, GameProgress, PlayerColors } from "./types";
 
 export class BoardController {
-    private draw: Svg;
+    private readonly draw: Svg;
     private boardState: SvgBoardStates;
     private gameProgress: GameProgress
     private background: StaticBackground;
     private mainFields = [] as Field[];
-    private homeFields = [] as Field[];
-    private startFields = [] as Field[];
-    private figurePositions =  {} as Record<PlayerIndex, Figure[]>
+    private homeFields = {} as Record<PlayerColor, Field[]>;
+    private startFields = {} as Record<PlayerColor, Field[]>;
+    private figures =  {} as Record<PlayerColor, Figure[]>;
     constructor(draw: Svg) {
         this.draw = draw
         this.boardState = SvgBoardStates.DEFAULT
+        this.init()
     }
-    public setGameProgress(progress: GameProgress) {
+    public updateGameProgress(progress: GameProgress) {
         this.gameProgress = progress
-        /* PlayersOrder.forEach(playerIndex => {
+        progress.playerStatuses.forEach(playerStatus => {
             for (let i = 0; i < 4; i++) {
-                this.figurePositions[playerIndex][i].setField(progress.playerStatuses[playerIndex].figures[i])
+                const progressPosition = playerStatus.figures[i]
+                this.figures[playerStatus.color][i].setField(progressPosition)
+                this.figures[playerStatus.color][i].render()
             }
-        }) */
+        })
+
+        if (progress.currentPlayerId) {}
     }
-    public init() {
+    private init() {
         this.mainFields = [];
-        this.homeFields = [];
-        this.startFields = [];
         this.background = new StaticBackground(this.draw);
-        this.background.render();
 
         for (let i = 0; i < 40; i++) {
             this.mainFields[i] = new Field(this.draw, {
                 index: i,
-                playerIndex: i % 10 === 0 ? `${Math.floor(i / 10)}` as PlayerIndex : null,
+                playerColor: i % 10 === 0 ? `${Math.floor(i / 10)}` as PlayerColor : null,
                 isHome: false,
                 isStart: false
             })
-            this.mainFields[i].render()
         }
 
-        PlayersOrder.forEach(playerIndex => {
+        PlayersOrder.forEach(playerColor => {
+            this.startFields[playerColor] = []
+            this.homeFields[playerColor] = []
+            this.figures[playerColor] = []
+
             for (let i = 0; i < 4; i++) {
                 const homeField = new Field(this.draw, {
                     index: i,
-                    playerIndex: playerIndex,
+                    playerColor: playerColor,
                     isHome: true,
                     isStart: false
                 })
                 const startField = new Field(this.draw, {
                     index: i,
-                    playerIndex: playerIndex,
+                    playerColor: playerColor,
                     isHome: false,
                     isStart: true
                 })
 
-                startField.render()
-                homeField.render()
+                const figure = new Figure(this.draw, playerColor, {
+                    index: i,
+                    playerColor: playerColor,
+                    isHome: false,
+                    isStart: true
+                })
 
-                this.homeFields.push(homeField)
-                this.startFields.push(startField)
-
-                this.figurePositions[playerIndex] = []
-                // TODO refactor this
-                for (let i = 0; i < 4; i++) {
-                    const figure = new Figure(this.draw, playerIndex, {
-                        index: i,
-                        playerIndex: playerIndex,
-                        isHome: false,
-                        isStart: true
-                    })
-                    figure.render()
-                    this.figurePositions[playerIndex].push(figure)
-                }
+                this.homeFields[playerColor].push(homeField)
+                this.startFields[playerColor].push(startField)
+                this.figures[playerColor].push(figure)
             }
         })
     }
 
     public render () {
-        PlayersOrder.forEach(playerIndex => {
+        this.background.render();
+        for (let i = 0; i < 40; i++) {
+            this.mainFields[i].render()
+        }
+        PlayersOrder.forEach(playerColor => {
             for (let i = 0; i < 4; i++) {
-                this.figurePositions[playerIndex][i].render()
+                this.startFields[playerColor][i].render()
+                this.homeFields[playerColor][i].render()
+                this.figures[playerColor][i].render()
             }
         })
     }

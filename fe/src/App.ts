@@ -1,15 +1,16 @@
-import { UserInfo, ViewName } from "./types";
-import { GameProgressView } from "./views/GameProgressView";
-import { GameSelectView } from "./views/GameSelectView";
-import { GameWaitingView } from "./views/GameWaitingView";
-import { LoadingView } from "./views/LoadingView";
-import { View } from "./views/View";
-import { SocketIOClientInstance } from "./socketio/SocketClient";
+import {PlayerColors, PlayerColor, PlayersOrder, UserInfo, ViewName} from "./types";
+import {GameProgressView} from "./views/GameProgressView";
+import {GameSelectView} from "./views/GameSelectView";
+import {GameWaitingView} from "./views/GameWaitingView";
+import {LoadingView} from "./views/LoadingView";
+import {View} from "./views/View";
+import {SocketIOClientInstance} from "./socketio/SocketClient";
 
 class App {
     private userInfo: UserInfo | null = null;
     private currentView: View;
     private viewsDict: Record<ViewName, View>;
+
     constructor() {
         this.viewsDict = {
             GAME_SELECT: new GameSelectView(),
@@ -22,6 +23,7 @@ class App {
         this.registerSocketListeners()
 
     }
+
     /**
      * getUserInfo
      * Loads user information from local storage and returns it.
@@ -30,12 +32,23 @@ class App {
         this.userInfo = null
         const localStorageInfo = JSON.parse(localStorage.getItem('user'));
 
-        if (localStorageInfo && typeof localStorageInfo.userId === 'string' && typeof localStorageInfo.gameId === 'string') {
+        if (localStorageInfo
+            && typeof localStorageInfo.userId === 'string'
+            && typeof localStorageInfo.gameId === 'string'
+            && localStorageInfo.color in PlayersOrder
+        ) {
             this.userInfo = {
                 userId: localStorageInfo.userId,
                 gameId: localStorageInfo.gameId,
+                color: localStorageInfo.color
             }
+        } else {
+            localStorage.removeItem('user')
         }
+    }
+
+    public getUserInfo() {
+        return this.userInfo
     }
 
     /**

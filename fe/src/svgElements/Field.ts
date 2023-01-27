@@ -19,9 +19,9 @@ export class Field extends GameElement /* implements HasHighlightAnimation */ {
         this.animationRunner = new Runner()
 
         if (info.isHome) {
-            this.center = homeCenters[info.playerIndex][info.index]
+            this.center = homeCenters[info.playerColor][info.index]
         } else if (info.isStart) {
-            this.center = startCenters[info.playerIndex][info.index]
+            this.center = startCenters[info.playerColor][info.index]
         } else {
             this.center = centers[info.index]
             if (info.index % 10 === 0) {
@@ -29,12 +29,12 @@ export class Field extends GameElement /* implements HasHighlightAnimation */ {
             }
         }
 
-        if (info.playerIndex === null) {
+        if (info.playerColor === null) {
             this.color = { front: '#ffffff', back: "#000000" }
         } else {
             this.color = {
-                front: Consts.COLORS[info.playerIndex].front,
-                back: Consts.COLORS[info.playerIndex].back,
+                front: Consts.COLORS[info.playerColor].front,
+                back: Consts.COLORS[info.playerColor].back,
             }
         }
     }
@@ -59,7 +59,7 @@ export class Field extends GameElement /* implements HasHighlightAnimation */ {
     hide() {
         this.svg.removeChildren()
     }
-    // TODO 
+    // TODO
     /* highlightAnimationStart(): void {
         // TODO
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment

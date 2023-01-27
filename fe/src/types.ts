@@ -1,6 +1,7 @@
 export interface UserInfo {
     userId: string,
-    gameId: string
+    gameId: string,
+    color: PlayerColor
 }
 
 export type ViewName = "LOADING" | "GAME_PROGRESS" | "GAME_SELECT" | "GAME_WAITING"
@@ -14,7 +15,7 @@ export const PlayerColors = {
     BLUE: '3'
 } as const
 
-export type PlayerIndex = typeof PlayerColors[keyof typeof PlayerColors]
+export type PlayerColor = typeof PlayerColors[keyof typeof PlayerColors]
 export const PlayersOrder = [PlayerColors.RED, PlayerColors.YELLOW, PlayerColors.GREEN, PlayerColors.BLUE] as const
 
 export const SvgBoardStates = {
@@ -33,7 +34,7 @@ export interface FieldInfo {
     index: number,
     isStart: boolean,
     isHome: boolean,
-    playerIndex: PlayerIndex | null
+    playerColor: PlayerColor | null
 }
 
 export interface GamePreview {
@@ -43,8 +44,8 @@ export interface GamePreview {
 }
 
 export interface PlayerStatus {
-    color: PlayerIndex
-    token: string
+    color: PlayerColor
+    userId: string
     figures: FieldInfo[]
 }
 
@@ -53,5 +54,5 @@ export interface GameProgress {
     players: number
     playerStatuses: PlayerStatus[]
     lastDiceSequence: number[]
-    currentPlayerIndex: PlayerIndex
+    currentPlayerId: string
 }

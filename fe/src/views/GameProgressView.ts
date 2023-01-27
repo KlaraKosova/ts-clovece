@@ -15,17 +15,15 @@ export class GameProgressView extends View {
 
         const draw = SVG().addTo("#svgContainer").size(Consts.BOARD.SIZE * Consts.K, Consts.BOARD.SIZE * Consts.K);
         this.boardController = new BoardController(draw)
-        this.boardController.init()
-    }
-
-    private onGameProgressResponse(game: GameProgress) {
-        console.log(game);
-        this.boardController.setGameProgress(game)
         this.boardController.render()
     }
 
+    private onGameProgressResponse(game: GameProgress) {
+        this.boardController.updateGameProgress(game)
+    }
+
     protected registerSocketListeners(): void {
-        SocketIOClientInstance.socket.on("GAME_PROGRESS_RESPONSE", this.onGameProgressResponse.bind(this))   
+        SocketIOClientInstance.socket.on("GAME_PROGRESS_RESPONSE", this.onGameProgressResponse.bind(this))
     }
 
     protected removeSocketListeners(): void {

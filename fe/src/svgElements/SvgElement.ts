@@ -123,7 +123,10 @@ export class SvgElement {
      * Not recursive
      */
     removeChildren() {
+        // console.log('------------------------------------------');
+        //console.log(JSON.parse(JSON.stringify(this.group.dom)));
         this.group.clear()
+        // console.log(JSON.parse(JSON.stringify(this.group.dom)));
     }
 
     destroy(): void {
@@ -132,6 +135,6 @@ export class SvgElement {
     }
 
     debug() {
-        return this.group.dom
+        return this.group.children()
     }
 }

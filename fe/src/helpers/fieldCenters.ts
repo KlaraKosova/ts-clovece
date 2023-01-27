@@ -1,10 +1,10 @@
 import Consts from './svgBoardConstants'
-import { Coordinates, PlayerColors, PlayerIndex } from '../types'
+import { Coordinates, PlayerColors, PlayerColor } from '../types'
 
 const centers = [] as Coordinates[]
 
 // TODO constants
-const startCenters: Record<PlayerIndex, Coordinates[]> = {
+const startCenters: Record<PlayerColor, Coordinates[]> = {
   [PlayerColors.RED]: [
     { x: 54, y: 34 },
     { x: 74 + 4, y: 34 },
@@ -30,7 +30,7 @@ const startCenters: Record<PlayerIndex, Coordinates[]> = {
     { x: 34, y: 315 - 74 - 4 }
   ]}
 
-const homeCenters: Record<PlayerIndex, Coordinates[]> = {
+const homeCenters: Record<PlayerColor, Coordinates[]> = {
   [PlayerColors.RED]: [
     { x: 38 + Consts.BOARD.FIELDS.OUTER_SIZE + Consts.BOARD.FIELDS.GAP, y: 157.5 },
     { x: 38 + 40 + 8, y: 157.5 },

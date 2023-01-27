@@ -8,6 +8,6 @@ export abstract class GameElement {
     }
     abstract render(): void;
     public hide() {
-        this.svg.destroy();
+        this.svg.removeChildren();
     };
 }
