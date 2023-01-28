@@ -3,7 +3,7 @@ import Client from "../../core/db/Client"
 // @ts-ignore
 import { v4 as uuidv4 } from 'uuid'
 import { Server } from "socket.io";
-import { GameProgress, PlayerColors } from "../../types";
+import { GameProgress, PlayerColors, PlayersOrder } from "../../types";
 
 export default async function (io: Server, socket: SocketIO, data: { name: string }) {
     console.log('Socket: on newGame')
@@ -13,30 +13,33 @@ export default async function (io: Server, socket: SocketIO, data: { name: strin
 
     const newGame: Omit<GameProgress, "_id" | "lastDiceSequence"> = {
         name: data.name,
-        currentPlayerIndex: PlayerColors.RED,
-        playerStatuses: {
-            [PlayerColors.RED]: {
-                token: userId,
+        players: 1,
+        currentPlayerId: userId,
+        playerStatuses: [{
+                color: PlayersOrder[0],
+                userId: userId,
                 figures: [
-                    { playerIndex: PlayerColors.RED, index: 0, isHome: false, isStart: true },
-                    { playerIndex: PlayerColors.RED, index: 1, isHome: false, isStart: true },
-                    { playerIndex: PlayerColors.RED, index: 2, isHome: false, isStart: true },
-                    { playerIndex: PlayerColors.RED, index: 3, isHome: false, isStart: true },
+                    { color: PlayerColors.RED, index: 0, isHome: false, isStart: true },
+                    { color: PlayerColors.RED, index: 1, isHome: false, isStart: true },
+                    { color: PlayerColors.RED, index: 2, isHome: false, isStart: true },
+                    { color: PlayerColors.RED, index: 3, isHome: false, isStart: true },
                 ]
             }
-        }
+        ]
     }
+
     const result = await games.insertOne(newGame)
     console.log('Socket: emit GameWait')
     await socket.join(result.insertedId.toString())
     socket.emit("REDIRECT_GAME_WAIT", {
         gameId: result.insertedId.toString(),
-        userId: userId
+        userId: userId,
+        color: PlayersOrder[0]
     })
-   
+
     const cursor = games.find({
-        [`playerStatuses.${PlayerColors.BLUE}`]: {
-            $exists: false
+        players: {
+            $lt: 4
         }
     })
     const response = await cursor.map((game) => {

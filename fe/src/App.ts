@@ -58,7 +58,6 @@ class App {
     public async init() {
         console.log('init');
         this.loadUserInfo();
-        console.log(this.userInfo);
         if (this.userInfo) {
             SocketIOClientInstance.socket.emit("INIT", this.userInfo)
         } else {
@@ -74,8 +73,6 @@ class App {
 
     private onRedirectGameWait(data: UserInfo) {
         this.userInfo = data;
-        console.log('here');
-        console.log(data);
         localStorage.setItem('user', JSON.stringify(this.userInfo))
         this.renderNewView("GAME_WAITING")
     }

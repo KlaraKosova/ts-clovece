@@ -10,8 +10,8 @@ export async function onGameSelectRequest(io: Server, socket: SocketIO) {
     const games = client.collection('games')
 
     const cursor = games.find({
-        [`playerStatuses.${PlayerColors.BLUE}`]: {
-            $exists: false
+        players: {
+            $lt: 4
         }
     })
     const response = await cursor.map((game) => {

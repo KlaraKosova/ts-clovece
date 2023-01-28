@@ -14,13 +14,9 @@ export class Figure extends GameElement {
     }
     public setField(field: FieldInfo) {
         this.field = field
-        console.log(field);
-        // this.render()
     }
     public render() {
-        this.hide()
-        console.log(this.svg.debug())
-        // return
+        this.clear()
         const color = Consts.COLORS[this.playerColor]
 
         let center

@@ -4,19 +4,22 @@ import { Field } from "./svgElements/Field";
 import { Figure } from "./svgElements/Figure";
 import { StaticBackground } from "./svgElements/StaticBackground";
 import { FieldInfo, PlayersOrder, PlayerColor, SvgBoardStates, GameProgress, PlayerColors } from "./types";
+import App from "./App";
+import {Dice} from "./svgElements/Dice";
 
 export class BoardController {
     private readonly draw: Svg;
     private boardState: SvgBoardStates;
     private gameProgress: GameProgress
     private background: StaticBackground;
+    private dice: Dice;
     private mainFields = [] as Field[];
     private homeFields = {} as Record<PlayerColor, Field[]>;
     private startFields = {} as Record<PlayerColor, Field[]>;
     private figures =  {} as Record<PlayerColor, Figure[]>;
     constructor(draw: Svg) {
         this.draw = draw
-        this.boardState = SvgBoardStates.DEFAULT
+        this.boardState = SvgBoardStates.BEFORE_LOAD
         this.init()
     }
     public updateGameProgress(progress: GameProgress) {
@@ -29,7 +32,10 @@ export class BoardController {
             }
         })
 
-        if (progress.currentPlayerId) {}
+        if (progress.currentPlayerId === App.getUserInfo().userId ) {
+            this.boardState = SvgBoardStates.DICE
+            this.dice.render()
+        }
     }
     private init() {
         this.mainFields = [];
@@ -75,6 +81,8 @@ export class BoardController {
                 this.figures[playerColor].push(figure)
             }
         })
+        // kostka musi byt az na konci
+        this.dice = new Dice(this.draw)
     }
 
     public render () {

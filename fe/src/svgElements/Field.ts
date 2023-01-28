@@ -56,7 +56,7 @@ export class Field extends GameElement /* implements HasHighlightAnimation */ {
         }
     }
 
-    hide() {
+    clear() {
         this.svg.removeChildren()
     }
     // TODO

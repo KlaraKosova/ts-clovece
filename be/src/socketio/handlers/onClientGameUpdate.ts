@@ -1,8 +1,7 @@
-import {SocketIO} from "../types";
+/* import {SocketIO} from "../types";
 import Client from "../../core/db/Client";
 import {extractGameInfo, generateDiceSequence} from "../../helpers";
 import {ObjectId} from "mongodb";
-import {GameDocument} from "../../db/types/Game";
 
 export default async function (socket: SocketIO, data: FieldNumber[][]) {
     console.log('Socket: on clientGameUpdate')
@@ -22,7 +21,7 @@ export default async function (socket: SocketIO, data: FieldNumber[][]) {
     const newPlayers = []
     for (let i = 0; i < 4; i++) {
         newPlayers[i] = {
-            token: game.players[i].token,
+            userId: game.players[i].userId,
             figurePositions: data[i]
         }
     }
@@ -46,3 +45,4 @@ export default async function (socket: SocketIO, data: FieldNumber[][]) {
     const result = extractGameInfo(updatedGame, socket.data.userId)
     socket.to(game._id.toString()).emit("GAME_PROGRESS", result)
 }
+*/

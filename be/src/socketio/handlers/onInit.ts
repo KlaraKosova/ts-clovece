@@ -1,44 +1,43 @@
 import Client from "../../core/db/Client";
 import { ObjectId } from "mongodb";
-import { GameDocument } from "../../db/types/Game";
-import { UserInfo } from "../../types";
+import { GameProgressDocument, UserInfo } from "../../types";
 import { SocketIO } from "../types";
-import { extractGameInfo } from "../../helpers";
+import { Server } from "socket.io";
 
-export default async function (socket: SocketIO, data: UserInfo | null) {
-    console.log('Socket: on init')
+export default async function (io: Server, socket: SocketIO, data: UserInfo | null) {
+    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Socket: on init')
+    console.log(data)
 
     const client = await Client.getClient()
     const games = client.collection('games')
 
-    if (data && data.gameId && data.userId) {
+    if (data && data.gameId && data.userId && data.color) {
         const result = await games.findOne({
             $and: [
                 { _id: new ObjectId(data.gameId) },
                 {
-                    players: {
+                    playerStatuses: {
                         $elemMatch: {
-                            token: data.userId
+                            userId: data.userId,
+                            color: data.color
                         }
                     }
                 }
             ]
-        }) as GameDocument | null
+        }) as GameProgressDocument | null
 
         if (result) {
             socket.join(data.gameId)
             socket.data.gameId = data.gameId
             socket.data.userId = data.userId
+            socket.data.color = data.color
 
-            if (result.players.length === 4) {
+            if (result.players === 4) {
                 console.log('Socket: emit redirectGameState')
-                // socket.emit("GAME_PROGRESS", extractGameInfo(result, data.userId))
+                socket.emit("REDIRECT_GAME_PROGRESS")
             } else {
                 console.log('Socket: emit redirectGameWait')
-                socket.emit("REDIRECT_GAME_WAIT", {
-                    gameId: data.gameId,
-                    userId: data.userId
-                })
+                socket.emit("REDIRECT_GAME_WAIT", data)
             }
             await client.disconnect()
             return

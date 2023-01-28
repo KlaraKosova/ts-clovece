@@ -56,6 +56,11 @@ export default {
                     OFFSET: 34
                 }
             }
+        },
+        DICE: {
+            OUTER_SIZE: 65,
+            INNER_SIZE: 63,
+            DOT_SIZE: 20
         }
     },
 } as const

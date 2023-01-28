@@ -19,14 +19,15 @@ export type PlayerColor = typeof PlayerColors[keyof typeof PlayerColors]
 export const PlayersOrder = [PlayerColors.RED, PlayerColors.YELLOW, PlayerColors.GREEN, PlayerColors.BLUE] as const
 
 export const SvgBoardStates = {
-    DEFAULT: '0',
-    DICE: '1',
-    DICE_PLAY_BTN: '2',
-    HIGHLIGHT_FIELDS: '3',
-    FIGURE_SELECTED: '4',
-    FIGURE_MOVE: '5',
-    ANIMATING: '6',
-    SENDING_DATA: '7'
+    BEFORE_LOAD: '0',
+    DEFAULT: '1',
+    DICE: '2',
+    DICE_PLAY_BTN: '3',
+    HIGHLIGHT_FIELDS: '4',
+    FIGURE_SELECTED: '5',
+    FIGURE_MOVE: '6',
+    ANIMATING: '7',
+    SENDING_DATA: '8'
 } as const
 export type SvgBoardStates = typeof SvgBoardStates[keyof typeof SvgBoardStates]
 

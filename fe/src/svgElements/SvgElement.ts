@@ -41,16 +41,18 @@ export class SvgElement {
         type: 'rect',
         center: Coordinates,
         color: string,
+        opacity?: number,
         size: { x: number, y: number },
         radius?: number
-    }): void;
+    }, id?: string): void;
 
     createChild(data: {
         type: 'circle',
         center: Coordinates,
         color: string,
+        opacity?: number,
         diameter: number
-    }): void;
+    }, id?: string): void;
 
     createChild(data: {
         type: 'text',
@@ -66,18 +68,19 @@ export class SvgElement {
             variant?: string
             weight?: string
         }
-    }): void;
+    }, id?: string): void;
 
     createChild(data: {
         type: 'rect' | 'circle' | 'text',
         center: { x: number, y: number },
         color?: string,
+        opacity?: number,
         diameter?: number
         size?: { x: number, y: number },
         font?: Record<string, any>,
         text?: string,
         radius?: number
-    }): void {
+    }, id?: string): void {
         //
         let element: Circle | Rect | Text
         if (data.type === 'rect') {
@@ -98,8 +101,13 @@ export class SvgElement {
         }
         element.center(data.center.x * Consts.K, data.center.y * Consts.K)
         if (data.color) {
-            element.fill(data.color)
+            element.fill({color: data.color, opacity: data.opacity ?? 1})
         }
+
+        if (id) {
+            element.node.setAttribute('id', id)
+        }
+
         this.group.add(element)
     }
 

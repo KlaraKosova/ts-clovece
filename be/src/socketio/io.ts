@@ -2,7 +2,6 @@ import { Socket, Server } from "socket.io";
 import { SocketIO } from "./types";
 import Client from "../core/db/Client";
 import { ObjectId, WithId } from "mongodb";
-import { GameDocument } from "../db/types/Game";
 // @ts-ignore
 import { v4 as uuidv4 } from 'uuid'
 import onInit from "./handlers/onInit";
@@ -10,6 +9,7 @@ import onJoinGame from "./handlers/onJoinGame";
 import onNewGame from "./handlers/onNewGame";
 import onClientGameUpdate from "./handlers/onClientGameUpdate";
 import { onGameSelectRequest } from "./handlers/onGameSelectRequest";
+import onGameProgressRequest from "./handlers/onGameProgressRequest";
 
 const io = new Server<SocketIO>(3001, {
     path: '/',
@@ -26,7 +26,7 @@ io.on("connection", (socket: SocketIO) => {
     })
 
     socket.on('INIT', data => {
-        onInit(socket, data)
+        onInit(io, socket, data)
     })
 
     socket.on('NEW_GAME', data => {
@@ -42,6 +42,9 @@ io.on("connection", (socket: SocketIO) => {
 
     socket.on("GAME_SELECT_REQUEST", () => {
         onGameSelectRequest(io, socket)
+    })
+    socket.on("GAME_PROGRESS_REQUEST", () => {
+        onGameProgressRequest(io, socket)
     })
     /* socket.on('joinGame', async data => {
         console.log('Socket: on joinGame')
