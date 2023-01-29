@@ -57,3 +57,10 @@ export interface GameProgress {
     lastDiceSequence: number[]
     currentPlayerId: string
 }
+
+export interface DocumentClickData {
+    field: string
+    figure: string
+    dice: boolean
+    playButton: boolean
+}

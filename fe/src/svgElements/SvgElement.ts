@@ -1,6 +1,7 @@
 import { G, Svg, Element, Circle, Rect, Text } from '@svgdotjs/svg.js'
 import Consts from "../helpers/svgBoardConstants";
 import { Coordinates } from '../types'
+import {delay} from "../helpers/common";
 
 export class SvgElement {
     private draw: Svg;
@@ -10,9 +11,9 @@ export class SvgElement {
         this.group = draw.group()
     }
 
-    setId(id: string): void {
+    /* setId(id: string): void {
         this.group.node.setAttribute('id', id)
-    }
+    } */
 
     setCSS(style: Partial<CSSStyleDeclaration>): void {
         this.group.css(style)
@@ -44,7 +45,7 @@ export class SvgElement {
         opacity?: number,
         size: { x: number, y: number },
         radius?: number
-    }, id?: string): void;
+    }): void;
 
     createChild(data: {
         type: 'circle',
@@ -52,7 +53,7 @@ export class SvgElement {
         color: string,
         opacity?: number,
         diameter: number
-    }, id?: string): void;
+    }): void;
 
     createChild(data: {
         type: 'text',
@@ -68,7 +69,7 @@ export class SvgElement {
             variant?: string
             weight?: string
         }
-    }, id?: string): void;
+    }): void;
 
     createChild(data: {
         type: 'rect' | 'circle' | 'text',
@@ -80,7 +81,7 @@ export class SvgElement {
         font?: Record<string, any>,
         text?: string,
         radius?: number
-    }, id?: string): void {
+    }): void {
         //
         let element: Circle | Rect | Text
         if (data.type === 'rect') {
@@ -104,10 +105,6 @@ export class SvgElement {
             element.fill({color: data.color, opacity: data.opacity ?? 1})
         }
 
-        if (id) {
-            element.node.setAttribute('id', id)
-        }
-
         this.group.add(element)
     }
 
@@ -115,14 +112,23 @@ export class SvgElement {
      * Iterates over child elements, calls passed function on each
      * @param {(Element) => void} fn
      */
-    callChildrenFn(fn: (element: Element) => void, excludeIndexes: number[] = []): void {
+    callChildrenFunction(fn: (element: Element) => void): void {
         const children = this.group.children()
         for (let i = 0; i < children.length; i++) {
-            if (excludeIndexes.includes(i)) {
-                continue
-            }
             fn(children[i])
         }
+    }
+
+    public async move(data: {
+        duration: number,
+        direction: { x: number, y: number}
+    }) {
+        this.group.children().forEach((child: Element) => {
+            child.animate(data.duration, 0, 'after')
+                .dmove(data.direction.x * Consts.K, data.direction.y * Consts.K)
+        })
+
+        await delay(data.duration * this.group.children().length)
     }
 
     // TODO recursive
