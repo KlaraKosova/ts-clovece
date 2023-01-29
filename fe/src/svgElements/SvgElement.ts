@@ -1,7 +1,7 @@
 import { G, Svg, Element, Circle, Rect, Text } from '@svgdotjs/svg.js'
 import Consts from "../helpers/svgBoardConstants";
 import { Coordinates } from '../types'
-import {delay} from "../helpers/common";
+import { camelToKebabCase, delay } from "../helpers/common";
 
 export class SvgElement {
     private draw: Svg;
@@ -20,7 +20,11 @@ export class SvgElement {
     }
 
     setDataset(data: Record<string, any>): void {
-        this.group.data({ ...data })
+        Object.keys(data).forEach(key => {
+            if (data.hasOwnProperty(key)) {
+                this.group.data(camelToKebabCase(key), data[key], true)
+            }
+        })
     }
 
     /***
@@ -102,7 +106,7 @@ export class SvgElement {
         }
         element.center(data.center.x * Consts.K, data.center.y * Consts.K)
         if (data.color) {
-            element.fill({color: data.color, opacity: data.opacity ?? 1})
+            element.fill({ color: data.color, opacity: data.opacity ?? 1 })
         }
 
         this.group.add(element)
@@ -112,16 +116,20 @@ export class SvgElement {
      * Iterates over child elements, calls passed function on each
      * @param {(Element) => void} fn
      */
-    callChildrenFunction(fn: (element: Element) => void): void {
+    public callChildrenFunction(fn: (element: Element) => void): void {
         const children = this.group.children()
         for (let i = 0; i < children.length; i++) {
             fn(children[i])
         }
     }
 
+    public getNthChild(n: number): Element {
+        return this.group.children()[n - 1]
+    }
+
     public async move(data: {
         duration: number,
-        direction: { x: number, y: number}
+        direction: { x: number, y: number }
     }) {
         this.group.children().forEach((child: Element) => {
             child.animate(data.duration, 0, 'after')

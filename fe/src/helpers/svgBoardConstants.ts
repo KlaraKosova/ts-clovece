@@ -26,6 +26,12 @@ export default {
             back: '#023852',
             highlight: '#7feeee',
             shadow: '#0698dd'
+        },
+        HIGHLIGHT: {
+            highlight: '#9c5300',
+            front: '#fc9c2d',
+            back: '#9c5300',
+            shadow: '#ffbc6e'
         }
     },
     BOARD: {

@@ -5,7 +5,7 @@ import Consts from "../helpers/svgBoardConstants";
 import { centers, homeCenters, startCenters } from '../helpers/fieldCenters'
 import { HasHighlightAnimation } from './HasHighlightAnimation';
 
-export class Field extends GameElement /* implements HasHighlightAnimation */ {
+export class Field extends GameElement implements HasHighlightAnimation {
     private color: { front: string, back: string }
     private center: Coordinates
     private text = ''
@@ -19,9 +19,9 @@ export class Field extends GameElement /* implements HasHighlightAnimation */ {
         this.animationRunner = new Runner()
 
         if (info.isHome) {
-            this.center = homeCenters[info.playerColor][info.index]
+            this.center = homeCenters[info.color][info.index]
         } else if (info.isStart) {
-            this.center = startCenters[info.playerColor][info.index]
+            this.center = startCenters[info.color][info.index]
         } else {
             this.center = centers[info.index]
             if (info.index % 10 === 0) {
@@ -29,12 +29,12 @@ export class Field extends GameElement /* implements HasHighlightAnimation */ {
             }
         }
 
-        if (info.playerColor === null) {
+        if (info.color === null) {
             this.color = { front: '#ffffff', back: "#000000" }
         } else {
             this.color = {
-                front: Consts.COLORS[info.playerColor].front,
-                back: Consts.COLORS[info.playerColor].back,
+                front: Consts.COLORS[info.color].front,
+                back: Consts.COLORS[info.color].back,
             }
         }
     }
@@ -43,6 +43,7 @@ export class Field extends GameElement /* implements HasHighlightAnimation */ {
         this.svg.createChild({ type: 'circle', diameter: Consts.BOARD.FIELDS.OUTER_SIZE, color: this.color.back, center: this.center })
         this.svg.createChild({ type: 'circle', diameter: Consts.BOARD.FIELDS.INNER_SIZE, color: this.color.front, center: this.center })
         this.svg.setDataset(this.fieldInfo)
+
 
         if (this.text) {
             this.svg.createChild({
@@ -58,6 +59,29 @@ export class Field extends GameElement /* implements HasHighlightAnimation */ {
 
     clear() {
         this.svg.removeChildren()
+    }
+
+    public highlightAnimationStart(): void {
+        this.animationRunner = this.svg.getNthChild(2).animate({
+            duration: 500,
+            delay: 0,
+            when: 'now',
+            swing: true,
+            times: Infinity,
+            wait: 200
+        }).attr({ fill: '#fc9c2d' })
+
+        this.svg.setCSS({
+            cursor: 'pointer'
+        })
+    }
+
+    public highlightAnimationStop(): void {
+        this.animationRunner.loops(2)
+        this.animationRunner.unschedule()
+        this.svg.setCSS({
+            cursor: 'default'
+        })
     }
     // TODO
     /* highlightAnimationStart(): void {
@@ -84,4 +108,7 @@ export class Field extends GameElement /* implements HasHighlightAnimation */ {
             cursor: 'default'
         })
     } */
+    public getFieldInfo() {
+        return this.fieldInfo
+    }
 }

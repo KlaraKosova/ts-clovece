@@ -2,7 +2,7 @@ import { SVG } from "@svgdotjs/svg.js";
 import { BoardController } from "../BoardController";
 import Consts from "../helpers/svgBoardConstants";
 import { SocketIOClientInstance } from "../socketio/SocketClient";
-import { GameProgress, DocumentClickData } from "../types";
+import { GameProgress, DocumentClickData, PlayerColor } from "../types";
 import { View } from "./View";
 
 export class GameProgressView extends View {
@@ -24,7 +24,6 @@ export class GameProgressView extends View {
 
     private onDocumentClick(event: PointerEvent) {
         const result: DocumentClickData = {
-            // @ts-ignore
             field: null,
             // @ts-ignore
             figure: null,
@@ -35,14 +34,22 @@ export class GameProgressView extends View {
             const element = event.composedPath()[i]
             if (element instanceof HTMLElement || element instanceof SVGElement) {
                 console.log(element.dataset)
-                console.log(element.dataset.dice)
                 const dataset = element.dataset
                 result.dice = result.dice || !!dataset.dice
                 result.playButton = result.playButton || !!dataset.playButton
+
+                if (dataset.index && dataset.isHome && dataset.isStart) { // dataset.color is optional
+                    result.field = {
+                        index: +dataset.index,
+                        isHome: dataset.isHome === 'true',
+                        isStart: dataset.isStart === 'true',
+                        color: dataset.color as PlayerColor || null
+                    }
+                }
             }
         }
-        console.log(event)
-        console.log(result)
+        console.log(result);
+
         this.boardController.handleClick(result)
     }
 

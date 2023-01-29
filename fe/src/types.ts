@@ -22,12 +22,13 @@ export const SvgBoardStates = {
     BEFORE_LOAD: '0',
     DEFAULT: '1',
     DICE: '2',
-    DICE_PLAY_BTN: '3',
-    HIGHLIGHT_FIELDS: '4',
-    FIGURE_SELECTED: '5',
-    FIGURE_MOVE: '6',
-    ANIMATING: '7',
-    SENDING_DATA: '8'
+    DICE_ANIMATION: '3',
+    DICE_PLAY_BTN: '4',
+    HIGHLIGHT_FIELDS: '5',
+    FIGURE_SELECTED: '6',
+    FIGURE_MOVE: '7',
+    ANIMATING: '8',
+    SENDING_DATA: '9'
 } as const
 export type SvgBoardStates = typeof SvgBoardStates[keyof typeof SvgBoardStates]
 
@@ -35,7 +36,7 @@ export interface FieldInfo {
     index: number,
     isStart: boolean,
     isHome: boolean,
-    playerColor: PlayerColor | null
+    color: PlayerColor | null
 }
 
 export interface GamePreview {
@@ -59,7 +60,7 @@ export interface GameProgress {
 }
 
 export interface DocumentClickData {
-    field: string
+    field: FieldInfo | null
     figure: string
     dice: boolean
     playButton: boolean
