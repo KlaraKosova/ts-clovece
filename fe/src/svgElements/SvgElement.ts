@@ -11,9 +11,9 @@ export class SvgElement {
         this.group = draw.group()
     }
 
-    /* setId(id: string): void {
-        this.group.node.setAttribute('id', id)
-    } */
+    addClass(className: string): void {
+        this.group.node.classList.add(className)
+    }
 
     setCSS(style: Partial<CSSStyleDeclaration>): void {
         this.group.css(style)
@@ -129,14 +129,29 @@ export class SvgElement {
 
     public async move(data: {
         duration: number,
-        direction: { x: number, y: number }
+        offset: Coordinates
+    }): Promise<void>;
+
+    public async move(data: {
+        duration: number,
+        center: Coordinates
+    }): Promise<void>;
+
+    public async move(data: {
+        duration: number,
+        offset?: Coordinates,
+        center?: Coordinates
     }) {
         this.group.children().forEach((child: Element) => {
-            child.animate(data.duration, 0, 'after')
-                .dmove(data.direction.x * Consts.K, data.direction.y * Consts.K)
+            const runner = child.animate(data.duration, 0, 'after')
+            if (data.offset) {
+                runner.dmove(data.offset.x * Consts.K, data.offset.y * Consts.K)
+            } else if (data.center) {
+                runner.center(data.center.x * Consts.K, data.center.y * Consts.K)
+            }
         })
 
-        await delay(data.duration * this.group.children().length)
+        await delay(data.duration)
     }
 
     // TODO recursive

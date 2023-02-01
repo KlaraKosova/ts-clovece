@@ -1,7 +1,7 @@
-import {GameElement} from "./GameElement";
+import { GameElement } from "./GameElement";
 import Consts from '../helpers/svgBoardConstants'
-import {delay} from "../helpers/common";
-import {Element, Svg} from "@svgdotjs/svg.js";
+import { delay } from "../helpers/common";
+import { Element, Svg } from "@svgdotjs/svg.js";
 
 const dotsConfig = [
     [
@@ -39,7 +39,7 @@ const dotsConfig = [
 export class Dice extends GameElement {
     constructor(draw: Svg) {
         super(draw);
-        this.svg.setDataset({dice: true})
+        this.svg.setDataset({ dice: true })
     }
 
     render(): void {
@@ -57,15 +57,15 @@ export class Dice extends GameElement {
     private drawDots(dots: number): void {
         this.svg.createChild({
             type: "rect",
-            center: {x: Consts.BOARD.SIZE / 2, y: Consts.BOARD.SIZE / 2},
-            size: {x: Consts.BOARD.DICE.OUTER_SIZE, y: Consts.BOARD.DICE.OUTER_SIZE},
+            center: { x: Consts.BOARD.SIZE / 2, y: Consts.BOARD.SIZE / 2 },
+            size: { x: Consts.BOARD.DICE.OUTER_SIZE, y: Consts.BOARD.DICE.OUTER_SIZE },
             color: '#000',
             radius: 10
         })
         this.svg.createChild({
             type: "rect",
-            center: {x: Consts.BOARD.SIZE / 2, y: Consts.BOARD.SIZE / 2},
-            size: {x: Consts.BOARD.DICE.INNER_SIZE, y: Consts.BOARD.DICE.INNER_SIZE},
+            center: { x: Consts.BOARD.SIZE / 2, y: Consts.BOARD.SIZE / 2 },
+            size: { x: Consts.BOARD.DICE.INNER_SIZE, y: Consts.BOARD.DICE.INNER_SIZE },
             color: '#fff',
             radius: 10
         })
@@ -115,6 +115,6 @@ export class Dice extends GameElement {
         }
     } */
     public async animateMoveUp() {
-        this.svg.move({ duration: 1000, direction: { x: 0, y: -30 } })
+        this.svg.move({ duration: 1000, offset: { x: 0, y: -30 } })
     }
 }

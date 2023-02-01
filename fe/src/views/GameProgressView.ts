@@ -25,7 +25,6 @@ export class GameProgressView extends View {
     private onDocumentClick(event: PointerEvent) {
         const result: DocumentClickData = {
             field: null,
-            // @ts-ignore
             figure: null,
             dice: false,
             playButton: false
@@ -38,12 +37,26 @@ export class GameProgressView extends View {
                 result.dice = result.dice || !!dataset.dice
                 result.playButton = result.playButton || !!dataset.playButton
 
-                if (dataset.index && dataset.isHome && dataset.isStart) { // dataset.color is optional
+                if (element.classList.contains('field')
+                    && dataset.index
+                    && dataset.isHome
+                    && dataset.isStart
+                ) { // dataset.color is optional
                     result.field = {
                         index: +dataset.index,
                         isHome: dataset.isHome === 'true',
                         isStart: dataset.isStart === 'true',
                         color: dataset.color as PlayerColor || null
+                    }
+                }
+
+                if (element.classList.contains('figure')
+                    && dataset.color
+                    && dataset.index
+                ) {
+                    result.figure = {
+                        index: +dataset.index,
+                        color: dataset.color as PlayerColor
                     }
                 }
             }

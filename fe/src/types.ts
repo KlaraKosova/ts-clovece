@@ -32,11 +32,16 @@ export const SvgBoardStates = {
 } as const
 export type SvgBoardStates = typeof SvgBoardStates[keyof typeof SvgBoardStates]
 
-export interface FieldInfo {
+export interface FieldDataset {
     index: number,
     isStart: boolean,
     isHome: boolean,
     color: PlayerColor | null
+}
+
+export interface FigureDataset {
+    index: number,
+    color: PlayerColor
 }
 
 export interface GamePreview {
@@ -48,7 +53,7 @@ export interface GamePreview {
 export interface PlayerStatus {
     color: PlayerColor
     userId: string
-    figures: FieldInfo[]
+    figures: FieldDataset[]
 }
 
 export interface GameProgress {
@@ -60,8 +65,8 @@ export interface GameProgress {
 }
 
 export interface DocumentClickData {
-    field: FieldInfo | null
-    figure: string
+    field: FieldDataset | null
+    figure: FigureDataset | null
     dice: boolean
     playButton: boolean
 }

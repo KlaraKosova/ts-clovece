@@ -1,6 +1,6 @@
 import { GameElement } from './GameElement'
 import { Runner, Svg } from '@svgdotjs/svg.js'
-import { FieldInfo, Coordinates } from '../types'
+import { FieldDataset, Coordinates } from '../types'
 import Consts from "../helpers/svgBoardConstants";
 import { centers, homeCenters, startCenters } from '../helpers/fieldCenters'
 import { HasHighlightAnimation } from './HasHighlightAnimation';
@@ -10,31 +10,32 @@ export class Field extends GameElement implements HasHighlightAnimation {
     private center: Coordinates
     private text = ''
     private animationRunner: Runner
-    private fieldInfo: FieldInfo
+    private fieldDataset: FieldDataset
 
-    constructor(draw: Svg, info: FieldInfo) {
+    constructor(draw: Svg, dataset: FieldDataset) {
         super(draw)
 
-        this.fieldInfo = info
+        this.fieldDataset = dataset
+        this.svg.addClass('field')
         this.animationRunner = new Runner()
 
-        if (info.isHome) {
-            this.center = homeCenters[info.color][info.index]
-        } else if (info.isStart) {
-            this.center = startCenters[info.color][info.index]
+        if (dataset.isHome) {
+            this.center = homeCenters[dataset.color][dataset.index]
+        } else if (dataset.isStart) {
+            this.center = startCenters[dataset.color][dataset.index]
         } else {
-            this.center = centers[info.index]
-            if (info.index % 10 === 0) {
+            this.center = centers[dataset.index]
+            if (dataset.index % 10 === 0) {
                 this.text = 'A'
             }
         }
 
-        if (info.color === null) {
+        if (dataset.color === null) {
             this.color = { front: '#ffffff', back: "#000000" }
         } else {
             this.color = {
-                front: Consts.COLORS[info.color].front,
-                back: Consts.COLORS[info.color].back,
+                front: Consts.COLORS[dataset.color].front,
+                back: Consts.COLORS[dataset.color].back,
             }
         }
     }
@@ -42,7 +43,7 @@ export class Field extends GameElement implements HasHighlightAnimation {
     render(): void {
         this.svg.createChild({ type: 'circle', diameter: Consts.BOARD.FIELDS.OUTER_SIZE, color: this.color.back, center: this.center })
         this.svg.createChild({ type: 'circle', diameter: Consts.BOARD.FIELDS.INNER_SIZE, color: this.color.front, center: this.center })
-        this.svg.setDataset(this.fieldInfo)
+        this.svg.setDataset(this.fieldDataset)
 
 
         if (this.text) {
@@ -108,7 +109,17 @@ export class Field extends GameElement implements HasHighlightAnimation {
             cursor: 'default'
         })
     } */
-    public getFieldInfo() {
-        return this.fieldInfo
+    public getFieldDataset() {
+        return this.fieldDataset
+    }
+
+    public getCoordinates(): Coordinates {
+        if (this.fieldDataset.isHome) {
+            return homeCenters[this.fieldDataset.color][this.fieldDataset.index]
+        }
+        if (this.fieldDataset.isStart) {
+            return startCenters[this.fieldDataset.color][this.fieldDataset.index]
+        }
+        return centers[this.fieldDataset.index]
     }
 }

@@ -1,40 +1,60 @@
 import { Runner, Svg } from "@svgdotjs/svg.js";
-import { FieldInfo, PlayerColor } from "../types";
+import { Coordinates, FieldDataset, FigureDataset, PlayerColor } from "../types";
 import { GameElement } from "./GameElement";
 import Consts from "../helpers/svgBoardConstants"
 import { centers, homeCenters, startCenters } from "../helpers/fieldCenters";
 import { HasHighlightAnimation } from "./HasHighlightAnimation";
+import { Field } from "./Field";
 
 export class Figure extends GameElement implements HasHighlightAnimation {
-    public field: FieldInfo;
-    private playerColor: PlayerColor
+    private field: Field;
+    private nextField = null as Field | null
+    private figureDataset: FigureDataset
     private animationRunners = [] as Runner[]
-    constructor(draw: Svg, playerColor: PlayerColor, field: FieldInfo) {
+    private path = null as Field[] | null
+    constructor(draw: Svg, info: FigureDataset, field: Field) {
         super(draw)
-        this.playerColor = playerColor
+        this.figureDataset = info
         this.field = field
+        this.svg.setDataset(info)
+        this.svg.addClass('figure')
+
         for (let i = 0; i < 4; i++) {
             this.animationRunners[i] = new Runner()
         }
     }
-    public setField(field: FieldInfo) {
+
+    public setPath(path: Field[]) {
+        this.path = path
+    }
+    public setField(field: Field) {
         this.field = field
     }
 
     public getField() {
         return this.field
     }
+
+    public getNextField() {
+        return this.nextField
+    }
+
+    public setNextField(field: Field | null) {
+        this.nextField = field
+    }
+
     public render() {
         this.clear()
-        const color = Consts.COLORS[this.playerColor]
+        const color = Consts.COLORS[this.figureDataset.color]
+        const dataset = this.field.getFieldDataset()
 
         let center
-        if (this.field.isHome) {
-            center = homeCenters[this.playerColor][this.field.index]
-        } else if (this.field.isStart) {
-            center = startCenters[this.playerColor][this.field.index]
+        if (dataset.isHome) {
+            center = homeCenters[this.figureDataset.color][dataset.index]
+        } else if (dataset.isStart) {
+            center = startCenters[this.figureDataset.color][dataset.index]
         } else {
-            center = centers[this.field.index]
+            center = centers[dataset.index]
         }
 
         this.svg.createChild({
@@ -89,5 +109,56 @@ export class Figure extends GameElement implements HasHighlightAnimation {
             this.animationRunners[i].unschedule()
         }
         this.svg.setCSS({ cursor: 'default' })
+    }
+
+    public computeNextField(dice: number): Field | undefined {
+        if (this.path === null) {
+            throw new Error("Path not set")
+        }
+        if (this.field.getFieldDataset().isStart && dice === 6) {
+            return this.path[0]
+        }
+        const currentIndex = this.path.indexOf(this.field);
+        return this.path[currentIndex + dice]
+    }
+
+    public async animateMoveSequence(finalField: Field): Promise<void> {
+        const checkpoints = [] as Coordinates[]
+        let destFieldCoordinates: Coordinates
+
+        const finalFieldDataset = finalField.getFieldDataset()
+
+        if (finalFieldDataset.isStart) {
+            checkpoints.push(finalField.getCoordinates())
+        } else {
+            const checkpointIndexes = [4, 8, 10, 14, 18, 20, 24, 28, 30, 34, 38, 39]
+            const fieldIndex = this.path.indexOf(this.field)
+            const finalFieldIndex = this.path.indexOf(finalField)
+            /* while (checkpointIndexes[0] < fieldIndex) {
+                // rotate left
+                checkpointIndexes.push(checkpointIndexes.shift()!)
+            } */
+
+            const filteredCheckpointIndexes = checkpointIndexes
+                .filter((index: number): boolean => index < finalFieldIndex)
+
+            for (let i = 0; i < filteredCheckpointIndexes.length; i++) {
+                const index = filteredCheckpointIndexes[i]
+                console.log(index);
+
+                checkpoints.push(this.path[index].getCoordinates())
+            }
+            checkpoints.push(finalField.getCoordinates())
+        }
+
+        console.log(checkpoints)
+        for (const checkpoint of checkpoints) {
+            await this.svg.move({
+                duration: 500,
+                center: checkpoint
+            })
+        }
+
+        //        this.field = finalField
     }
 }

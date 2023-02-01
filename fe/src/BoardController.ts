@@ -4,7 +4,7 @@ import { Field } from "./svgElements/Field";
 import { Figure } from "./svgElements/Figure";
 import { StaticBackground } from "./svgElements/StaticBackground";
 import {
-    FieldInfo,
+    FieldDataset,
     PlayersOrder,
     PlayerColor,
     SvgBoardStates,
@@ -30,19 +30,18 @@ export class BoardController {
     private homeFields = {} as Record<PlayerColor, Field[]>;
     private startFields = {} as Record<PlayerColor, Field[]>;
     private figures = {} as Record<PlayerColor, Figure[]>;
-    private paths = {} as Record<PlayerColor, FieldInfo[]>;
     constructor(draw: Svg) {
         this.draw = draw;
         this.boardState = SvgBoardStates.BEFORE_LOAD;
         this.init();
-        this.constructPlayerPaths();
     }
     public updateGameProgress(progress: GameProgress) {
         this.gameProgress = progress;
         progress.playerStatuses.forEach((playerStatus) => {
             for (let i = 0; i < 4; i++) {
                 const progressPosition = playerStatus.figures[i];
-                this.figures[playerStatus.color][i].setField(progressPosition);
+                const field = this.getFieldByFieldDataset(progressPosition)
+                this.figures[playerStatus.color][i].setField(field);
                 this.figures[playerStatus.color][i].render();
             }
         });
@@ -67,7 +66,14 @@ export class BoardController {
             });
         }
 
-        PlayersOrder.forEach((playerColor) => {
+        PlayersOrder.forEach((playerColor, index) => {
+            const path = [] as Field[]
+            const pathStart = index * 10;
+            for (let i = 0; i < 40; i++) {
+                const field = this.mainFields[(pathStart + i) % 40];
+                path.push(field);
+            }
+
             this.startFields[playerColor] = [];
             this.homeFields[playerColor] = [];
             this.figures[playerColor] = [];
@@ -86,15 +92,14 @@ export class BoardController {
                     isStart: true,
                 });
 
-                const figure = new Figure(this.draw, playerColor, {
-                    index: i,
-                    color: playerColor,
-                    isHome: false,
-                    isStart: true,
-                });
-
                 this.homeFields[playerColor].push(homeField);
                 this.startFields[playerColor].push(startField);
+                path.push(startField)
+            }
+
+            for (let i = 0; i < 4; i++) {
+                const figure = new Figure(this.draw, { color: playerColor, index: i }, this.startFields[playerColor][i]);
+                figure.setPath(path)
                 this.figures[playerColor].push(figure);
             }
         });
@@ -102,21 +107,6 @@ export class BoardController {
         this.dicePlayButton = new DicePlayButton(this.draw);
         // kostka musi byt az na konci
         this.dice = new Dice(this.draw);
-    }
-
-    private constructPlayerPaths() {
-        PlayersOrder.forEach((color: PlayerColor, index: number) => {
-            this.paths[color] = [];
-            const start = index * 10;
-
-            for (let i = 0; i < 40; i++) {
-                const field = this.mainFields[(start + i) % 40];
-                this.paths[color].push(field.getFieldInfo());
-            }
-            for (let i = 0; i < 4; i++) {
-                this.paths[color].push(this.homeFields[color][i].getFieldInfo());
-            }
-        });
     }
 
     public render() {
@@ -152,6 +142,10 @@ export class BoardController {
             return;
         }
         if (data.field && this.boardState === SvgBoardStates.HIGHLIGHT_FIELDS) {
+            const field = this.getFieldByFieldDataset(data.field)
+            field.highlightAnimationStop()
+            const srcFigure = this.getFigureByField(field, true)
+            await srcFigure.animateMoveSequence(field)
 
         }
     }
@@ -161,38 +155,37 @@ export class BoardController {
         const move = this.gameProgress.lastDiceSequence[this.gameProgress.lastDiceSequence.length - 1]
 
         const playerFigures = this.figures[userInfo.color];
-        const availableFields = [] as FieldInfo[];
+        const availableFields = [] as Field[];
         for (let i = 0; i < 4; i++) {
-            const currentField = playerFigures[i].getField()
-            let nextField;
-            if (currentField.isStart && move === 6) {
-                nextField = this.paths[userInfo.color][0]
-            } else {
-                const currentIndex = 0;
-                nextField = this.paths[userInfo.color][0]
-            }
+            const currentFigure = playerFigures[i]
+            const nextField = currentFigure.computeNextField(move)
             if (nextField && !availableFields.includes(nextField)) {
                 const figure = this.getFigureByField(nextField);
-                const field = this.getFieldByFieldInfo(nextField)
                 console.log(figure);
 
                 if (figure) {
                     figure.highlightAnimationStart();
                 } else {
-                    field.highlightAnimationStart();
+                    nextField.highlightAnimationStart();
                 }
                 availableFields.push(nextField);
+                currentFigure.setNextField(nextField)
+            } else {
+                currentFigure.setField(null)
             }
         }
     }
 
-    private getFigureByField(field: FieldInfo): Figure | null {
+    private getFigureByField(field: Field, next: boolean = false): Figure | null {
+        // TODO predelat
         for (let i = 0; i < 4; i++) {
             const color = PlayersOrder[i]
             for (let i = 0; i < 4; i++) {
                 const figure = this.figures[color][i]
-
-                if (objectCompare(figure.getField(), field)) {
+                if (!next && figure.getField() === field) {
+                    return figure
+                }
+                if (next && figure.getNextField() === field) {
                     return figure
                 }
             }
@@ -200,7 +193,7 @@ export class BoardController {
         return null;
     }
 
-    private getFieldByFieldInfo(field: FieldInfo): Field {
+    private getFieldByFieldDataset(field: FieldDataset): Field {
         if (field.isHome) {
             return this.homeFields[field.color][field.index]
         }
