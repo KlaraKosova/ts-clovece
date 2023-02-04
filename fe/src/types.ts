@@ -1,3 +1,5 @@
+import {Field} from "./svgElements/Field";
+
 export interface UserInfo {
     userId: string,
     gameId: string,
@@ -21,14 +23,17 @@ export const PlayersOrder = [PlayerColors.RED, PlayerColors.YELLOW, PlayerColors
 export const SvgBoardStates = {
     BEFORE_LOAD: '0',
     DEFAULT: '1',
-    DICE: '2',
-    DICE_ANIMATION: '3',
-    DICE_PLAY_BTN: '4',
+    DICE: '2', // vychozi stav kostky pred animaci
+    DICE_ANIMATION: '3', // animace kostky
+    DICE_PLAY_BTN: '4', // zobrazeni play btn
     HIGHLIGHT_FIELDS: '5',
     FIGURE_SELECTED: '6',
     FIGURE_MOVE: '7',
-    ANIMATING: '8',
-    SENDING_DATA: '9'
+    GAME_PROGRESS_UPDATE_MOVE: '8', // animace tahu ostatnich hracu
+    ANIMATING: '9',
+    SENDING_DATA: '10',
+    NO_MOVES: '11'
+
 } as const
 export type SvgBoardStates = typeof SvgBoardStates[keyof typeof SvgBoardStates]
 
@@ -59,7 +64,7 @@ export interface PlayerStatus {
 export interface GameProgress {
     name: string
     players: number
-    playerStatuses: PlayerStatus[]
+    playerStatuses: Record<PlayerColor, PlayerStatus>
     lastDiceSequence: number[]
     currentPlayerId: string
 }
@@ -69,4 +74,11 @@ export interface DocumentClickData {
     figure: FigureDataset | null
     dice: boolean
     playButton: boolean
+    nextPlayerButton: boolean
+}
+
+export interface GameProgressUpdate {
+    type: 'MOVE' | 'KICK',
+    prevField: FieldDataset,
+    nextField: FieldDataset
 }

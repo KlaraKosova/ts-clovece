@@ -4,18 +4,19 @@ import { FieldDataset, Coordinates } from '../types'
 import Consts from "../helpers/svgBoardConstants";
 import { centers, homeCenters, startCenters } from '../helpers/fieldCenters'
 import { HasHighlightAnimation } from './HasHighlightAnimation';
+import {HasDataset} from "./HasDataset";
 
-export class Field extends GameElement implements HasHighlightAnimation {
+export class Field extends GameElement implements HasHighlightAnimation, HasDataset<FieldDataset> {
     private color: { front: string, back: string }
     private center: Coordinates
     private text = ''
     private animationRunner: Runner
-    private fieldDataset: FieldDataset
+    private dataset: FieldDataset
 
     constructor(draw: Svg, dataset: FieldDataset) {
         super(draw)
 
-        this.fieldDataset = dataset
+        this.dataset = dataset
         this.svg.addClass('field')
         this.animationRunner = new Runner()
 
@@ -43,7 +44,7 @@ export class Field extends GameElement implements HasHighlightAnimation {
     render(): void {
         this.svg.createChild({ type: 'circle', diameter: Consts.BOARD.FIELDS.OUTER_SIZE, color: this.color.back, center: this.center })
         this.svg.createChild({ type: 'circle', diameter: Consts.BOARD.FIELDS.INNER_SIZE, color: this.color.front, center: this.center })
-        this.svg.setDataset(this.fieldDataset)
+        this.svg.setDataset(this.dataset)
 
 
         if (this.text) {
@@ -109,17 +110,17 @@ export class Field extends GameElement implements HasHighlightAnimation {
             cursor: 'default'
         })
     } */
-    public getFieldDataset() {
-        return this.fieldDataset
+    public getDataset() {
+        return this.dataset
     }
 
     public getCoordinates(): Coordinates {
-        if (this.fieldDataset.isHome) {
-            return homeCenters[this.fieldDataset.color][this.fieldDataset.index]
+        if (this.dataset.isHome) {
+            return homeCenters[this.dataset.color][this.dataset.index]
         }
-        if (this.fieldDataset.isStart) {
-            return startCenters[this.fieldDataset.color][this.fieldDataset.index]
+        if (this.dataset.isStart) {
+            return startCenters[this.dataset.color][this.dataset.index]
         }
-        return centers[this.fieldDataset.index]
+        return centers[this.dataset.index]
     }
 }

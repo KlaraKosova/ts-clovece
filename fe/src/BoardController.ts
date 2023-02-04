@@ -1,8 +1,8 @@
-import { Svg } from "@svgdotjs/svg.js";
-import { centers, homeCenters } from "./helpers/fieldCenters";
-import { Field } from "./svgElements/Field";
-import { Figure } from "./svgElements/Figure";
-import { StaticBackground } from "./svgElements/StaticBackground";
+import {Svg} from "@svgdotjs/svg.js";
+import {centers, homeCenters} from "./helpers/fieldCenters";
+import {Field} from "./svgElements/Field";
+import {Figure} from "./svgElements/Figure";
+import {StaticBackground} from "./svgElements/StaticBackground";
 import {
     FieldDataset,
     PlayersOrder,
@@ -10,13 +10,17 @@ import {
     SvgBoardStates,
     GameProgress,
     PlayerColors,
-    DocumentClickData,
+    DocumentClickData, GameProgressUpdate,
 } from "./types";
 import App from "./App";
-import { Dice } from "./svgElements/Dice";
-import { Overlay } from "./svgElements/Overlay";
-import { DicePlayButton } from "./svgElements/DicePlayButton";
-import { objectCompare } from "./helpers/common";
+import {Dice} from "./svgElements/Dice";
+import {Overlay} from "./svgElements/Overlay";
+import {DicePlayButton} from "./svgElements/DicePlayButton";
+import {objectCompare} from "./helpers/common";
+import {SocketIOClientInstance} from "./socketio/SocketClient";
+import svgBoardConstants from "./helpers/svgBoardConstants";
+import {NoMovesModal} from "./svgElements/NoMovesModal";
+import {NextPlayerButton} from "./svgElements/NextPlayerButton";
 
 export class BoardController {
     private readonly draw: Svg;
@@ -26,32 +30,44 @@ export class BoardController {
     private overlay: Overlay;
     private dicePlayButton: DicePlayButton;
     private dice: Dice;
+    private noMovesModal: NoMovesModal;
+    private nextPlayerButton: NextPlayerButton;
     private mainFields = [] as Field[];
     private homeFields = {} as Record<PlayerColor, Field[]>;
     private startFields = {} as Record<PlayerColor, Field[]>;
     private figures = {} as Record<PlayerColor, Figure[]>;
+
     constructor(draw: Svg) {
         this.draw = draw;
         this.boardState = SvgBoardStates.BEFORE_LOAD;
         this.init();
     }
+
+    public setProgress(progress: GameProgress) {
+        this.gameProgress = progress
+    }
+
     public updateGameProgress(progress: GameProgress) {
         this.gameProgress = progress;
-        progress.playerStatuses.forEach((playerStatus) => {
+        Object.keys(progress.playerStatuses).forEach((playerColor: PlayerColor) => {
             for (let i = 0; i < 4; i++) {
-                const progressPosition = playerStatus.figures[i];
+                const progressPosition = progress.playerStatuses[playerColor].figures[i];
                 const field = this.getFieldByFieldDataset(progressPosition)
-                this.figures[playerStatus.color][i].setField(field);
-                this.figures[playerStatus.color][i].render();
+                this.figures[playerColor][i].setField(field);
+                this.figures[playerColor][i].render();
             }
         });
+        this.displayDice()
+    }
 
-        if (progress.currentPlayerId === App.getUserInfo().userId) {
+    private displayDice() {
+        if (this.gameProgress.currentPlayerId === App.getUserInfo().userId) {
             this.boardState = SvgBoardStates.DICE;
             this.overlay.render();
             this.dice.render();
         }
     }
+
     private init() {
         this.mainFields = [];
         this.background = new StaticBackground(this.draw);
@@ -98,13 +114,15 @@ export class BoardController {
             }
 
             for (let i = 0; i < 4; i++) {
-                const figure = new Figure(this.draw, { color: playerColor, index: i }, this.startFields[playerColor][i]);
+                const figure = new Figure(this.draw, {color: playerColor, index: i}, this.startFields[playerColor][i]);
                 figure.setPath(path)
                 this.figures[playerColor].push(figure);
             }
         });
         this.overlay = new Overlay(this.draw);
         this.dicePlayButton = new DicePlayButton(this.draw);
+        this.noMovesModal = new NoMovesModal(this.draw)
+        this.nextPlayerButton = new NextPlayerButton(this.draw)
         // kostka musi byt az na konci
         this.dice = new Dice(this.draw);
     }
@@ -124,6 +142,7 @@ export class BoardController {
     }
 
     public async handleClick(data: DocumentClickData) {
+        console.log(data)
         if (data.dice && this.boardState === SvgBoardStates.DICE) {
             this.boardState = SvgBoardStates.DICE_ANIMATION
             await this.dice.animateDotsSequence(this.gameProgress.lastDiceSequence);
@@ -143,11 +162,22 @@ export class BoardController {
         }
         if (data.field && this.boardState === SvgBoardStates.HIGHLIGHT_FIELDS) {
             const field = this.getFieldByFieldDataset(data.field)
-            field.highlightAnimationStop()
             const srcFigure = this.getFigureByField(field, true)
-            await srcFigure.animateMoveSequence(field)
-
+            if (srcFigure) {
+                this.stopAllHighlightAnimations()
+                const update: GameProgressUpdate = {
+                    type: "MOVE",
+                    prevField: srcFigure.getField().getDataset(),
+                    nextField: field.getDataset()
+                }
+                SocketIOClientInstance.socket.emit("CLIENT_GAME_PROGRESS_UPDATE", [update])
+                await srcFigure.animateMoveSequence(field)
+            }
         }
+        if (this.boardState === SvgBoardStates.NO_MOVES && data.nextPlayerButton) {
+            SocketIOClientInstance.socket.emit("CLIENT_GAME_PROGRESS_UPDATE", [])
+        }
+
     }
 
     private showMoveOptions() {
@@ -174,6 +204,28 @@ export class BoardController {
                 currentFigure.setField(null)
             }
         }
+        if (!availableFields.length) {
+            this.boardState = SvgBoardStates.NO_MOVES
+            this.overlay.render()
+            this.noMovesModal.render()
+            this.nextPlayerButton.render()
+            this.noMovesModal.moveDown()
+            this.nextPlayerButton.moveDown()
+        }
+    }
+
+    public async animateUpdates(updates: GameProgressUpdate[]) {
+        this.boardState = SvgBoardStates.GAME_PROGRESS_UPDATE_MOVE
+        for (const update of updates) {
+            if (update.type === "MOVE") {
+                const prevField = this.getFieldByFieldDataset(update.prevField)
+                const nextField = this.getFieldByFieldDataset(update.nextField)
+                const figure = this.getFigureByField(prevField)
+                await figure.animateMoveSequence(nextField)
+                console.log(figure)
+            }
+        }
+        this.displayDice()
     }
 
     private getFigureByField(field: Field, next: boolean = false): Figure | null {
@@ -201,5 +253,19 @@ export class BoardController {
             return this.startFields[field.color][field.index]
         }
         return this.mainFields[field.index]
+    }
+
+    private stopAllHighlightAnimations() {
+        for (let i = 0; i < 40; i++) {
+            this.mainFields[i].highlightAnimationStop()
+        }
+
+        PlayersOrder.forEach(playerColor => {
+            for (let i = 0; i < 4; i++) {
+                this.homeFields[playerColor][i].highlightAnimationStop()
+                this.startFields[playerColor][i].highlightAnimationStop()
+                this.figures[playerColor][i].highlightAnimationStop()
+            }
+        })
     }
 }

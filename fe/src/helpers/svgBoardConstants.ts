@@ -1,5 +1,7 @@
 import { PlayerColors } from "../types"
 
+export const FIGURE_PATH = 'M 0 45 C 5 50 15 50 20 45 C 20 35 15 30 15 20 C 15 15 20 15 20 10 C 20 5 15 0 10 0 C 5 0 0 5 0 10 C 0 15 5 15 5 20 C 5 30 0 35 0 45'
+
 export default {
     K: 2.75,
     COLORS: {
@@ -67,6 +69,11 @@ export default {
             OUTER_SIZE: 65,
             INNER_SIZE: 63,
             DOT_SIZE: 20
+        },
+        NO_MOVES_MODAL: {
+            WIDTH: 110,
+            HEIGHT: 70,
+            INITIAL_OFFSET: 50
         }
     },
 } as const

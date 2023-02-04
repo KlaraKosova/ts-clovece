@@ -5,8 +5,8 @@ import { SocketIO } from "../types";
 import { Server } from "socket.io";
 
 export default async function (io: Server, socket: SocketIO, data: UserInfo | null) {
-    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Socket: on init')
-    console.log(data)
+    console.log('Socket: on init')
+    // console.log(data)
 
     const client = await Client.getClient()
     const games = client.collection('games')

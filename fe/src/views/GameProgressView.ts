@@ -2,7 +2,7 @@ import { SVG } from "@svgdotjs/svg.js";
 import { BoardController } from "../BoardController";
 import Consts from "../helpers/svgBoardConstants";
 import { SocketIOClientInstance } from "../socketio/SocketClient";
-import { GameProgress, DocumentClickData, PlayerColor } from "../types";
+import {GameProgress, DocumentClickData, PlayerColor, GameProgressUpdate} from "../types";
 import { View } from "./View";
 
 export class GameProgressView extends View {
@@ -22,20 +22,26 @@ export class GameProgressView extends View {
         this.boardController.updateGameProgress(game)
     }
 
-    private onDocumentClick(event: PointerEvent) {
+    private async onGameProgressUpdate(data: {progress: GameProgress, updates: GameProgressUpdate[]}) {
+        this.boardController.setProgress(data.progress)
+        await this.boardController.animateUpdates(data.updates)
+    }
+
+    private async onDocumentClick(event: PointerEvent) {
         const result: DocumentClickData = {
             field: null,
             figure: null,
             dice: false,
-            playButton: false
+            playButton: false,
+            nextPlayerButton: false
         }
         for (let i = 0; i < event.composedPath().length; i++) {
             const element = event.composedPath()[i]
             if (element instanceof HTMLElement || element instanceof SVGElement) {
-                console.log(element.dataset)
                 const dataset = element.dataset
                 result.dice = result.dice || !!dataset.dice
                 result.playButton = result.playButton || !!dataset.playButton
+                result.nextPlayerButton = result.nextPlayerButton || !!dataset.nextPlayerButton
 
                 if (element.classList.contains('field')
                     && dataset.index
@@ -61,17 +67,17 @@ export class GameProgressView extends View {
                 }
             }
         }
-        console.log(result);
-
-        this.boardController.handleClick(result)
+        await this.boardController.handleClick(result)
     }
 
     protected registerSocketListeners(): void {
         SocketIOClientInstance.socket.on("GAME_PROGRESS_RESPONSE", this.onGameProgressResponse.bind(this))
+        SocketIOClientInstance.socket.on("GAME_PROGRESS_UPDATE", this.onGameProgressUpdate.bind(this))
     }
 
     protected removeSocketListeners(): void {
         SocketIOClientInstance.socket.off("GAME_PROGRESS_RESPONSE")
+        SocketIOClientInstance.socket.off("GAME_PROGRESS_UPDATE")
     }
 
     protected registerHtmlListeners() {

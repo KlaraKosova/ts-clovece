@@ -1,7 +1,8 @@
-import { G, Svg, Element, Circle, Rect, Text } from '@svgdotjs/svg.js'
+import {G, Svg, Element, Circle, Rect, Text, Tspan} from '@svgdotjs/svg.js'
 import Consts from "../helpers/svgBoardConstants";
-import { Coordinates } from '../types'
+import {Coordinates, PlayerColors} from '../types'
 import { camelToKebabCase, delay } from "../helpers/common";
+import {centers, homeCenters} from "../helpers/fieldCenters";
 
 export class SvgElement {
     private draw: Svg;
@@ -60,6 +61,11 @@ export class SvgElement {
     }): void;
 
     createChild(data: {
+        type: 'functionText',
+        addFunction?: (add: any) => void
+    }): void;
+
+    createChild(data: {
         type: 'text',
         text: string,
         center: Coordinates,
@@ -71,22 +77,28 @@ export class SvgElement {
             stretch?: string
             style?: string
             variant?: string
-            weight?: string
+            weight?: string,
+            fill?: string
         }
     }): void;
 
+
     createChild(data: {
-        type: 'rect' | 'circle' | 'text',
-        center: { x: number, y: number },
+        type: 'rect' | 'circle' | 'text' | 'functionText',
+        center?: { x: number, y: number },
         color?: string,
         opacity?: number,
         diameter?: number
         size?: { x: number, y: number },
         font?: Record<string, any>,
         text?: string,
-        radius?: number
+        radius?: number,
+        addFunction?: (tspan: Tspan) => void
     }): void {
-        //
+        if (data.addFunction) {
+            this.draw.text(data.addFunction)
+            return
+        }
         let element: Circle | Rect | Text
         if (data.type === 'rect') {
             element = this.draw.rect()
@@ -143,7 +155,7 @@ export class SvgElement {
         center?: Coordinates
     }) {
         this.group.children().forEach((child: Element) => {
-            const runner = child.animate(data.duration, 0, 'after')
+            const runner = child.animate(data.duration, 0, 'last')
             if (data.offset) {
                 runner.dmove(data.offset.x * Consts.K, data.offset.y * Consts.K)
             } else if (data.center) {
@@ -172,6 +184,14 @@ export class SvgElement {
     }
 
     debug() {
-        return this.group.children()
+    /* const test= this.draw.path('M 0 45 C 5 50 15 50 20 45 C 20 35 15 30 15 20 C 15 15 20 15 20 10 C 20 5 15 0 10 0 C 5 0 0 5 0 10 C 0 15 5 15 5 20 C 5 30 0 35 0 45')
+        .fill(Consts.COLORS[PlayerColors.RED].front)
+        //.center(centers[0].x *Consts.K ,centers[0].y*Consts.K)
+        //.scale(Consts.K)
+        .move(centers[0].x *Consts.K ,centers[0].y*Consts.K)
+        this.draw.path('M 7 2 C 6 1 1 8 2 8 C 4 8 8 2 7 2')
+            .fill(Consts.COLORS[PlayerColors.RED].highlight)
+            .move(centers[0].x *Consts.K ,centers[0].y*Consts.K)*/
+
     }
 }

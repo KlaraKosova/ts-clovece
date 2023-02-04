@@ -9,7 +9,7 @@ export const PlayerColors = {
 
 export type PlayerColor = typeof PlayerColors[keyof typeof PlayerColors]
 export const PlayersOrder = [PlayerColors.RED, PlayerColors.YELLOW, PlayerColors.GREEN, PlayerColors.BLUE] as const
-export interface FieldInfo {
+export interface FieldDataset {
     index: number,
     isStart: boolean,
     isHome: boolean,
@@ -19,13 +19,13 @@ export interface FieldInfo {
 export interface PlayerStatus {
     color: PlayerColor
     userId: string
-    figures: FieldInfo[]
+    figures: FieldDataset[]
 }
 
 export interface GameProgress {
     name: string
     players: number
-    playerStatuses: PlayerStatus[]
+    playerStatuses: Record<PlayerColor, PlayerStatus>
     lastDiceSequence: number[]
     currentPlayerId: string
 }
@@ -43,4 +43,10 @@ export interface UserInfo {
     userId: string,
     gameId: string,
     color: PlayerColor
+}
+
+export interface GameProgressUpdate {
+    type: 'MOVE' | 'KICK',
+    prevField: FieldDataset,
+    nextField: FieldDataset
 }

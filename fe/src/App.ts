@@ -21,7 +21,6 @@ class App {
         this.currentView = this.viewsDict.LOADING
         this.currentView.mount()
         this.registerSocketListeners()
-
     }
 
     /**

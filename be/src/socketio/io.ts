@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid'
 import onInit from "./handlers/onInit";
 import onJoinGame from "./handlers/onJoinGame";
 import onNewGame from "./handlers/onNewGame";
-import onClientGameUpdate from "./handlers/onClientGameUpdate";
+import onClientGameProgressUpdate from "./handlers/onClientGameProgressUpdate";
 import { onGameSelectRequest } from "./handlers/onGameSelectRequest";
 import onGameProgressRequest from "./handlers/onGameProgressRequest";
 
@@ -36,53 +36,16 @@ io.on("connection", (socket: SocketIO) => {
         onJoinGame(io, socket, data)
     })
 
-    /* socket.on('CLIENT_GAME_UPDATE', data => {
-        onClientGameUpdate(socket, data)
-    }) */
-
     socket.on("GAME_SELECT_REQUEST", () => {
         onGameSelectRequest(io, socket)
     })
     socket.on("GAME_PROGRESS_REQUEST", () => {
         onGameProgressRequest(io, socket)
     })
-    /* socket.on('joinGame', async data => {
-        console.log('Socket: on joinGame')
-        const client = await Client.getClient()
-        const games = client.collection('games')
-        const userId = uuidv4()
 
-        const game = await games.findOne({
-            _id: new ObjectId(data.gameId)
-        }) as GameDocument | null
-        if (!game) {
-            return
-        }
-        await games.updateOne({
-                _id: new ObjectId(data.gameId)
-            },
-            {
-                $push: {
-                    players: {
-                        token: userId,
-                        figurePositions: ['H0', 'H1', 'H2', 'H3']
-                    }
-                }
-            }
-        )
-        await socket.join(data.gameId)
-
-        console.log('Socket: emit redirectGameWait')
-        socket.emit("GAME_WAIT", {
-            gameId: data.gameId,
-            userId: userId
-        })
-        if (game.players.length === 3) {
-            console.log('Socket: emit redirectGameState')
-            socket.emit("GAME_PROGRESS")
-            socket.to(data.gameId).emit("GAME_PROGRESS")
-        }
-    }) */
+    socket.on("CLIENT_GAME_PROGRESS_UPDATE", (data) => {
+        onClientGameProgressUpdate(io, socket, data)
+    })
 });
 
 

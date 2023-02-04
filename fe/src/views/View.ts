@@ -5,7 +5,6 @@ export abstract class View {
         if (!this.rootElem) {
             throw new Error("Root element #app not found");
         }
-        this.registerSocketListeners()
     }
     protected abstract render(): void;
     protected registerSocketListeners() {};
