@@ -66,7 +66,7 @@ export class GameSelectView extends View {
 
     private emitNewGame() {
         const inputElement = document.querySelector(".modal .input-text") as HTMLInputElement | null
-        console.log(inputElement);
+        // console.log(inputElement);
 
         SocketIOClientInstance.socket.emit("NEW_GAME", {
             name: inputElement?.value || "Hra bez názvu"
@@ -78,6 +78,7 @@ export class GameSelectView extends View {
     }
 
     private onGameSelectResponse(data: { games: GamePreview[] }) {
+        console.log('onGameSelectResponse')
         this.games = data.games
         this.render()
     }

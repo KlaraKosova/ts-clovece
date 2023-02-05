@@ -1,8 +1,9 @@
-import {G, Svg, Element, Circle, Rect, Text, Tspan} from '@svgdotjs/svg.js'
+import {G, Svg, Element, Circle, Rect, Text, Tspan, Path} from '@svgdotjs/svg.js'
 import Consts from "../helpers/svgBoardConstants";
 import {Coordinates, PlayerColors} from '../types'
 import { camelToKebabCase, delay } from "../helpers/common";
 import {centers, homeCenters} from "../helpers/fieldCenters";
+import * as path from "path";
 
 export class SvgElement {
     private draw: Svg;
@@ -66,6 +67,13 @@ export class SvgElement {
     }): void;
 
     createChild(data: {
+        type: 'path',
+        initialPosition: Coordinates,
+        path: string,
+        color: string
+    }): void;
+
+    createChild(data: {
         type: 'text',
         text: string,
         center: Coordinates,
@@ -84,7 +92,9 @@ export class SvgElement {
 
 
     createChild(data: {
-        type: 'rect' | 'circle' | 'text' | 'functionText',
+        type: 'rect' | 'circle' | 'text' | 'functionText' | 'path',
+        path?: string,
+        initialPosition?: Coordinates,
         center?: { x: number, y: number },
         color?: string,
         opacity?: number,
@@ -99,7 +109,7 @@ export class SvgElement {
             this.draw.text(data.addFunction)
             return
         }
-        let element: Circle | Rect | Text
+        let element: Circle | Rect | Text | Path
         if (data.type === 'rect') {
             element = this.draw.rect()
             if (data.size) {
@@ -110,13 +120,25 @@ export class SvgElement {
             }
         } else if (data.type === 'circle') {
             element = this.draw.circle(data.diameter * Consts.K)
-        } else {
+        } else if (data.type === 'text') {
             element = this.draw.text(data.text || '')
             if (data.font && Object.keys(data.font).length) {
                 element.font(data.font)
             }
+        } else {
+            let transformedPath = `M ${data.initialPosition.x * Consts.K} ${data.initialPosition.y * Consts.K} `
+                + data.path
+                .split(' ')
+                .map(pathElement => {
+                    return isNaN(+pathElement)? pathElement : +pathElement * Consts.K * 0.75
+                })
+                .join(' ')
+            // console.log(transformedPath)
+            element = this.draw.path(transformedPath + ' z')
         }
-        element.center(data.center.x * Consts.K, data.center.y * Consts.K)
+        if (data.center) {
+            element.center(data.center.x * Consts.K, data.center.y * Consts.K)
+        }
         if (data.color) {
             element.fill({ color: data.color, opacity: data.opacity ?? 1 })
         }
@@ -191,7 +213,7 @@ export class SvgElement {
         .move(centers[0].x *Consts.K ,centers[0].y*Consts.K)
         this.draw.path('M 7 2 C 6 1 1 8 2 8 C 4 8 8 2 7 2')
             .fill(Consts.COLORS[PlayerColors.RED].highlight)
-            .move(centers[0].x *Consts.K ,centers[0].y*Consts.K)*/
+            .move(centers[0].x *Consts.K ,centers[0].y*Consts.K) */
 
     }
 }

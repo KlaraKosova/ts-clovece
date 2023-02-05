@@ -1,3 +1,5 @@
+import {Coordinates} from "../types";
+
 export async function delay(ms: number): Promise<void> {
     return new Promise((resolve) => {
         setTimeout(resolve, ms)
@@ -33,4 +35,11 @@ export function camelToKebabCase(str: string) {
         }
     }
     return result
+}
+
+export function coordinatesDiff(a: Coordinates, b: Coordinates): Coordinates {
+    return {
+        x: a.x - b.x,
+        y: a.y - b.y
+    }
 }

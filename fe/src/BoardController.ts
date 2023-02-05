@@ -10,7 +10,7 @@ import {
     SvgBoardStates,
     GameProgress,
     PlayerColors,
-    DocumentClickData, GameProgressUpdate,
+    DocumentClickData, GameProgressUpdate, FigureDataset,
 } from "./types";
 import App from "./App";
 import {Dice} from "./svgElements/Dice";
@@ -21,6 +21,7 @@ import {SocketIOClientInstance} from "./socketio/SocketClient";
 import svgBoardConstants from "./helpers/svgBoardConstants";
 import {NoMovesModal} from "./svgElements/NoMovesModal";
 import {NextPlayerButton} from "./svgElements/NextPlayerButton";
+import {Loading} from "./svgElements/Loading";
 
 export class BoardController {
     private readonly draw: Svg;
@@ -32,6 +33,7 @@ export class BoardController {
     private dice: Dice;
     private noMovesModal: NoMovesModal;
     private nextPlayerButton: NextPlayerButton;
+    private loading: Loading;
     private mainFields = [] as Field[];
     private homeFields = {} as Record<PlayerColor, Field[]>;
     private startFields = {} as Record<PlayerColor, Field[]>;
@@ -39,15 +41,23 @@ export class BoardController {
 
     constructor(draw: Svg) {
         this.draw = draw;
-        this.boardState = SvgBoardStates.BEFORE_LOAD;
+        this.boardState = SvgBoardStates.LOADING;
         this.init();
     }
 
     public setProgress(progress: GameProgress) {
+        if (this.boardState === SvgBoardStates.NO_MOVES_MODAL) {
+            this.overlay.clear()
+            this.noMovesModal.clear()
+            this.nextPlayerButton.clear()
+        }
         this.gameProgress = progress
     }
 
     public updateGameProgress(progress: GameProgress) {
+        this.overlay.clear()
+        this.loading.clear()
+
         this.gameProgress = progress;
         Object.keys(progress.playerStatuses).forEach((playerColor: PlayerColor) => {
             for (let i = 0; i < 4; i++) {
@@ -123,6 +133,7 @@ export class BoardController {
         this.dicePlayButton = new DicePlayButton(this.draw);
         this.noMovesModal = new NoMovesModal(this.draw)
         this.nextPlayerButton = new NextPlayerButton(this.draw)
+        this.loading = new Loading(this.draw)
         // kostka musi byt az na konci
         this.dice = new Dice(this.draw);
     }
@@ -139,42 +150,84 @@ export class BoardController {
                 this.figures[playerColor][i].render();
             }
         });
+        this.overlay.render()
+        this.loading.render()
+        this.loading.runAnimation()
     }
 
     public async handleClick(data: DocumentClickData) {
-        console.log(data)
+        // console.log(data)
         if (data.dice && this.boardState === SvgBoardStates.DICE) {
             this.boardState = SvgBoardStates.DICE_ANIMATION
             await this.dice.animateDotsSequence(this.gameProgress.lastDiceSequence);
-            this.boardState = SvgBoardStates.DICE_PLAY_BTN;
+            this.boardState = SvgBoardStates.DICE_PLAY_BUTTON;
             this.dicePlayButton.render();
             this.dice.animateMoveUp();
             this.dicePlayButton.animateMoveDown();
             return;
         }
-        if (data.playButton && this.boardState === SvgBoardStates.DICE_PLAY_BTN) {
-            this.boardState = SvgBoardStates.HIGHLIGHT_FIELDS;
+        if (data.playButton && this.boardState === SvgBoardStates.DICE_PLAY_BUTTON) {
+            this.boardState = SvgBoardStates.HIGHLIGHT_ANIMATION;
             this.dice.clear();
             this.dicePlayButton.clear();
             this.overlay.clear();
             this.showMoveOptions();
             return;
         }
-        if (data.field && this.boardState === SvgBoardStates.HIGHLIGHT_FIELDS) {
-            const field = this.getFieldByFieldDataset(data.field)
-            const srcFigure = this.getFigureByField(field, true)
-            if (srcFigure) {
-                this.stopAllHighlightAnimations()
-                const update: GameProgressUpdate = {
+
+        if ( this.boardState === SvgBoardStates.HIGHLIGHT_ANIMATION && (data.field || data.figure)) {
+            this.boardState = SvgBoardStates.CURRENT_PLAYER_FIGURE_MOVE_ANIMATION
+            let field
+            let srcFigure : Figure | null
+            let destFigure : Figure | null
+
+            if (data.field) {
+                field = this.getFieldByFieldDataset(data.field)
+                srcFigure = this.getFigureByField(field, true)
+                destFigure = this.getFigureByField(field, false)
+            } else {
+                destFigure = this.getFigureByFigureDataset(data.figure)
+                field = destFigure.getField()
+                srcFigure = this.getFigureByField(field, true)
+            }
+            if (!srcFigure) {
+                return
+            }
+
+            this.stopAllHighlightAnimations()
+            const updates: GameProgressUpdate[] = []
+
+            if (destFigure) {
+                const startField = this.getFreeHomeField(destFigure.getDataset().color)
+                updates.push({
                     type: "MOVE",
                     prevField: srcFigure.getField().getDataset(),
                     nextField: field.getDataset()
-                }
-                SocketIOClientInstance.socket.emit("CLIENT_GAME_PROGRESS_UPDATE", [update])
+                })
+
+                updates.push({
+                    type: "KICK",
+                    prevField: destFigure.getField().getDataset(),
+                    nextField: startField.getDataset()
+                })
+                console.log('updates', updates)
+                SocketIOClientInstance.socket.emit("CLIENT_GAME_PROGRESS_UPDATE", updates)
+
+                await srcFigure.animateKickSequence(field)
+                await destFigure.animateMoveSequence(startField)
+            } else {
+                updates.push({
+                    type: "MOVE",
+                    prevField: srcFigure.getField().getDataset(),
+                    nextField: field.getDataset()
+                })
+                SocketIOClientInstance.socket.emit("CLIENT_GAME_PROGRESS_UPDATE", updates)
                 await srcFigure.animateMoveSequence(field)
             }
+
         }
-        if (this.boardState === SvgBoardStates.NO_MOVES && data.nextPlayerButton) {
+
+        if (this.boardState === SvgBoardStates.NO_MOVES_MODAL && data.nextPlayerButton) {
             SocketIOClientInstance.socket.emit("CLIENT_GAME_PROGRESS_UPDATE", [])
         }
 
@@ -191,21 +244,16 @@ export class BoardController {
             const nextField = currentFigure.computeNextField(move)
             if (nextField && !availableFields.includes(nextField)) {
                 const figure = this.getFigureByField(nextField);
-                console.log(figure);
-
                 if (figure) {
                     figure.highlightAnimationStart();
-                } else {
-                    nextField.highlightAnimationStart();
                 }
+                nextField.highlightAnimationStart();
                 availableFields.push(nextField);
                 currentFigure.setNextField(nextField)
-            } else {
-                currentFigure.setField(null)
             }
         }
         if (!availableFields.length) {
-            this.boardState = SvgBoardStates.NO_MOVES
+            this.boardState = SvgBoardStates.NO_MOVES_MODAL
             this.overlay.render()
             this.noMovesModal.render()
             this.nextPlayerButton.render()
@@ -215,21 +263,41 @@ export class BoardController {
     }
 
     public async animateUpdates(updates: GameProgressUpdate[]) {
-        this.boardState = SvgBoardStates.GAME_PROGRESS_UPDATE_MOVE
+        if (this.boardState === SvgBoardStates.CURRENT_PLAYER_FIGURE_MOVE_ANIMATION) {
+            this.displayDice()
+            return
+        }
+        this.boardState = SvgBoardStates.NEXT_PLAYER_FIGURE_MOVE_ANIMATION
+        const animationFunctions = [] // as ((field: Field) => Promise<void>)[]
         for (const update of updates) {
+            const prevField = this.getFieldByFieldDataset(update.prevField)
+            const nextField = this.getFieldByFieldDataset(update.nextField)
+            const prevFigure = this.getFigureByField(prevField)
+            const nextFigure = this.getFigureByField(nextField)
             if (update.type === "MOVE") {
-                const prevField = this.getFieldByFieldDataset(update.prevField)
-                const nextField = this.getFieldByFieldDataset(update.nextField)
-                const figure = this.getFigureByField(prevField)
-                await figure.animateMoveSequence(nextField)
-                console.log(figure)
+                // await prevFigure.animateMoveSequence(nextField)
+                // animationFunctions.push(prevFigure.animateMoveSequence.bind(prevFigure, nextField))
+                animationFunctions.push(bind(prevFigure.animateMoveSequence, prevFigure, nextField))
+            } else if(update.type === 'KICK') {
+                await prevFigure.animateKickSequence(nextField)
+                if (!nextFigure) {
+                    throw new Error('test')
+                }
+                // await nextFigure.animateMoveSequence(nextField)
+                // animationFunctions.push(nextFigure.animateMoveSequence.bind(nextFigure, nextField))
+                animationFunctions.push(bind(nextFigure.animateMoveSequence, nextFigure, nextField))
             }
+        }
+        for (const animationFunction of animationFunctions) {
+            console.log(animationFunction.__boundThis__)
+            console.log(animationFunction.__boundArgs__)
+            console.log('--------')
+            animationFunction()
         }
         this.displayDice()
     }
 
     private getFigureByField(field: Field, next: boolean = false): Figure | null {
-        // TODO predelat
         for (let i = 0; i < 4; i++) {
             const color = PlayersOrder[i]
             for (let i = 0; i < 4; i++) {
@@ -243,6 +311,10 @@ export class BoardController {
             }
         }
         return null;
+    }
+
+    private getFigureByFigureDataset(figure: FigureDataset) {
+        return this.figures[figure.color][figure.index]
     }
 
     private getFieldByFieldDataset(field: FieldDataset): Field {
@@ -268,4 +340,27 @@ export class BoardController {
             }
         })
     }
+
+    private getFreeHomeField (color: PlayerColor) {
+        const startFields = [ ...this.startFields[color] ] as (Field | null)[]
+
+        for (let i = 0; i < 4; i++) {
+            const figure = this.figures[color][i]
+            const index = startFields.indexOf(figure.getField())
+            if (index !== -1) {
+                startFields[i] = null
+            }
+        }
+
+        return startFields[0] || startFields[1] || startFields[2] || startFields[3]
+    }
+}
+
+// @ts-ignore
+function bind(fn, boundThis, ...args) {
+    const bound = fn.bind(boundThis, ...args)
+    bound.__targetFunction__ = fn;
+    bound.__boundThis__ = boundThis;
+    bound.__boundArgs__ = args
+    return bound;
 }

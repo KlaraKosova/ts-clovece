@@ -206,3 +206,19 @@ header .border {
 #svgContainer {
     width: min-content;
 }
+
+.game-progress-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.game-progress-wrapper > :first-child {
+    width: 100%;
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+}

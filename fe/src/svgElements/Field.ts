@@ -35,8 +35,8 @@ export class Field extends GameElement implements HasHighlightAnimation, HasData
             this.color = { front: '#ffffff', back: "#000000" }
         } else {
             this.color = {
-                front: Consts.COLORS[dataset.color].front,
-                back: Consts.COLORS[dataset.color].back,
+                front: Consts.COLORS[dataset.color].FIELD_FRONT,
+                back: Consts.COLORS[dataset.color].FIELD_BACK,
             }
         }
     }

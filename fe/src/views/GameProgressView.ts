@@ -2,28 +2,40 @@ import { SVG } from "@svgdotjs/svg.js";
 import { BoardController } from "../BoardController";
 import Consts from "../helpers/svgBoardConstants";
 import { SocketIOClientInstance } from "../socketio/SocketClient";
-import {GameProgress, DocumentClickData, PlayerColor, GameProgressUpdate} from "../types";
+import {GameProgress, DocumentClickData, PlayerColor, GameProgressUpdate, PlayersOrder} from "../types";
 import { View } from "./View";
+import App from "../App";
 
 export class GameProgressView extends View {
     private boardController: BoardController
 
     public render(): void {
-        const container = document.createElement("div");
+        const wrapper = document.createElement("div")
+        wrapper.classList.add("game-progress-wrapper")
+        const headerBar = document.createElement("div")
+        const container = document.createElement("div")
         container.id = "svgContainer";
-        this.rootElem.replaceChildren(container);
 
-        const draw = SVG().addTo("#svgContainer").size(Consts.BOARD.SIZE * Consts.K, Consts.BOARD.SIZE * Consts.K);
+        wrapper.replaceChildren(headerBar, container)
+        this.rootElem.replaceChildren(wrapper)
+        const color = App.getUserInfo().color
+        document.body.style.backgroundColor = Consts.COLORS[color].FIGURE_HIGHLIGHT
+
+        const draw = SVG().addTo("#svgContainer").size(Consts.BOARD.SIZE * Consts.K, Consts.BOARD.SIZE * Consts.K)
         this.boardController = new BoardController(draw)
         this.boardController.render()
     }
 
     private onGameProgressResponse(game: GameProgress) {
+        console.log('onGameProgressResponse', game)
         this.boardController.updateGameProgress(game)
+        this.setHeaderBarColor(game)
     }
 
     private async onGameProgressUpdate(data: {progress: GameProgress, updates: GameProgressUpdate[]}) {
+        console.log('onGameProgressUpdate', data)
         this.boardController.setProgress(data.progress)
+        this.setHeaderBarColor(data.progress)
         await this.boardController.animateUpdates(data.updates)
     }
 
@@ -93,5 +105,19 @@ export class GameProgressView extends View {
     public mount(): void {
         super.mount()
         SocketIOClientInstance.socket.emit("GAME_PROGRESS_REQUEST")
+    }
+
+    private setHeaderBarColor (progress: GameProgress) {
+        const headerBar = this.rootElem.querySelector('.game-progress-wrapper :first-child') as HTMLElement
+        PlayersOrder.forEach(color => {
+            if (progress.playerStatuses[color].userId === progress.currentPlayerId) {
+                headerBar.style.backgroundColor = Consts.COLORS[color].FIGURE_BODY
+            }
+            if (progress.currentPlayerId === App.getUserInfo().userId) {
+                headerBar.textContent = "Jste na tahu"
+            } else {
+                headerBar.textContent = "Jiny hrac"
+            }
+        })
     }
 }

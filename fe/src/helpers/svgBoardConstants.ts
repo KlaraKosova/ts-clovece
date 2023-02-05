@@ -1,39 +1,37 @@
 import { PlayerColors } from "../types"
 
-export const FIGURE_PATH = 'M 0 45 C 5 50 15 50 20 45 C 20 35 15 30 15 20 C 15 15 20 15 20 10 C 20 5 15 0 10 0 C 5 0 0 5 0 10 C 0 15 5 15 5 20 C 5 30 0 35 0 45'
-
 export default {
-    K: 2.75,
+    K: 2.8,
     COLORS: {
         [PlayerColors.RED]: {
-            front: '#de0000',
-            back: '#730505',
-            highlight: '#ef8b8b',
-            shadow: '#ff4d4d'
+            FIELD_FRONT: '#de0000',
+            FIELD_BACK: '#730505',
+            FIGURE_HIGHLIGHT: '#ef8b8b',
+            FIGURE_BODY: '#ff4d4d'
         },
         [PlayerColors.GREEN]: {
-            front: '#088714',
-            back: '#03540b',
-            highlight: '#84ca8b',
-            shadow: '#3aab45'
+            FIELD_FRONT: '#088714',
+            FIELD_BACK: '#03540b',
+            FIGURE_HIGHLIGHT: '#84ca8b',
+            FIGURE_BODY: '#3aab45'
         },
         [PlayerColors.YELLOW]: {
-            front: '#bab70d',
-            back: '#7a5f05',
-            highlight: '#f4f287',
-            shadow: '#dfd91b'
+            FIELD_FRONT: '#bab70d',
+            FIELD_BACK: '#7a5f05',
+            FIGURE_HIGHLIGHT: '#f4f287',
+            FIGURE_BODY: '#dfd91b'
         },
         [PlayerColors.BLUE]: {
-            front: '#0576ab',
-            back: '#023852',
-            highlight: '#7feeee',
-            shadow: '#0698dd'
+            FIELD_FRONT: '#0576ab',
+            FIELD_BACK: '#023852',
+            FIGURE_HIGHLIGHT: '#7feeee',
+            FIGURE_BODY: '#0698dd'
         },
         HIGHLIGHT: {
-            highlight: '#9c5300',
-            front: '#fc9c2d',
-            back: '#9c5300',
-            shadow: '#ffbc6e'
+            FIELD_FRONT: '#fc9c2d',
+            FIELD_BACK: '#9c5300',
+            FIGURE_HIGHLIGHT: '#ffbc6e',
+            FIGURE_BODY: '#9c5300',
         }
     },
     BOARD: {
@@ -76,4 +74,11 @@ export default {
             INITIAL_OFFSET: 50
         }
     },
+    FIGURE: {
+        // prefix 'M x y', kde x, y je stred aktualniho pole
+        RELATIVE_PATH: {
+            OUTLINE: 'm -9 3 c 6 3 12 3 18 0 c 0 -6 -4 -10 -6 -15 c 1 -2 3 -3 3 -6 c 0 -3 -3 -6 -6 -6 c -3 0 -6 3 -6 6 c 0 3 2 4 3 6 c -2 5 -6 9 -6 15',
+            HIGHLIGHT: 'm -2 -23 c -2 0 -5 6 -3 6 c 1 0 4 -6 3 -6'
+        }
+    }
 } as const

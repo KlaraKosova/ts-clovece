@@ -1,4 +1,4 @@
-import {SocketIO} from "../types"
+import {ServerIO, SocketIO} from "../types"
 import Client from "../../core/db/Client"
 import {ObjectId} from "mongodb"
 // @ts-ignore
@@ -7,7 +7,7 @@ import { generateDiceSequence} from "../../helpers";
 import { Server } from "socket.io"
 import { GameProgress, GameProgressDocument, PlayerColors, PlayersOrder, PlayerStatus } from "../../types"
 
-export default async function (io: Server, socket: SocketIO, data: { gameId: string }) {
+export default async function (io: ServerIO, socket: SocketIO, data: { gameId: string }) {
     console.log('Socket: on joinGame')
     const client = await Client.getClient()
     const games = client.collection('games')
@@ -42,6 +42,9 @@ export default async function (io: Server, socket: SocketIO, data: { gameId: str
         ]
     }
 
+    const updatedStatuses = game.playerStatuses
+    updatedStatuses[newPlayerColor] = newPlayerStatus
+
     await games.updateOne({
             _id: new ObjectId(data.gameId)
         },
@@ -49,10 +52,8 @@ export default async function (io: Server, socket: SocketIO, data: { gameId: str
             $set: {
                 lastDiceSequence,
                 players: game.players + 1,
+                playerStatuses: updatedStatuses
             },
-            $push: {
-                playerStatuses: newPlayerStatus
-            }
         }
     )
     const updatedGame = await games.findOne({
@@ -62,6 +63,7 @@ export default async function (io: Server, socket: SocketIO, data: { gameId: str
     await socket.join(data.gameId)
     socket.data.gameId = data.gameId
     socket.data.userId = userId
+    socket.data.color = newPlayerColor
 
     console.log('Socket: emit GameWait')
     socket.emit("REDIRECT_GAME_WAIT", {
@@ -71,7 +73,22 @@ export default async function (io: Server, socket: SocketIO, data: { gameId: str
     })
 
     if (updatedGame.players === 4) {
-        socket.emit('REDIRECT_GAME_PROGRESS')
-        socket.to(data.gameId).emit('REDIRECT_GAME_PROGRESS')
+        io.to(data.gameId).emit('REDIRECT_GAME_PROGRESS')
     }
+
+    const cursor = games.find({
+        players: {
+            $lt: 4
+        }
+    })
+    const response = await cursor.map((game) => {
+        return {
+            _id: game._id.toString(),
+            name: game.name,
+            players: Object.keys(game.playerStatuses).length
+        }
+    }).toArray()
+
+
+    io.emit('GAME_SELECT_RESPONSE', { games: response })
 }

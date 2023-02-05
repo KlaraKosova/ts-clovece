@@ -8,7 +8,8 @@ export interface ServerToClientEvents {
     GAME_SELECT_RESPONSE: (data: { games: GamePreview[] }) => void,
     REDIRECT_GAME_PROGRESS: () => void,
     GAME_PROGRESS_RESPONSE: (data: GameProgress) => void,
-    GAME_PROGRESS_UPDATE: (data: { progress: GameProgress, updates: GameProgressUpdate[] }) => void
+    GAME_PROGRESS_UPDATE: (data: { progress: GameProgress, updates: GameProgressUpdate[] }) => void,
+    GAME_WINNER: (data: { winnerId: string }) => void
 }
 
 export interface ClientToServerEvents {

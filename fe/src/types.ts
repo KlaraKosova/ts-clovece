@@ -21,19 +21,14 @@ export type PlayerColor = typeof PlayerColors[keyof typeof PlayerColors]
 export const PlayersOrder = [PlayerColors.RED, PlayerColors.YELLOW, PlayerColors.GREEN, PlayerColors.BLUE] as const
 
 export const SvgBoardStates = {
-    BEFORE_LOAD: '0',
-    DEFAULT: '1',
-    DICE: '2', // vychozi stav kostky pred animaci
-    DICE_ANIMATION: '3', // animace kostky
-    DICE_PLAY_BTN: '4', // zobrazeni play btn
-    HIGHLIGHT_FIELDS: '5',
-    FIGURE_SELECTED: '6',
-    FIGURE_MOVE: '7',
-    GAME_PROGRESS_UPDATE_MOVE: '8', // animace tahu ostatnich hracu
-    ANIMATING: '9',
-    SENDING_DATA: '10',
-    NO_MOVES: '11'
-
+    LOADING: 'LOADING',
+    DICE: 'DICE',// vychozi stav kostky pred animaci
+    DICE_ANIMATION: 'DICE_ANIMATION',// animace kostky
+    DICE_PLAY_BUTTON: 'DICE_PLAY_BUTTON',// zobrazeni play btn
+    NO_MOVES_MODAL: 'NO_MOVES_MODAL', // zobrazeni modalu
+    HIGHLIGHT_ANIMATION: 'HIGHLIGHT_ANIMATION', // highlight moznych tahu
+    CURRENT_PLAYER_FIGURE_MOVE_ANIMATION: 'CURRENT_PLAYER_FIGURE_MOVE_ANIMATION', // animace po kliknuti na pole/figurku
+    NEXT_PLAYER_FIGURE_MOVE_ANIMATION: 'NEXT_PLAYER_FIGURE_MOVE_ANIMATION' // animace tahu ostatnich hracu
 } as const
 export type SvgBoardStates = typeof SvgBoardStates[keyof typeof SvgBoardStates]
 

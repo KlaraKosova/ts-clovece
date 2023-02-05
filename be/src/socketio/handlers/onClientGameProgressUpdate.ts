@@ -1,19 +1,18 @@
 import Client from "../../core/db/Client";
 import { ObjectId } from "mongodb";
 import {GameProgress, GameProgressDocument, GameProgressUpdate, PlayersOrder, UserInfo} from "../../types";
-import { SocketIO } from "../types";
+import {ServerIO, SocketIO} from "../types";
 import { Server } from "socket.io";
 import {generateDiceSequence, objectCompare} from "../../helpers";
 
-export default async function (io: Server, socket: SocketIO, data: GameProgressUpdate[]) {
-    console.log('Socket: on clientGameProgressUpdate')
-    console.log(data)
-    console.log(socket.data)
+export default async function (io: ServerIO, socket: SocketIO, data: GameProgressUpdate[]) {
+    console.log('!!!!!!!!!!!!!!!!!!!!!!!Socket: on clientGameProgressUpdate')
+    // console.log(data)
+    // console.log(socket.data)
 
     if (!socket.data) {
         return
     }
-
 
     const client = await Client.getClient()
     const games = client.collection('games')
@@ -23,10 +22,15 @@ export default async function (io: Server, socket: SocketIO, data: GameProgressU
         return
     }
 
+    console.log(socket.data)
     const currentPlayerIndex = PlayersOrder.indexOf(socket.data.color!)
     const nextPlayerColor = PlayersOrder[(currentPlayerIndex + 1) % 4]
     const nextPlayer = game.playerStatuses[nextPlayerColor]
     const statuses = game.playerStatuses
+
+    console.log('currentPlayerIndex', currentPlayerIndex)
+    console.log('nextPlayerColor',nextPlayerColor)
+    console.log('nextPlayer',nextPlayer)
 
     for (let i = 0; i < 4; i++) {
         const color = PlayersOrder[i]
@@ -53,17 +57,19 @@ export default async function (io: Server, socket: SocketIO, data: GameProgressU
         _id: new ObjectId(socket.data.gameId)
     }) as GameProgressDocument
 
-    const clients = io.sockets.adapter.rooms.get(socket.data.gameId!)!
-    for (const clientId of clients ) {
-
-        //this is the socket of each client in the room.
-        const clientSocket = io.sockets.sockets.get(clientId)!;
-        console.log('client socket----')
-        console.log(clientSocket.data)
-
-
+    let winner = true
+    for (let i = 0; i < 4; i++) {
+        const figure = updatedGame.playerStatuses[socket.data.color!].figures[i]
+        if (!figure.isHome) {
+            winner = false
+        }
     }
-    console.log(io.sockets.adapter.rooms.get(socket.data.gameId!)?.size)
+    if (winner) {
+        socket.to(socket.data.gameId!).emit("GAME_WINNER", {winnerId: socket.data.userId!})
+        await client.disconnect()
+        return
+    }
+
     io.to(socket.data.gameId!).emit("GAME_PROGRESS_UPDATE", { progress: updatedGame, updates: data })
     await client.disconnect()
 }

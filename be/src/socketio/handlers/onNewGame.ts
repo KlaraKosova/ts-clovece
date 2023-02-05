@@ -15,7 +15,8 @@ export default async function (io: Server, socket: SocketIO, data: { name: strin
         name: data.name,
         players: 1,
         currentPlayerId: userId,
-        playerStatuses: [{
+        playerStatuses: {
+            [PlayerColors.RED]: {
                 color: PlayersOrder[0],
                 userId: userId,
                 figures: [
@@ -24,11 +25,15 @@ export default async function (io: Server, socket: SocketIO, data: { name: strin
                     { color: PlayerColors.RED, index: 2, isHome: false, isStart: true },
                     { color: PlayerColors.RED, index: 3, isHome: false, isStart: true },
                 ]
-            }
-        ]
+            }}
     }
 
     const result = await games.insertOne(newGame)
+    socket.data = {
+        color: PlayerColors.RED,
+        gameId: result.insertedId.toString(),
+        userId: userId
+    }
     console.log('Socket: emit GameWait')
     await socket.join(result.insertedId.toString())
     socket.emit("REDIRECT_GAME_WAIT", {

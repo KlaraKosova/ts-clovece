@@ -1,10 +1,10 @@
 import Client from "../../core/db/Client";
 import { ObjectId } from "mongodb";
 import { GameProgressDocument, UserInfo } from "../../types";
-import { SocketIO } from "../types";
+import {ServerIO, SocketIO} from "../types";
 import { Server } from "socket.io";
 
-export default async function (io: Server, socket: SocketIO, data: UserInfo | null) {
+export default async function (io: ServerIO, socket: SocketIO, data: UserInfo | null) {
     console.log('Socket: on init')
     // console.log(data)
 
@@ -16,13 +16,8 @@ export default async function (io: Server, socket: SocketIO, data: UserInfo | nu
             $and: [
                 { _id: new ObjectId(data.gameId) },
                 {
-                    playerStatuses: {
-                        $elemMatch: {
-                            userId: data.userId,
-                            color: data.color
-                        }
-                    }
-                }
+                    [`playerStatuses.${data.color}.userId`]: { $eq: data.userId}
+                },
             ]
         }) as GameProgressDocument | null
 

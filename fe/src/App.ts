@@ -42,6 +42,7 @@ class App {
                 color: localStorageInfo.color
             }
         } else {
+            console.log('wtf')
             localStorage.removeItem('user')
         }
     }
@@ -71,17 +72,20 @@ class App {
     }
 
     private onRedirectGameWait(data: UserInfo) {
+        console.log("onRedirectGameWait")
         this.userInfo = data;
         localStorage.setItem('user', JSON.stringify(this.userInfo))
         this.renderNewView("GAME_WAITING")
     }
 
     private onRedirectGameSelect() {
+        console.log('onRedirectGameSelect')
         localStorage.removeItem('user')
         this.renderNewView("GAME_SELECT")
     }
 
     private onRedirectGameProgress() {
+        console.log('onRedirectGameProgress')
         this.renderNewView("GAME_PROGRESS")
     }
 
