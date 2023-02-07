@@ -1,7 +1,7 @@
-import {MongoClient, Db, Collection} from "mongodb";
+import { MongoClient, Db, Collection } from "mongodb";
 
 import dotenv from "dotenv";
-import {DBCollectionError, DBConnectionError} from "./Error.js";
+import { DBCollectionError, DBConnectionError } from "./Error.js";
 dotenv.config();
 
 class Client {
@@ -24,18 +24,20 @@ class Client {
             console.log("Connected successfully to the DB");
         } catch (e) {
             await client.client.close();
+            console.log(e);
+
             throw new DBConnectionError(process.env.MONGODB_CONNECTION_STRING!)
         }
 
         return client
     }
-    collection(collection: string):Collection {
+    collection(collection: string): Collection {
         if (!this.db) {
             throw new DBCollectionError(collection)
         }
         return this.db.collection(collection)
     }
-    async disconnect (): Promise<void> {
+    async disconnect(): Promise<void> {
         await this.client.close();
     }
 

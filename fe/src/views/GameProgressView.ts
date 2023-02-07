@@ -1,8 +1,8 @@
 import { SVG } from "@svgdotjs/svg.js";
-import { BoardController } from "../BoardController";
+import { BoardController } from "../entities/BoardController";
 import Consts from "../helpers/svgBoardConstants";
 import { SocketIOClientInstance } from "../socketio/SocketClient";
-import {GameProgress, DocumentClickData, PlayerColor, GameProgressUpdate, PlayersOrder} from "../types";
+import { GameProgressDataset, DocumentClickData, PlayerColor, GameProgressUpdate, PlayersOrder } from "../types";
 import { View } from "./View";
 import App from "../App";
 
@@ -26,17 +26,18 @@ export class GameProgressView extends View {
         this.boardController.render()
     }
 
-    private onGameProgressResponse(game: GameProgress) {
+    private onGameProgressResponse(game: GameProgressDataset) {
         console.log('onGameProgressResponse', game)
-        this.boardController.updateGameProgress(game)
+        this.boardController.renderLoadedProgress(game)
         this.setHeaderBarColor(game)
     }
 
-    private async onGameProgressUpdate(data: {progress: GameProgress, updates: GameProgressUpdate[]}) {
+    private async onGameProgressUpdate(data: { progress: GameProgressDataset, updates: GameProgressUpdate[] }) {
         console.log('onGameProgressUpdate', data)
         this.setHeaderBarColor(data.progress)
         await this.boardController.animateUpdates(data.updates)
         this.boardController.setProgress(data.progress)
+        this.boardController.displayDice()
     }
 
     private async onDocumentClick(event: PointerEvent) {
@@ -104,10 +105,12 @@ export class GameProgressView extends View {
 
     public mount(): void {
         super.mount()
+        console.log('emit GAME_PROGRESS_REQUEST');
+
         SocketIOClientInstance.socket.emit("GAME_PROGRESS_REQUEST")
     }
 
-    private setHeaderBarColor (progress: GameProgress) {
+    private setHeaderBarColor(progress: GameProgressDataset) {
         const headerBar = this.rootElem.querySelector('.game-progress-wrapper :first-child') as HTMLElement
         PlayersOrder.forEach(color => {
             if (progress.playerStatuses[color].userId === progress.currentPlayerId) {

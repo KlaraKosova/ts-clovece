@@ -1,6 +1,6 @@
 import { GameElement } from "../GameElement";
-import Consts from '../../helpers/svgBoardConstants'
-import { delay } from "../../helpers/common";
+import Consts from '../../../helpers/svgBoardConstants'
+import { delay } from "../../../helpers/common";
 import { Element, Svg } from "@svgdotjs/svg.js";
 
 const dotsConfig = [
@@ -44,6 +44,9 @@ export class Dice extends GameElement {
 
     render(): void {
         this.drawDots(6)
+        this.svg.setCSS({
+            cursor: 'pointer'
+        })
     }
 
     /* animate (fn: (elem: Element) => void): void {
@@ -116,5 +119,8 @@ export class Dice extends GameElement {
     } */
     public async animateMoveUp() {
         this.svg.move({ duration: 1000, offset: { x: 0, y: -30 } })
+        this.svg.setCSS({
+            cursor: 'default'
+        })
     }
 }

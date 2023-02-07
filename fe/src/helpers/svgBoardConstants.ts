@@ -74,7 +74,15 @@ export default {
             INITIAL_OFFSET: 50
         }
     },
-    FIGURE: {
+    ELEMENTS: {
+        SUCCESS_COLOR: '#108c0e',
+        FAILURE_COLOR: '#ed2121',
+        PLAY_BUTTON: {
+            WIDTH: 50,
+            HEIGHT: 20,
+            RADIUS: 10
+        }
+    }, FIGURE: {
         // prefix 'M x y', kde x, y je stred aktualniho pole
         RELATIVE_PATH: {
             OUTLINE: 'm -9 3 c 6 3 12 3 18 0 c 0 -6 -4 -10 -6 -15 c 1 -2 3 -3 3 -6 c 0 -3 -3 -6 -6 -6 c -3 0 -6 3 -6 6 c 0 3 2 4 3 6 c -2 5 -6 9 -6 15',

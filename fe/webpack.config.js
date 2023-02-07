@@ -31,4 +31,7 @@ module.exports = {
     compress: true,
     port: 8080,
   },
+  stats: {
+    errorDetails: true
+  }
 };

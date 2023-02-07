@@ -1,10 +1,10 @@
-import {PlayerColors, PlayerColor, PlayersOrder, UserInfo, ViewName} from "./types";
-import {GameProgressView} from "./views/GameProgressView";
-import {GameSelectView} from "./views/GameSelectView";
-import {GameWaitingView} from "./views/GameWaitingView";
-import {LoadingView} from "./views/LoadingView";
-import {View} from "./views/View";
-import {SocketIOClientInstance} from "./socketio/SocketClient";
+import { PlayerColors, PlayerColor, PlayersOrder, UserInfo, ViewName } from "./types";
+import { GameProgressView } from "./views/GameProgressView";
+import { GameSelectView } from "./views/GameSelectView";
+import { GameWaitingView } from "./views/GameWaitingView";
+import { LoadingView } from "./views/LoadingView";
+import { View } from "./views/View";
+import { SocketIOClientInstance } from "./socketio/SocketClient";
 
 class App {
     private userInfo: UserInfo | null = null;
@@ -42,7 +42,6 @@ class App {
                 color: localStorageInfo.color
             }
         } else {
-            console.log('wtf')
             localStorage.removeItem('user')
         }
     }
@@ -59,6 +58,8 @@ class App {
         console.log('init');
         this.loadUserInfo();
         if (this.userInfo) {
+            console.log('emit INIT');
+
             SocketIOClientInstance.socket.emit("INIT", this.userInfo)
         } else {
             this.renderNewView("GAME_SELECT")

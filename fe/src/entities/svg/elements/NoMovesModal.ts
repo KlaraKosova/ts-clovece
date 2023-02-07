@@ -1,5 +1,5 @@
-import {GameElement} from "../GameElement";
-import Consts from "../../helpers/svgBoardConstants"
+import { GameElement } from "../GameElement";
+import Consts from "../../../helpers/svgBoardConstants"
 
 export class NoMovesModal extends GameElement {
     render() {
@@ -11,7 +11,7 @@ export class NoMovesModal extends GameElement {
             },
             radius: 10,
             center: {
-                x: Consts.BOARD.SIZE / 2 ,
+                x: Consts.BOARD.SIZE / 2,
                 y: Consts.BOARD.SIZE / 2 - Consts.BOARD.NO_MOVES_MODAL.INITIAL_OFFSET
             },
             color: '#fff'
@@ -20,13 +20,13 @@ export class NoMovesModal extends GameElement {
         this.svg.createChild({
             type: 'text',
             text: 'Zadne dalsi tahy',
-            center: { x: Consts.BOARD.SIZE / 2, y: Consts.BOARD.SIZE / 2 - 15 - Consts.BOARD.NO_MOVES_MODAL.INITIAL_OFFSET},
+            center: { x: Consts.BOARD.SIZE / 2, y: Consts.BOARD.SIZE / 2 - 15 - Consts.BOARD.NO_MOVES_MODAL.INITIAL_OFFSET },
             font: {
                 size: '1.5rem'
             }
         })
     }
-    public async moveDown () {
+    public async moveDown() {
         await this.svg.move({
             duration: 500,
             offset: {

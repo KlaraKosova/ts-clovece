@@ -1,15 +1,14 @@
 import Client from "../../core/db/Client";
 import { ObjectId } from "mongodb";
-import {GameProgress, GameProgressDocument, GameProgressUpdate, PlayersOrder, UserInfo} from "../../types";
-import {ServerIO, SocketIO} from "../types";
+import { GameProgress, GameProgressDocument, GameProgressUpdate, PlayersOrder, UserInfo } from "../../types";
+import { ServerIO, SocketIO } from "../types";
 import { Server } from "socket.io";
-import {generateDiceSequence, objectCompare} from "../../helpers";
+import { generateDiceSequence, objectCompare } from "../../helpers";
 
-export default async function (io: ServerIO, socket: SocketIO, data: GameProgressUpdate[]) {
+export default async function (io: ServerIO, socket: SocketIO, updates: GameProgressUpdate[]) {
     console.log('!!!!!!!!!!!!!!!!!!!!!!!Socket: on clientGameProgressUpdate')
     // console.log(data)
     // console.log(socket.data)
-
     if (!socket.data) {
         return
     }
@@ -29,13 +28,16 @@ export default async function (io: ServerIO, socket: SocketIO, data: GameProgres
     const statuses = game.playerStatuses
 
     console.log('currentPlayerIndex', currentPlayerIndex)
-    console.log('nextPlayerColor',nextPlayerColor)
-    console.log('nextPlayer',nextPlayer)
+    console.log('nextPlayerColor', nextPlayerColor)
+    console.log('nextPlayer', nextPlayer)
+
+
+    const reversedUpdates = [...updates].reverse()
 
     for (let i = 0; i < 4; i++) {
         const color = PlayersOrder[i]
         for (let j = 0; j < 4; j++) {
-            for (const move of data) {
+            for (const move of reversedUpdates) {
                 if (objectCompare(statuses[color].figures[j], move.prevField)) {
                     statuses[color].figures[j] = move.nextField
                 }
@@ -65,11 +67,14 @@ export default async function (io: ServerIO, socket: SocketIO, data: GameProgres
         }
     }
     if (winner) {
-        socket.to(socket.data.gameId!).emit("GAME_WINNER", {winnerId: socket.data.userId!})
+        console.log("!!!!!!!!!!!!!!! WINNER !!!!!!!!!!!!!!!!!!!!");
+        console.log(socket.data.userId, socket.data.color);
+
+        socket.to(socket.data.gameId!).emit("GAME_WINNER", { winnerId: socket.data.userId! })
         await client.disconnect()
         return
     }
 
-    io.to(socket.data.gameId!).emit("GAME_PROGRESS_UPDATE", { progress: updatedGame, updates: data })
+    io.to(socket.data.gameId!).emit("GAME_PROGRESS_UPDATE", { progress: updatedGame, updates: updates })
     await client.disconnect()
 }

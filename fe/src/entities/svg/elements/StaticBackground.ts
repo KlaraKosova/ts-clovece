@@ -1,5 +1,5 @@
 import { GameElement } from "../GameElement";
-import Consts from "../../helpers/svgBoardConstants";
+import Consts from "../../../helpers/svgBoardConstants";
 
 export class StaticBackground extends GameElement {
     render(): void {

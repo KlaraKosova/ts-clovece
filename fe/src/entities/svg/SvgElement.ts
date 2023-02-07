@@ -1,8 +1,8 @@
-import {G, Svg, Element, Circle, Rect, Text, Tspan, Path} from '@svgdotjs/svg.js'
-import Consts from "../helpers/svgBoardConstants";
-import {Coordinates, PlayerColors} from '../types'
-import { camelToKebabCase, delay } from "../helpers/common";
-import {centers, homeCenters} from "../helpers/fieldCenters";
+import { G, Svg, Element, Circle, Rect, Text, Tspan, Path, Ellipse } from '@svgdotjs/svg.js'
+import Consts from "../../helpers/svgBoardConstants";
+import { Coordinates, PlayerColors } from '../../types'
+import { camelToKebabCase, delay } from "../../helpers/common";
+import { centers, homeCenters } from "../../helpers/fieldCenters";
 import * as path from "path";
 
 export class SvgElement {
@@ -54,6 +54,14 @@ export class SvgElement {
     }): void;
 
     createChild(data: {
+        type: 'ellipse',
+        center: Coordinates,
+        color: string,
+        opacity?: number,
+        ellipseRadius: Coordinates,
+    }): void;
+
+    createChild(data: {
         type: 'circle',
         center: Coordinates,
         color: string,
@@ -92,7 +100,7 @@ export class SvgElement {
 
 
     createChild(data: {
-        type: 'rect' | 'circle' | 'text' | 'functionText' | 'path',
+        type: 'rect' | 'ellipse' | 'circle' | 'text' | 'functionText' | 'path',
         path?: string,
         initialPosition?: Coordinates,
         center?: { x: number, y: number },
@@ -103,13 +111,14 @@ export class SvgElement {
         font?: Record<string, any>,
         text?: string,
         radius?: number,
+        ellipseRadius?: Coordinates,
         addFunction?: (tspan: Tspan) => void
     }): void {
         if (data.addFunction) {
             this.draw.text(data.addFunction)
             return
         }
-        let element: Circle | Rect | Text | Path
+        let element: Circle | Rect | Text | Path | Ellipse
         if (data.type === 'rect') {
             element = this.draw.rect()
             if (data.size) {
@@ -125,14 +134,16 @@ export class SvgElement {
             if (data.font && Object.keys(data.font).length) {
                 element.font(data.font)
             }
+        } else if (data.type === 'ellipse') {
+            element = this.draw.ellipse(data.ellipseRadius.x * Consts.K, data.ellipseRadius.y * Consts.K)
         } else {
             let transformedPath = `M ${data.initialPosition.x * Consts.K} ${data.initialPosition.y * Consts.K} `
                 + data.path
-                .split(' ')
-                .map(pathElement => {
-                    return isNaN(+pathElement)? pathElement : +pathElement * Consts.K * 0.75
-                })
-                .join(' ')
+                    .split(' ')
+                    .map(pathElement => {
+                        return isNaN(+pathElement) ? pathElement : +pathElement * Consts.K * 0.75
+                    })
+                    .join(' ')
             // console.log(transformedPath)
             element = this.draw.path(transformedPath + ' z')
         }
@@ -206,14 +217,22 @@ export class SvgElement {
     }
 
     debug() {
-    /* const test= this.draw.path('M 0 45 C 5 50 15 50 20 45 C 20 35 15 30 15 20 C 15 15 20 15 20 10 C 20 5 15 0 10 0 C 5 0 0 5 0 10 C 0 15 5 15 5 20 C 5 30 0 35 0 45')
-        .fill(Consts.COLORS[PlayerColors.RED].front)
-        //.center(centers[0].x *Consts.K ,centers[0].y*Consts.K)
-        //.scale(Consts.K)
-        .move(centers[0].x *Consts.K ,centers[0].y*Consts.K)
-        this.draw.path('M 7 2 C 6 1 1 8 2 8 C 4 8 8 2 7 2')
-            .fill(Consts.COLORS[PlayerColors.RED].highlight)
-            .move(centers[0].x *Consts.K ,centers[0].y*Consts.K) */
+        /* const test= this.draw.path('M 0 45 C 5 50 15 50 20 45 C 20 35 15 30 15 20 C 15 15 20 15 20 10 C 20 5 15 0 10 0 C 5 0 0 5 0 10 C 0 15 5 15 5 20 C 5 30 0 35 0 45')
+            .fill(Consts.COLORS[PlayerColors.RED].front)
+            //.center(centers[0].x *Consts.K ,centers[0].y*Consts.K)
+            //.scale(Consts.K)
+            .move(centers[0].x *Consts.K ,centers[0].y*Consts.K)
+            this.draw.path('M 7 2 C 6 1 1 8 2 8 C 4 8 8 2 7 2')
+                .fill(Consts.COLORS[PlayerColors.RED].highlight)
+                .move(centers[0].x *Consts.K ,centers[0].y*Consts.K) */
 
     }
+
+    /* public addListener(event: string, handler: (this: Svg) => void) {
+        this.group.on(event, handler.bind(this.group))
+    }
+
+    public removeListener(event: string, handler: () => void) {
+        this.group.off(event, handler.bind(this.group))
+    } */
 }

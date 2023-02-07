@@ -1,6 +1,6 @@
-import {GameElement} from "../GameElement";
-import Consts from "../../helpers/svgBoardConstants"
-import {Runner, Svg} from "@svgdotjs/svg.js";
+import { GameElement } from "../GameElement";
+import Consts from "../../../helpers/svgBoardConstants"
+import { Runner, Svg } from "@svgdotjs/svg.js";
 
 export class Loading extends GameElement {
     private animationRunners: Runner[]
@@ -17,7 +17,7 @@ export class Loading extends GameElement {
         for (let i = 0; i < 3; i++) {
             this.svg.createChild({
                 type: 'circle',
-                center: {x: Consts.BOARD.SIZE / 2 - 30, y: Consts.BOARD.SIZE / 2},
+                center: { x: Consts.BOARD.SIZE / 2 - 30, y: Consts.BOARD.SIZE / 2 },
                 diameter: 5,
                 color: '#fff'
             })

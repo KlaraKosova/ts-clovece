@@ -29,7 +29,7 @@ export class GameSelectView extends View {
             playersWrapper.textContent = `Hráči: ${this.games[i].players}/4`
             const joinButton = document.createElement('button')
             joinButton.classList.add('btn-full', 'btn-green')
-            joinButton.textContent= 'Přidat se'
+            joinButton.textContent = 'Přidat se'
             joinButton.addEventListener('click', this.joinGame.bind(this, this.games[i]._id))
 
             wrapper.append(nameWrapper, playersWrapper, joinButton)
@@ -68,12 +68,15 @@ export class GameSelectView extends View {
         const inputElement = document.querySelector(".modal .input-text") as HTMLInputElement | null
         // console.log(inputElement);
 
+        console.log('emit NEW_GAME');
+
         SocketIOClientInstance.socket.emit("NEW_GAME", {
             name: inputElement?.value || "Hra bez názvu"
         })
     }
 
     private joinGame(gameId: string) {
+        console.log('emit JOIN_GAME');
         SocketIOClientInstance.socket.emit("JOIN_GAME", { gameId });
     }
 
@@ -99,6 +102,7 @@ export class GameSelectView extends View {
 
     public mount(): void {
         super.mount()
+        console.log('emit GAME_SELECT_REQUEST');
         SocketIOClientInstance.socket.emit("GAME_SELECT_REQUEST")
     }
 }

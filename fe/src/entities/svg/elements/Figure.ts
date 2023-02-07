@@ -1,12 +1,12 @@
-import {Runner, Svg} from "@svgdotjs/svg.js";
-import {Coordinates, FieldDataset, FigureDataset, PlayerColor} from "../../types";
-import {GameElement} from "../GameElement";
-import Consts from "../../helpers/svgBoardConstants"
-import {centers, homeCenters, startCenters} from "../../helpers/fieldCenters";
-import {HasHighlightAnimation} from "../HasHighlightAnimation";
-import {Field} from "./Field";
-import {HasDataset} from "../HasDataset";
-import {coordinatesDiff} from "../../helpers/common";
+import { Runner, Svg } from "@svgdotjs/svg.js";
+import { Coordinates, FieldDataset, FigureDataset, PlayerColor } from "../../../types";
+import { GameElement } from "../GameElement";
+import Consts from "../../../helpers/svgBoardConstants"
+import { centers, homeCenters, startCenters } from "../../../helpers/fieldCenters";
+import { HasHighlightAnimation } from "../HasHighlightAnimation";
+import { Field } from "./Field";
+import { HasDataset } from "../../../entities/HasDataset";
+import { coordinatesDiff } from "../../../helpers/common";
 
 export class Figure extends GameElement implements HasHighlightAnimation, HasDataset<FigureDataset> {
     private field: Field;
@@ -91,7 +91,7 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDat
             swing: true,
             times: Infinity,
             wait: 200
-        }).attr({fill: Consts.COLORS.HIGHLIGHT.FIGURE_BODY})
+        }).attr({ fill: Consts.COLORS.HIGHLIGHT.FIGURE_BODY })
         this.animationRunners[1] = this.svg.getNthChild(2).animate({
             duration: 500,
             delay: 0,
@@ -99,8 +99,8 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDat
             swing: true,
             times: Infinity,
             wait: 200
-        }).attr({fill: Consts.COLORS.HIGHLIGHT.FIGURE_BODY})
-        this.svg.setCSS({cursor: 'pointer'})
+        }).attr({ fill: Consts.COLORS.HIGHLIGHT.FIGURE_BODY })
+        this.svg.setCSS({ cursor: 'pointer' })
     }
 
     public highlightAnimationStop(): void {
@@ -108,7 +108,7 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDat
             this.animationRunners[i].loops(2)
             this.animationRunners[i].unschedule()
         }
-        this.svg.setCSS({cursor: 'default'})
+        this.svg.setCSS({ cursor: 'default' })
     }
 
     public computeNextField(dice: number): Field | null {
@@ -151,7 +151,9 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDat
 
     public async animateKickSequence(finalField: Field): Promise<void> {
         const index = this.path.indexOf(finalField)
-        await this.animateMoveSequence(this.path[index - 1])
+        if (index > 0) {
+            await this.animateMoveSequence(this.path[index - 1])
+        }
 
         const sideStepCoordinates = this.getSideStepCenter()
         await this.svg.move({

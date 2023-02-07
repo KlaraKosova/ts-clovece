@@ -1,6 +1,6 @@
-import {GameElement} from "../GameElement";
-import Consts from "../../helpers/svgBoardConstants";
-import {Svg} from "@svgdotjs/svg.js";
+import { GameElement } from "../GameElement";
+import Consts from "../../../helpers/svgBoardConstants";
+import { Svg } from "@svgdotjs/svg.js";
 
 export class NextPlayerButton extends GameElement {
     constructor(draw: Svg) {
@@ -8,7 +8,7 @@ export class NextPlayerButton extends GameElement {
         this.svg.setCSS({
             cursor: 'pointer'
         })
-        this.svg.setDataset({nextPlayerButton: true})
+        this.svg.setDataset({ nextPlayerButton: true })
     }
     public render() {
         this.svg.createChild({
@@ -17,7 +17,7 @@ export class NextPlayerButton extends GameElement {
                 x: Consts.BOARD.NO_MOVES_MODAL.WIDTH - 10,
                 y: 20
             },
-            radius: 10,center: { x: Consts.BOARD.SIZE / 2, y: Consts.BOARD.SIZE / 2 + 15 - Consts.BOARD.NO_MOVES_MODAL.INITIAL_OFFSET },
+            radius: 10, center: { x: Consts.BOARD.SIZE / 2, y: Consts.BOARD.SIZE / 2 + 15 - Consts.BOARD.NO_MOVES_MODAL.INITIAL_OFFSET },
             color: Consts.BOARD.FRAMES.GREEN.COLOR
         })
 
@@ -31,7 +31,7 @@ export class NextPlayerButton extends GameElement {
             },
         })
     }
-    public async moveDown () {
+    public async moveDown() {
         await this.svg.move({
             duration: 500,
             offset: {
