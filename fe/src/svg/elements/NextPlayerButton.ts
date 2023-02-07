@@ -1,5 +1,5 @@
-import {GameElement} from "./GameElement";
-import Consts from "../helpers/svgBoardConstants";
+import {GameElement} from "../GameElement";
+import Consts from "../../helpers/svgBoardConstants";
 import {Svg} from "@svgdotjs/svg.js";
 
 export class NextPlayerButton extends GameElement {

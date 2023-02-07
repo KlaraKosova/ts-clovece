@@ -1,5 +1,5 @@
-import {GameElement} from "./GameElement";
-import Consts from "../helpers/svgBoardConstants"
+import {GameElement} from "../GameElement";
+import Consts from "../../helpers/svgBoardConstants"
 import {Runner, Svg} from "@svgdotjs/svg.js";
 
 export class Loading extends GameElement {

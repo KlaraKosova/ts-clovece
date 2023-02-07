@@ -1,5 +1,3 @@
-import {Field} from "./svgElements/Field";
-
 export interface UserInfo {
     userId: string,
     gameId: string,

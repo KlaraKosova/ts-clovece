@@ -1,5 +1,5 @@
-import {GameElement} from "./GameElement";
-import Consts from "../helpers/svgBoardConstants"
+import {GameElement} from "../GameElement";
+import Consts from "../../helpers/svgBoardConstants"
 
 export class NoMovesModal extends GameElement {
     render() {

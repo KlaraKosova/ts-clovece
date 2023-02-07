@@ -1,12 +1,12 @@
 import {Runner, Svg} from "@svgdotjs/svg.js";
-import {Coordinates, FieldDataset, FigureDataset, PlayerColor} from "../types";
-import {GameElement} from "./GameElement";
-import Consts from "../helpers/svgBoardConstants"
-import {centers, homeCenters, startCenters} from "../helpers/fieldCenters";
-import {HasHighlightAnimation} from "./HasHighlightAnimation";
+import {Coordinates, FieldDataset, FigureDataset, PlayerColor} from "../../types";
+import {GameElement} from "../GameElement";
+import Consts from "../../helpers/svgBoardConstants"
+import {centers, homeCenters, startCenters} from "../../helpers/fieldCenters";
+import {HasHighlightAnimation} from "../HasHighlightAnimation";
 import {Field} from "./Field";
-import {HasDataset} from "./HasDataset";
-import {coordinatesDiff} from "../helpers/common";
+import {HasDataset} from "../HasDataset";
+import {coordinatesDiff} from "../../helpers/common";
 
 export class Figure extends GameElement implements HasHighlightAnimation, HasDataset<FigureDataset> {
     private field: Field;

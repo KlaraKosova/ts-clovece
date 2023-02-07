@@ -1,6 +1,6 @@
-import { GameElement } from "./GameElement";
-import Consts from '../helpers/svgBoardConstants'
-import { delay } from "../helpers/common";
+import { GameElement } from "../GameElement";
+import Consts from '../../helpers/svgBoardConstants'
+import { delay } from "../../helpers/common";
 import { Element, Svg } from "@svgdotjs/svg.js";
 
 const dotsConfig = [

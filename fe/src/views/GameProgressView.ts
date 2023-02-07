@@ -34,9 +34,9 @@ export class GameProgressView extends View {
 
     private async onGameProgressUpdate(data: {progress: GameProgress, updates: GameProgressUpdate[]}) {
         console.log('onGameProgressUpdate', data)
-        this.boardController.setProgress(data.progress)
         this.setHeaderBarColor(data.progress)
         await this.boardController.animateUpdates(data.updates)
+        this.boardController.setProgress(data.progress)
     }
 
     private async onDocumentClick(event: PointerEvent) {

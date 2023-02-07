@@ -1,6 +1,6 @@
-import { GameElement } from "./GameElement";
+import { GameElement } from "../GameElement";
 import { Svg } from "@svgdotjs/svg.js";
-import Consts from "../helpers/svgBoardConstants"
+import Consts from "../../helpers/svgBoardConstants"
 
 export class DicePlayButton extends GameElement {
     constructor(draw: Svg) {

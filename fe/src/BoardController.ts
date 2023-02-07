@@ -1,8 +1,8 @@
 import {Svg} from "@svgdotjs/svg.js";
 import {centers, homeCenters} from "./helpers/fieldCenters";
-import {Field} from "./svgElements/Field";
-import {Figure} from "./svgElements/Figure";
-import {StaticBackground} from "./svgElements/StaticBackground";
+import {Field} from "./svg/elements/Field";
+import {Figure} from "./svg/elements/Figure";
+import {StaticBackground} from "./svg/elements/StaticBackground";
 import {
     FieldDataset,
     PlayersOrder,
@@ -13,15 +13,15 @@ import {
     DocumentClickData, GameProgressUpdate, FigureDataset,
 } from "./types";
 import App from "./App";
-import {Dice} from "./svgElements/Dice";
-import {Overlay} from "./svgElements/Overlay";
-import {DicePlayButton} from "./svgElements/DicePlayButton";
+import {Dice} from "./svg/elements/Dice";
+import {Overlay} from "./svg/elements/Overlay";
+import {DicePlayButton} from "./svg/elements/DicePlayButton";
 import {objectCompare} from "./helpers/common";
 import {SocketIOClientInstance} from "./socketio/SocketClient";
 import svgBoardConstants from "./helpers/svgBoardConstants";
-import {NoMovesModal} from "./svgElements/NoMovesModal";
-import {NextPlayerButton} from "./svgElements/NextPlayerButton";
-import {Loading} from "./svgElements/Loading";
+import {NoMovesModal} from "./svg/elements/NoMovesModal";
+import {NextPlayerButton} from "./svg/elements/NextPlayerButton";
+import {Loading} from "./svg/elements/Loading";
 
 export class BoardController {
     private readonly draw: Svg;
