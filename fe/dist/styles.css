@@ -117,6 +117,7 @@ header .border {
 
 .game-card {
     width: 20%;
+    height: min-content;
     cursor: default;
     display: flex;
     flex-direction: column;
@@ -138,7 +139,8 @@ header .border {
 
 .game-cards-container {
     padding: 5%;
-    width: 100%;
+    width: 80%;
+    height: 80%;
     display: flex;
     flex-wrap: wrap;
     gap: 5%;
@@ -201,6 +203,9 @@ header .border {
     width: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
 }
 
 #svgContainer {
