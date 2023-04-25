@@ -1,5 +1,8 @@
 import { Socket } from 'socket.io-client'
-import { UserInfo, GamePreview, GameProgressDataset, GameProgressUpdate } from '../types'
+import { UserInfo } from '../types/common/UserInfo'
+import { GamePreview } from '../types/data/GamePreview'
+import { GameProgressDataset } from '../types/data/GameProgressDataset'
+import { GameProgressUpdate } from '../types/data/GameProgressUpdate'
 
 // redirect_ eventy se resi primo v App, ostatni v samostatnych funkcich
 export interface ServerToClientEvents {

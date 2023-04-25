@@ -1,10 +1,13 @@
 import { SVG } from "@svgdotjs/svg.js";
-import { BoardController } from "../entities/BoardController";
-import Consts from "../helpers/svgBoardConstants";
+import { BoardController } from "../svgElements/BoardController";
+import Consts from "../utils/svgBoardConstants";
 import { SocketIOClientInstance } from "../socketio/SocketClient";
-import { GameProgressDataset, DocumentClickData, PlayerColor, GameProgressUpdate, PlayersOrder } from "../types";
 import { View } from "./View";
 import App from "../App";
+import { DocumentClickData } from "../types/board/DocumentClickData";
+import { PlayerColors, PlayersOrder } from "../types/common/PlayerColors";
+import { GameProgressDataset } from "../types/data/GameProgressDataset";
+import { GameProgressUpdate } from "../types/data/GameProgressUpdate";
 
 export class GameProgressView extends View {
     private boardController: BoardController
@@ -65,7 +68,7 @@ export class GameProgressView extends View {
                         index: +dataset.index,
                         isHome: dataset.isHome === 'true',
                         isStart: dataset.isStart === 'true',
-                        color: dataset.color as PlayerColor || null
+                        color: dataset.color as PlayerColors || null
                     }
                 }
 
@@ -75,7 +78,7 @@ export class GameProgressView extends View {
                 ) {
                     result.figure = {
                         index: +dataset.index,
-                        color: dataset.color as PlayerColor
+                        color: dataset.color as PlayerColors
                     }
                 }
             }

@@ -1,5 +1,5 @@
 import { SocketIOClientInstance } from "../socketio/SocketClient";
-import { GamePreview } from "../types";
+import { GamePreview } from "../types/data/GamePreview";
 import { View } from "./View";
 
 export class GameSelectView extends View {

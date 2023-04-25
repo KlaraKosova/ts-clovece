@@ -11,10 +11,12 @@
   "license": "ISC",
   "dependencies": {
     "@svgdotjs/svg.js": "^3.1.2",
+    "lodash": "^4.17.21",
     "socket.io": "^4.5.4",
     "socket.io-client": "^4.5.4"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.194",
     "dotenv-webpack": "^8.0.1",
     "ts-loader": "^9.4.2",
     "typescript": "^4.9.4",

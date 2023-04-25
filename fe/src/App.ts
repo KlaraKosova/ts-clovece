@@ -1,10 +1,12 @@
-import { PlayerColors, PlayerColor, PlayersOrder, UserInfo, ViewName } from "./types";
 import { GameProgressView } from "./views/GameProgressView";
 import { GameSelectView } from "./views/GameSelectView";
 import { GameWaitingView } from "./views/GameWaitingView";
 import { LoadingView } from "./views/LoadingView";
 import { View } from "./views/View";
 import { SocketIOClientInstance } from "./socketio/SocketClient";
+import { UserInfo } from "./types/common/UserInfo";
+import { ViewName } from "./types/common/ViewName";
+import { PlayersOrder } from "./types/common/PlayerColors";
 
 class App {
     private userInfo: UserInfo | null = null;
