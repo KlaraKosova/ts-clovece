@@ -5,7 +5,7 @@ import { LoadingView } from "./views/LoadingView";
 import { View } from "./views/View";
 import { SocketIOClientInstance } from "./socketio/SocketClient";
 import { UserInfo } from "./types/common/UserInfo";
-import { ViewName } from "./types/common/ViewName";
+import { ViewName } from "./types/state/ViewName";
 import { PlayersOrder } from "./types/common/PlayerColors";
 
 class App {

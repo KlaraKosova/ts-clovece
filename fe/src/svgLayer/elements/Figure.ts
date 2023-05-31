@@ -4,10 +4,11 @@ import Consts from "../../utils/svgBoardConstants"
 import { centers, homeCenters, startCenters } from "../../utils/fieldCenters";
 import { HasHighlightAnimation } from "./base/HasHighlightAnimation";
 import { Field } from "./Field";
-import { HasDataset } from "../../types/data/HasDataset";
 import { coordinatesDiff } from "../../utils/common";
 import { FigureDataset } from "../../types/data/FigureDataset";
-import { Coordinates } from "../../types/common/Coordinates";
+import { Coordinates } from "../../types/svgLayer/Coordinates";
+import { HasDataset } from "../../facades/HasDataset";
+import { cloneDeep } from "lodash";
 
 export class Figure extends GameElement implements HasHighlightAnimation, HasDataset<FigureDataset> {
     private field: Field;
@@ -15,6 +16,8 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDat
     private dataset: FigureDataset
     private animationRunners = [] as Runner[]
     private path = null as Field[] | null
+    // --------------------------------------
+    private initialPosition: Coordinates
 
     constructor(draw: Svg, info: FigureDataset, field: Field) {
         super(draw)
@@ -25,6 +28,7 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDat
 
         this.animationRunners[0] = new Runner()
         this.animationRunners[1] = new Runner()
+        this.initialPosition = { x: 0, y: 0 }
     }
 
     public setPath(path: Field[]) {
@@ -48,7 +52,11 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDat
     }
 
     public getDataset() {
-        return this.dataset
+        return cloneDeep(this.dataset)
+    }
+
+    public setDataset(dataset: FigureDataset) {
+        this.dataset = cloneDeep(dataset)
     }
 
     public render() {

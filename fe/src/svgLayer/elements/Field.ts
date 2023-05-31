@@ -3,9 +3,10 @@ import { Runner, Svg } from '@svgdotjs/svg.js'
 import Consts from "../../utils/svgBoardConstants";
 import { centers, homeCenters, startCenters } from '../../utils/fieldCenters'
 import { HasHighlightAnimation } from './base/HasHighlightAnimation';
-import { HasDataset } from "../../types/data/HasDataset";
-import { Coordinates } from '../../types/common/Coordinates';
+import { Coordinates } from '../../types/svgLayer/Coordinates';
 import { FieldDataset } from '../../types/data/FieldDataset';
+import { HasDataset } from '../../facades/HasDataset';
+import { cloneDeep } from 'lodash';
 
 export class Field extends GameElement implements HasHighlightAnimation, HasDataset<FieldDataset> {
     private color: { front: string, back: string }
@@ -58,6 +59,9 @@ export class Field extends GameElement implements HasHighlightAnimation, HasData
                 }
             })
         }
+
+        console.log('aaa');
+        
     }
 
     clear() {
@@ -112,7 +116,11 @@ export class Field extends GameElement implements HasHighlightAnimation, HasData
         })
     } */
     public getDataset() {
-        return this.dataset
+        return cloneDeep(this.dataset)
+    }
+
+    public setDataset(dataset: FieldDataset) {
+        this.dataset = cloneDeep(dataset)
     }
 
     public getCoordinates(): Coordinates {

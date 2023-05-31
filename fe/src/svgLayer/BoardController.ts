@@ -13,15 +13,16 @@ import { NextPlayerButton } from "./elements/NextPlayerButton";
 import { Loading } from "./elements/Loading";
 import { GameProgress } from "../facades/GameProgress";
 import { objectCompare } from "../utils/common";
-import { SvgBoardStates } from "../types/board/SvgBoardStates";
-import { SvgElements } from "../types/board/SvgElements";
-import { GameElementsDict } from "../types/board/GameElementsDict";
+import { SvgBoardStates } from "../types/state/SvgBoardStates";
+import { SvgElements } from "../types/svgLayer/SvgElements";
+// import { GameElementsDict } from "../types/svgLayer/GameElementsDict";
 import { GameProgressDataset } from "../types/data/GameProgressDataset";
 import { PlayerColors, PlayersOrder } from "../types/common/PlayerColors";
 import { GameProgressUpdate } from "../types/data/GameProgressUpdate";
 import { FigureDataset } from "../types/data/FigureDataset";
 import { FieldDataset } from "../types/data/FieldDataset";
-import { DocumentClickData } from "../types/board/DocumentClickData";
+import { DocumentClickData } from "../types/state/DocumentClickData";
+type GameElementsDict = Record<string, any>
 
 export class BoardController {
     private readonly draw: Svg;
