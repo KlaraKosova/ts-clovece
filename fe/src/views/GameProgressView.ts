@@ -8,9 +8,11 @@ import { DocumentClickData } from "../types/board/DocumentClickData";
 import { PlayerColors, PlayersOrder } from "../types/common/PlayerColors";
 import { GameProgressDataset } from "../types/data/GameProgressDataset";
 import { GameProgressUpdate } from "../types/data/GameProgressUpdate";
+import { State } from "../GameProgressControls/State";
 
 export class GameProgressView extends View {
-    private boardController: BoardController
+    // private boardController: BoardController
+    private state: State
 
     public render(): void {
         const wrapper = document.createElement("div")
@@ -25,22 +27,25 @@ export class GameProgressView extends View {
         document.body.style.backgroundColor = Consts.COLORS[color].FIGURE_HIGHLIGHT
 
         const draw = SVG().addTo("#svgContainer").size(Consts.BOARD.SIZE * Consts.K, Consts.BOARD.SIZE * Consts.K)
-        this.boardController = new BoardController(draw)
-        this.boardController.render()
+        this.state = new State(draw, App.getUserInfo())
+        this.state.renderInitial()
+        // this.boardController = new BoardController(draw)
+        // this.boardController.render()
     }
 
     private onGameProgressResponse(game: GameProgressDataset) {
         console.log('onGameProgressResponse', game)
-        this.boardController.renderLoadedProgress(game)
+        // this.boardController.renderLoadedProgress(game)
+        this.state.handleGameProgressResponse(game)
         this.setHeaderBarColor(game)
     }
 
     private async onGameProgressUpdate(data: { progress: GameProgressDataset, updates: GameProgressUpdate[] }) {
-        console.log('onGameProgressUpdate', data)
+        /* console.log('onGameProgressUpdate', data)
         this.setHeaderBarColor(data.progress)
         await this.boardController.animateUpdates(data.updates)
         this.boardController.setProgress(data.progress)
-        this.boardController.displayDice()
+        this.boardController.displayDice() */
     }
 
     private async onDocumentClick(event: PointerEvent) {
@@ -83,7 +88,9 @@ export class GameProgressView extends View {
                 }
             }
         }
-        await this.boardController.handleClick(result)
+        // TODO
+        // await this.boardController.handleClick(result)
+        this.state.handleDocumentClick(result)
     }
 
     protected registerSocketListeners(): void {
