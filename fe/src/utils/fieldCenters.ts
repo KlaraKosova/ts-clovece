@@ -1,4 +1,4 @@
-import { Coordinates } from '../types/common/Coordinates'
+import { Coordinates } from '../types/svgLayer/Coordinates'
 import { PlayerColors } from '../types/common/PlayerColors'
 import Consts from './svgBoardConstants'
 

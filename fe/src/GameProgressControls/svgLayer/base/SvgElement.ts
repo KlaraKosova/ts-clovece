@@ -3,7 +3,7 @@ import Consts from "../../../utils/svgBoardConstants";
 import { camelToKebabCase, delay } from "../../../utils/common";
 import { centers, homeCenters } from "../../../utils/fieldCenters";
 import * as path from "path";
-import { Coordinates } from '../../../types/common/Coordinates';
+import { Coordinates } from '../../../types/svgLayer/Coordinates';
 
 export class SvgElement {
     private draw: Svg;

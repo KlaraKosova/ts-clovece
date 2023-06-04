@@ -1,4 +1,4 @@
-import { Coordinates } from "../types/common/Coordinates";
+import { Coordinates } from "../types/svgLayer/Coordinates";
 
 export async function delay(ms: number): Promise<void> {
     return new Promise((resolve) => {
@@ -6,7 +6,13 @@ export async function delay(ms: number): Promise<void> {
     })
 }
 
-export function objectCompare(a: Record<string, any>, b: Record<string, any>) {
+// TODO refactor using generics
+// export function objectCompare<Type extends Record<string, any>>(a: Type, b: Type)
+export function objectCompare(a: Record<string, any> | null, b: Record<string, any> | null) {
+    if (!a || !b) {
+        return a === b
+    }
+
     const aKeys = Object.keys(a)
     for (let i = 0; i < aKeys.length; i++) {
         const key = aKeys[i];

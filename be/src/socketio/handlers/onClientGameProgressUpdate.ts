@@ -22,8 +22,9 @@ export default async function (io: ServerIO, socket: SocketIO, updates: GameProg
     }
 
     console.log(socket.data)
+    const lastDiceThrow = game.lastDiceSequence[game.lastDiceSequence.length - 1]
     const currentPlayerIndex = PlayersOrder.indexOf(socket.data.color!)
-    const nextPlayerColor = PlayersOrder[(currentPlayerIndex + 1) % 4]
+    const nextPlayerColor = lastDiceThrow === 6? socket.data.color! : PlayersOrder[(currentPlayerIndex + 1) % 4]
     const nextPlayer = game.playerStatuses[nextPlayerColor]
     const statuses = game.playerStatuses
 

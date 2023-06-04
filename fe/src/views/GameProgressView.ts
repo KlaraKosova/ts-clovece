@@ -1,14 +1,13 @@
 import { SVG } from "@svgdotjs/svg.js";
-import { BoardController } from "../svgElements/BoardController";
 import Consts from "../utils/svgBoardConstants";
 import { SocketIOClientInstance } from "../socketio/SocketClient";
 import { View } from "./View";
 import App from "../App";
-import { DocumentClickData } from "../types/board/DocumentClickData";
+import { DocumentClickData } from "../types/state/DocumentClickData";
 import { PlayerColors, PlayersOrder } from "../types/common/PlayerColors";
 import { GameProgressDataset } from "../types/data/GameProgressDataset";
 import { GameProgressUpdate } from "../types/data/GameProgressUpdate";
-import { State } from "../GameProgressControls/State";
+import { State } from "../gameProgressControls/State";
 
 export class GameProgressView extends View {
     // private boardController: BoardController
@@ -36,14 +35,15 @@ export class GameProgressView extends View {
     private onGameProgressResponse(game: GameProgressDataset) {
         console.log('onGameProgressResponse', game)
         // this.boardController.renderLoadedProgress(game)
-        this.state.handleGameProgressResponse(game)
+        // this.state.handleGameProgressResponse(game)
         this.setHeaderBarColor(game)
     }
 
     private async onGameProgressUpdate(data: { progress: GameProgressDataset, updates: GameProgressUpdate[] }) {
-        /* console.log('onGameProgressUpdate', data)
+        console.log('onGameProgressUpdate', data)
         this.setHeaderBarColor(data.progress)
-        await this.boardController.animateUpdates(data.updates)
+        //this.state.handleGameProgressUpdate(data)
+        /* await this.boardController.animateUpdates(data.updates)
         this.boardController.setProgress(data.progress)
         this.boardController.displayDice() */
     }
@@ -90,7 +90,7 @@ export class GameProgressView extends View {
         }
         // TODO
         // await this.boardController.handleClick(result)
-        this.state.handleDocumentClick(result)
+       // this.state.handleDocumentClick(result)
     }
 
     protected registerSocketListeners(): void {

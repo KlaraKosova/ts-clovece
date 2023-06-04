@@ -5,6 +5,12 @@ module.exports = {
   entry: './src/index.ts',
   mode: 'development',
   devtool: 'inline-source-map',
+  resolve: {
+    extensions: [".js", ".ts", ".jsx", ".tsx"],
+    alias: {
+      "@": path.resolve(__dirname, "src/"),
+    },
+  },
   module: {
     rules: [
       {
@@ -17,9 +23,6 @@ module.exports = {
   plugins: [
     new Dotenv()
   ],
-  resolve: {
-    extensions: [ '.tsx', '.ts', '.js' ],
-  },
   output: {
     filename: 'index.js',
     path: path.resolve(__dirname, 'dist'),
