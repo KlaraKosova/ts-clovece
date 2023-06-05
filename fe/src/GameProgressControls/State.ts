@@ -4,6 +4,7 @@ import {SvgBoardStates} from "@/types/state/SvgBoardStates";
 import {LogicLayer} from "@/gameProgressControls/LogicLayer";
 import { GameProgressDataset } from "@/types/data/GameProgressDataset";
 import {UserInfo} from "@/types/common/UserInfo";
+import {DocumentClickData} from "@/types/state/DocumentClickData";
 
 export class State {
     private boardState: SvgBoardStates;
@@ -19,13 +20,57 @@ export class State {
         this.user = user
     }
 
-    public renderInitial() {
-        this.svg.renderInitial()
+    private currentPlayerTurn() {
+        return this.logic.getCurrentPlayerId() === this.user.userId
     }
 
-    public initLoaded(dataset: GameProgressDataset) {
-        this.gameLogicController.setDataset(dataset)
+    public renderInitial() {
+        this.svg.initialState()
+    }
 
+    public handleGameProgressResponse(game: GameProgressDataset) {
+        this.logic.setDataset(game)
+        this.svg.loadedProgressState(game)
 
+        if (this.currentPlayerTurn()) {
+            this.svg.diceState()
+            this.boardState = SvgBoardStates.DICE
+        } else {
+            this.svg.waitingState()
+            this.boardState = SvgBoardStates.WAITING
+        }
+    }
+
+    public async handleDocumentClick(data: DocumentClickData) {
+        switch(this.boardState) {
+            case SvgBoardStates.DICE:
+                await this.handleDocumentClick_diceState(data)
+                break
+            case SvgBoardStates.DICE_PLAY_BUTTON:
+                await this.handleDocumentClick_dicePlayButtonState(data)
+                break
+        }
+    }
+
+    private async handleDocumentClick_diceState(data: DocumentClickData) {
+        if (!data.dice) {
+            return
+        }
+
+        this.boardState = SvgBoardStates.DICE_ANIMATION
+        await this.svg.diceAnimationState(this.logic.getDiceSequence())
+        this.boardState = SvgBoardStates.DICE_PLAY_BUTTON
+    }
+
+    private async handleDocumentClick_dicePlayButtonState(data: DocumentClickData) {
+        if (!data.playButton) {
+            return
+        }
+
+        this.boardState = SvgBoardStates.HIGHLIGHT_ANIMATION;
+        /* this.gameElementsDict.DICE.clear();
+        this.gameElementsDict.DICE_PLAY_BUTTON.clear();
+        this.gameElementsDict.OVERLAY.clear();
+        this.showMoveOptions(); */
     }
 }

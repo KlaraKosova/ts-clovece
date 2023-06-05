@@ -35,7 +35,7 @@ export class GameProgressView extends View {
     private onGameProgressResponse(game: GameProgressDataset) {
         console.log('onGameProgressResponse', game)
         // this.boardController.renderLoadedProgress(game)
-        // this.state.handleGameProgressResponse(game)
+        this.state.handleGameProgressResponse(game)
         this.setHeaderBarColor(game)
     }
 
@@ -90,7 +90,7 @@ export class GameProgressView extends View {
         }
         // TODO
         // await this.boardController.handleClick(result)
-       // this.state.handleDocumentClick(result)
+       this.state.handleDocumentClick(result)
     }
 
     protected registerSocketListeners(): void {

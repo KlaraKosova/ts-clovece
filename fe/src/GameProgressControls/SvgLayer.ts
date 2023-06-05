@@ -11,6 +11,8 @@ import { NextPlayerButton } from "./svgLayer/NextPlayerButton";
 import { Loading } from "./svgLayer/Loading";
 import { Field } from "./svgLayer/Field";
 import { Figure } from "./svgLayer/Figure";
+import {GameProgressDataset} from "@/types/data/GameProgressDataset";
+import {FieldDataset} from "@/types/data/FieldDataset";
 
 export class SvgLayer {
     private draw: Svg
@@ -90,7 +92,18 @@ export class SvgLayer {
         }
     }
 
-    public renderInitial() {
+    public loadedProgressState(game: GameProgressDataset) {
+        PlayersOrder.forEach((color: PlayerColors) => {
+            for (let i = 0; i < 4; i++) {
+                const progressPosition = game.playerStatuses[color].figures[i];
+                const field = this.getFieldByFieldDataset(progressPosition)
+                this.gameElementsDict[SvgElements.FIGURES][color][i].setField(field);
+                this.gameElementsDict[SvgElements.FIGURES][color][i].render();
+            }
+        })
+    }
+
+    public initialState() {
         this.gameElementsDict.STATIC_BACKGROUND.render()
 
         for (let i = 0; i < 40; i++) {
@@ -109,5 +122,35 @@ export class SvgLayer {
         this.gameElementsDict.OVERLAY.render()
         this.gameElementsDict.LOADING.render()
         this.gameElementsDict.LOADING.runAnimation()
+    }
+
+    public diceState() {
+        this.gameElementsDict.LOADING.clear()
+
+        this.gameElementsDict.OVERLAY.render()
+        this.gameElementsDict.DICE.render()
+    }
+
+    public waitingState() {
+        this.gameElementsDict.OVERLAY.clear()
+        this.gameElementsDict.LOADING.clear()
+    }
+
+    public async diceAnimationState(sequence: number[]) {
+        await this.gameElementsDict.DICE.animateDotsSequence(sequence)
+        this.gameElementsDict.DICE_PLAY_BUTTON.render()
+
+        this.gameElementsDict.DICE.animateMoveUp()
+        this.gameElementsDict.DICE_PLAY_BUTTON.animateMoveDown()
+    }
+
+    private getFieldByFieldDataset(field: FieldDataset): Field {
+        if (field.isHome) {
+            return this.gameElementsDict.HOME_FIELDS[field.color][field.index]
+        }
+        if (field.isStart) {
+            return this.gameElementsDict.START_FIELDS[field.color][field.index]
+        }
+        return this.gameElementsDict.MAIN_FIELDS[field.index]
     }
 }
