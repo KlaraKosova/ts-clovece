@@ -3,6 +3,7 @@ import Consts from "../../utils/svgBoardConstants";
 
 export class Overlay extends GameElement {
     public render() {
+        this.clear()
         this.svg.createChild({
             type: "rect",
             center: { x: Consts.BOARD.SIZE / 2, y: Consts.BOARD.SIZE / 2 },

@@ -16,7 +16,7 @@ export class State {
         this.boardState = SvgBoardStates.LOADING
 
         this.svg = new SvgLayer(draw)
-        this.logic = new LogicLayer()
+        this.logic = new LogicLayer(user)
         this.user = user
     }
 
@@ -67,7 +67,14 @@ export class State {
             return
         }
 
-        this.boardState = SvgBoardStates.HIGHLIGHT_ANIMATION;
+        const available = this.logic.getAvailable()
+        if (available.fields.length) {
+            this.boardState = SvgBoardStates.HIGHLIGHT_ANIMATION
+            console.log(available)
+        } else {
+            this.boardState = SvgBoardStates.NO_MOVES_MODAL
+            this.svg.noMovesModalState()
+        }
         /* this.gameElementsDict.DICE.clear();
         this.gameElementsDict.DICE_PLAY_BUTTON.clear();
         this.gameElementsDict.OVERLAY.clear();

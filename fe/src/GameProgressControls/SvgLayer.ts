@@ -144,6 +144,18 @@ export class SvgLayer {
         this.gameElementsDict.DICE_PLAY_BUTTON.animateMoveDown()
     }
 
+    public noMovesModalState() {
+        this.gameElementsDict.DICE.clear()
+        this.gameElementsDict.DICE_PLAY_BUTTON.clear()
+
+        this.gameElementsDict.OVERLAY.render()
+        this.gameElementsDict.NO_MOVES_MODAL.render()
+        this.gameElementsDict.NEXT_PLAYER_BUTTON.render()
+
+        this.gameElementsDict.NO_MOVES_MODAL.moveDown()
+        this.gameElementsDict.NEXT_PLAYER_BUTTON.moveDown()
+    }
+
     private getFieldByFieldDataset(field: FieldDataset): Field {
         if (field.isHome) {
             return this.gameElementsDict.HOME_FIELDS[field.color][field.index]
