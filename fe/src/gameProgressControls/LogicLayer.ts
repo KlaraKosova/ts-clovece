@@ -84,23 +84,17 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
     }
     public setDataset(dataset: GameProgressDataset) {
         this.dataset = cloneDeep(dataset)
-    }
-
-    public getDataset(): GameProgressDataset {
-        return cloneDeep(this.dataset)
-    }
-
-    public setLoadedProgress(dataset: GameProgressDataset) {
-        this.setDataset(dataset)
 
         PlayersOrder.forEach((playerColor, index) => {
             for (let i = 0; i < 4; i++) {
                 this.figures[playerColor][i].setField(this.dataset.playerStatuses[playerColor].figures[i])
-                if (playerColor === PlayerColors.RED)
-                console.log(this.figures[playerColor][i].getField());
                 
             }
         });
+    }
+
+    public getDataset(): GameProgressDataset {
+        return cloneDeep(this.dataset)
     }
 
     public getCurrentPlayerId() {
@@ -118,7 +112,8 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
     public getAvailable() {
         const result = {
             fields: [] as FieldDataset[],
-            figures: [] as FigureDataset[]
+            figures: [] as FigureDataset[],
+            homeMovesOnly: true
         }
 
         const diceResult = this.getDiceResult()
@@ -135,6 +130,10 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
                 const figure = this.getFigureByFieldDataset(nextField)
                 if (figure) {
                     result.figures.push(figure.getDataset())
+                }
+
+                if (!nextField.isHome || !currentFigure.getField().isHome ) {
+                    result.homeMovesOnly = false
                 }
             }
         }
@@ -172,12 +171,16 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
                 figure: srcFigure.getDataset()
             })
 
+
             result.push({
                 type: "MOVE",
                 prevField: destFigure.getField(),
                 nextField: startField.getDataset(),
                 figure: destFigure.getDataset()
             })
+
+            srcFigure.setField(destFieldDataset)
+            destFigure.setField(startField.getDataset())
         } else {
             result.push({
                 type: "MOVE",
@@ -185,6 +188,8 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
                 nextField: destFieldDataset,
                 figure: srcFigure.getDataset()
             })
+
+            srcFigure.setField(destFieldDataset)
         }
 
         return result

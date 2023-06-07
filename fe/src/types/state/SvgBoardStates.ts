@@ -7,6 +7,7 @@ export const SvgBoardStates = {
     HIGHLIGHT_ANIMATION: 'HIGHLIGHT_ANIMATION', // highlight moznych tahu
     CURRENT_PLAYER_FIGURE_MOVE_ANIMATION: 'CURRENT_PLAYER_FIGURE_MOVE_ANIMATION', // animace po kliknuti na pole/figurku
     NEXT_PLAYER_FIGURE_MOVE_ANIMATION: 'NEXT_PLAYER_FIGURE_MOVE_ANIMATION', // animace tahu ostatnich hracu
+    HOME_MOVES_ONLY_MODAL: 'HOME_MOVES_ONLY_MODAL', // zobrazeni modalu o dostupnych tazich jen v "domecku"
     WAITING: 'WAITING' // prechodny stav
 } as const
 

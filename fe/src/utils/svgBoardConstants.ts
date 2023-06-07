@@ -72,6 +72,11 @@ export default {
             WIDTH: 110,
             HEIGHT: 70,
             INITIAL_OFFSET: 50
+        },
+        HOME_MOVES_ONLY_MODAL: {
+            WIDTH: 110,
+            HEIGHT: 70,
+            INITIAL_OFFSET: 50
         }
     },
     ELEMENTS: {

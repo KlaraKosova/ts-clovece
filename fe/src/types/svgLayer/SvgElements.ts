@@ -9,7 +9,8 @@ export const SvgElements = {
     DICE_PLAY_BUTTON: 'DICE_PLAY_BUTTON',
     NO_MOVES_MODAL: 'NO_MOVES_MODAL',
     NEXT_PLAYER_BUTTON: 'NEXT_PLAYER_BUTTON',
-    LOADING: 'LOADING'
+    LOADING: 'LOADING',
+    HOME_MOVES_ONLY_MODAL: 'HOME_MOVES_ONLY_MODAL'
 } as const
 
 export type SvgElements = typeof SvgElements[keyof typeof SvgElements]

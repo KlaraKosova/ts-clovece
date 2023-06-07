@@ -23,27 +23,27 @@
 // import { FieldDataset } from "../types/data/FieldDataset";
 // import { DocumentClickData } from "../types/state/DocumentClickData";
 // type GameElementsDict = Record<string, any>
-//
+
 // export class BoardController {
 //     private readonly draw: Svg;
 //     private boardState: SvgBoardStates;
 //     private gameProgress: GameProgress;
 //     private gameElementsDict: GameElementsDict
-//
+
 //     constructor(draw: Svg) {
 //         this.draw = draw;
 //         this.boardState = SvgBoardStates.LOADING;
 //         this.init();
 //         this.gameProgress = new GameProgress()
 //     }
-//
+
 //     public setProgress(progress: GameProgressDataset) {
 //         this.gameProgress.setDataset(progress)
 //     }
-//
+
 //     public setSvgProgress(progress: GameProgressDataset) {
 //         this.gameProgress.setDataset(progress)
-//
+
 //         PlayersOrder.forEach((color: PlayerColors) => {
 //             for (let i = 0; i < 4; i++) {
 //                 const progressPosition = progress.playerStatuses[color].figures[i];
@@ -53,14 +53,14 @@
 //             }
 //         })
 //     }
-//
+
 //     public renderLoadedProgress(progress: GameProgressDataset) {
 //         this.gameElementsDict.OVERLAY.clear()
 //         this.gameElementsDict.LOADING.clear()
 //         this.setSvgProgress(progress)
 //         this.displayDice()
 //     }
-//
+
 //     public displayDice() {
 //         if (this.gameProgress.getCurrentPlayerId() === App.getUserInfo().userId) {
 //             this.boardState = SvgBoardStates.DICE;
@@ -70,14 +70,14 @@
 //             this.boardState = SvgBoardStates.WAITING
 //         }
 //     }
-//
+
 //     private init() {
 //         const background = new StaticBackground(this.draw)
 //         const startFields = {} as Record<PlayerColors, Field[]>
 //         const homeFields = {} as Record<PlayerColors, Field[]>
 //         const figures = {} as Record<PlayerColors, Figure[]>
 //         const mainFields = [] as Field[]
-//
+
 //         for (let i = 0; i < 40; i++) {
 //             mainFields[i] = new Field(this.draw, {
 //                 index: i,
@@ -87,7 +87,7 @@
 //                 isStart: false,
 //             });
 //         }
-//
+
 //         PlayersOrder.forEach((playerColor, index) => {
 //             const path = [] as Field[]
 //             const pathStart = index * 10;
@@ -95,11 +95,11 @@
 //                 const field = /*this.*/mainFields[(pathStart + i) % 40];
 //                 path.push(field);
 //             }
-//
+
 //             startFields[playerColor] = [];
 //             homeFields[playerColor] = [];
 //             figures[playerColor] = [];
-//
+
 //             for (let i = 0; i < 4; i++) {
 //                 const homeField = new Field(this.draw, {
 //                     index: i,
@@ -113,19 +113,19 @@
 //                     isHome: false,
 //                     isStart: true,
 //                 });
-//
+
 //                 homeFields[playerColor].push(homeField);
 //                 startFields[playerColor].push(startField);
 //                 path.push(homeField)
 //             }
-//
+
 //             for (let i = 0; i < 4; i++) {
 //                 const figure = new Figure(this.draw, { color: playerColor, index: i }, startFields[playerColor][i]);
 //                 figure.setPath(path)
 //                 figures[playerColor].push(figure);
 //             }
 //         });
-//
+
 //         this.gameElementsDict = {
 //             [SvgElements.BACKGROUND]: background,
 //             [SvgElements.MAIN_FIELDS]: mainFields,
@@ -140,7 +140,7 @@
 //             [SvgElements.LOADING]: new Loading(this.draw)
 //         }
 //     }
-//
+
 //     public render() {
 //         this.boardState = SvgBoardStates.LOADING
 //         this.renderStatic()
@@ -148,7 +148,7 @@
 //         this.gameElementsDict.LOADING.render()
 //         this.gameElementsDict.LOADING.runAnimation()
 //     }
-//
+
 //     private renderStatic() {
 //         this.gameElementsDict.BACKGROUND.render();
 //         for (let i = 0; i < 40; i++) {
@@ -162,7 +162,7 @@
 //             }
 //         });
 //     }
-//
+
 //     public async handleClick(data: DocumentClickData) {
 //         console.log(data)
 //         if (data.dice && this.boardState === SvgBoardStates.DICE) {
@@ -182,13 +182,13 @@
 //             this.showMoveOptions();
 //             return;
 //         }
-//
+
 //         if (this.boardState === SvgBoardStates.HIGHLIGHT_ANIMATION && (data.field || data.figure)) {
 //             this.boardState = SvgBoardStates.CURRENT_PLAYER_FIGURE_MOVE_ANIMATION
 //             let field
 //             let srcFigure = null as Figure | null
 //             let destFigure = null as Figure | null
-//
+
 //             if (data.field) {
 //                 field = this.getFieldByFieldDataset(data.field)
 //                 srcFigure = this.getFigureByNextField(field)
@@ -202,10 +202,10 @@
 //             if (!srcFigure) {
 //                 return
 //             }
-//
+
 //             this.stopAllHighlightAnimations()
 //             const updates: GameProgressUpdate[] = []
-//
+
 //             if (destFigure) {
 //                 const startField = this.getFreeStartField(destFigure.getDataset().color)
 //                 updates.push({
@@ -213,7 +213,7 @@
 //                     prevField: srcFigure.getField().getDataset(),
 //                     nextField: field.getDataset()
 //                 })
-//
+
 //                 updates.push({
 //                     type: "MOVE",
 //                     prevField: destFigure.getField().getDataset(),
@@ -221,12 +221,12 @@
 //                 })
 //                 console.log('updates', updates)
 //                 console.log('emit CLIENT_GAME_PROGRESS_UPDATE');
-//
+
 //                 SocketIOClientInstance.socket.emit("CLIENT_GAME_PROGRESS_UPDATE", updates)
 //                 console.log('kick', field);
 //                 await srcFigure.animateKickSequence(field)
 //                 console.log('move', startField);
-//
+
 //                 await destFigure.animateMoveSequence(startField)
 //             } else {
 //                 updates.push({
@@ -235,28 +235,28 @@
 //                     nextField: field.getDataset()
 //                 })
 //                 console.log('emit CLIENT_GAME_PROGRESS_UPDATE');
-//
+
 //                 SocketIOClientInstance.socket.emit("CLIENT_GAME_PROGRESS_UPDATE", updates)
 //                 await srcFigure.animateMoveSequence(field)
 //             }
 //             this.boardState = SvgBoardStates.WAITING
 //         }
-//
+
 //         if (this.boardState === SvgBoardStates.NO_MOVES_MODAL && data.nextPlayerButton) {
 //             this.gameElementsDict.NO_MOVES_MODAL.clear()
 //             this.gameElementsDict.NEXT_PLAYER_BUTTON.clear()
 //             this.gameElementsDict.OVERLAY.clear()
 //             this.boardState = SvgBoardStates.WAITING
 //             console.log('emit CLIENT_GAME_PROGRESS_UPDATE');
-//
+
 //             SocketIOClientInstance.socket.emit("CLIENT_GAME_PROGRESS_UPDATE", [])
 //         }
 //     }
-//
+
 //     private showMoveOptions() {
 //         const userInfo = App.getUserInfo();
 //         const move = this.gameProgress.getLastDiceSequence()[this.gameProgress.getLastDiceSequence().length - 1]
-//
+
 //         const playerFigures = this.gameElementsDict.FIGURES[userInfo.color];
 //         const availableFields = [] as Field[];
 //         for (let i = 0; i < 4; i++) {
@@ -282,7 +282,7 @@
 //             this.gameElementsDict.NEXT_PLAYER_BUTTON.moveDown()
 //         }
 //     }
-//
+
 //     public async animateUpdates(updates: GameProgressUpdate[]) {
 //         if (this.boardState === SvgBoardStates.CURRENT_PLAYER_FIGURE_MOVE_ANIMATION) {
 //             this.boardState = SvgBoardStates.WAITING
@@ -296,7 +296,7 @@
 //             // const nextFigure = this.getFigureByField(nextField)
 //             if (!prevFigureDataset) {
 //                 console.log('prev');
-//
+
 //                 throw new Error("TODO")
 //             }
 //             const prevFigure = this.getFigureByFigureDataset(prevFigureDataset)
@@ -306,11 +306,11 @@
 //                 //animationFunctions.push(bind(prevFigure.animateMoveSequence, prevFigure, nextField))
 //             } else if (update.type === 'KICK') {
 //                 await prevFigure.animateKickSequence(nextField)
-//
+
 //                 /* const nextFigureDataset = this.gameProgress.getFigureByField(update.nextField)
 //                 if (!nextFigureDataset) {
 //                     console.log('next');
-//
+
 //                     throw new Error('TODO');
 //                 }
 //                 const nextFigure = this.getFigureByFigureDataset(nextFigureDataset)
@@ -332,13 +332,13 @@
 //         } */
 //         // this.displayDice()
 //     }
-//
+
 //     private getFigureByNextField(field: Field): Figure | null {
 //         for (let i = 0; i < 4; i++) {
 //             const color = PlayersOrder[i]
 //             for (let j = 0; j < 4; j++) {
 //                 const figure = this.gameElementsDict.FIGURES[color][j]
-//
+
 //                 if (figure.getNextField() === field) {
 //                     return figure
 //                 }
@@ -346,11 +346,11 @@
 //         }
 //         return null;
 //     }
-//
+
 //     private getFigureByFigureDataset(figure: FigureDataset) {
 //         return this.gameElementsDict.FIGURES[figure.color][figure.index]
 //     }
-//
+
 //     private getFieldByFieldDataset(field: FieldDataset): Field {
 //         if (field.isHome) {
 //             return this.gameElementsDict.HOME_FIELDS[field.color][field.index]
@@ -360,12 +360,12 @@
 //         }
 //         return this.gameElementsDict.MAIN_FIELDS[field.index]
 //     }
-//
+
 //     private stopAllHighlightAnimations() {
 //         for (let i = 0; i < 40; i++) {
 //             this.gameElementsDict.MAIN_FIELDS[i].highlightAnimationStop()
 //         }
-//
+
 //         PlayersOrder.forEach(playerColor => {
 //             for (let i = 0; i < 4; i++) {
 //                 this.gameElementsDict.HOME_FIELDS[playerColor][i].highlightAnimationStop()
@@ -374,14 +374,14 @@
 //             }
 //         })
 //     }
-//
+
 //     private getFreeStartField(color: PlayerColors) {
 //         const startFields = [...this.gameElementsDict.START_FIELDS[color]] as (Field | null)[]
-//
+
 //         for (let i = 0; i < 4; i++) {
 //             const figure = this.gameElementsDict.FIGURES[color][i]
 //             console.log('+++++++++++++++++++++++', i);
-//
+
 //             for (let j = 0; j < 4; j++) {
 //                 if (!startFields[j]) {
 //                     continue
@@ -390,22 +390,22 @@
 //                 const startFieldDataset = startFields[j].getDataset()
 //                 console.log('------------');
 //                 console.log(figureFieldDataset);
-//
+
 //                 console.log(startFieldDataset);
 //                 console.log('/************   ', objectCompare(figureFieldDataset, startFieldDataset), '   ************/');
-//
-//
+
+
 //                 if (objectCompare(figureFieldDataset, startFieldDataset)) {
 //                     startFields[j] = null
 //                 }
 //             }
 //             console.log(startFields);
 //         }
-//
+
 //         return startFields[0] || startFields[1] || startFields[2] || startFields[3]
 //     }
 // }
-//
+
 // // @ts-ignore
 // function bind(fn, boundThis, ...args) {
 //     const bound = fn.bind(boundThis, ...args)

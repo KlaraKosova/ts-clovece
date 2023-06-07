@@ -122,6 +122,7 @@ export class GameProgressView extends View {
             } else {
                 headerBar.textContent = "Jiny hrac"
             }
+            
         })
     }
 }

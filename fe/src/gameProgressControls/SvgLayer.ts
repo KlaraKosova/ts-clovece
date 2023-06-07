@@ -15,6 +15,8 @@ import {GameProgressDataset} from "@/types/data/GameProgressDataset";
 import {FieldDataset} from "@/types/data/FieldDataset";
 import { FigureDataset } from "@/types/data/FigureDataset";
 import { GameProgressUpdate } from "@/types/data/GameProgressUpdate";
+import { delay } from "@/utils/common";
+import { HomeMovesOnlyModal } from "./svgLayer/HomeMovesOnlyModal";
 
 export class SvgLayer {
     private draw: Svg
@@ -89,8 +91,9 @@ export class SvgLayer {
             [SvgElements.DICE]: new Dice(this.draw),
             [SvgElements.DICE_PLAY_BUTTON]: new DicePlayButton(this.draw),
             [SvgElements.NO_MOVES_MODAL]: new NoMovesModal(this.draw),
+            [SvgElements.HOME_MOVES_ONLY_MODAL]: new HomeMovesOnlyModal(this.draw),
             [SvgElements.NEXT_PLAYER_BUTTON]: new NextPlayerButton(this.draw),
-            [SvgElements.LOADING]: new Loading(this.draw)
+            [SvgElements.LOADING]: new Loading(this.draw),
         }
     }
 
@@ -176,6 +179,18 @@ export class SvgLayer {
             const figure = this.getFigureByFigureDataset(figureDataset)
             figure.highlightAnimationStart()
         })
+    }
+
+    public async homeMovesOnlyModalState() {
+        this.gameElementsDict.DICE.clear()
+        this.gameElementsDict.DICE_PLAY_BUTTON.clear()
+
+        this.gameElementsDict.OVERLAY.render()
+        this.gameElementsDict.HOME_MOVES_ONLY_MODAL.render()
+        this.gameElementsDict.NEXT_PLAYER_BUTTON.render()
+
+        this.gameElementsDict.HOME_MOVES_ONLY_MODAL.moveDown()
+        this.gameElementsDict.NEXT_PLAYER_BUTTON.moveDown()
     }
 
     public async currentPlayerFigureMoveAnimationState(updates: GameProgressUpdate[]) {

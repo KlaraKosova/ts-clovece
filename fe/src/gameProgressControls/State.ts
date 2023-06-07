@@ -8,17 +8,18 @@ import {DocumentClickData} from "@/types/state/DocumentClickData";
 import { objectCompare } from "@/utils/common";
 import { SocketIOClientInstance } from "@/socketio/SocketClient";
 import { GameProgressUpdate } from "@/types/data/GameProgressUpdate";
+import { PromiseInspectorInstance } from "@/utils/PromiseInspector";
 
 export class State {
     private _boardState: SvgBoardStates
     private get boardState() { return this._boardState}
     private set boardState (value) {
         // debug
-        try {
+        /* try {
             throw new Error("boardState assignment")
         } catch (e) {
             console.log(e);   
-        }
+        } */
 
         this._boardState = value
     }
@@ -43,7 +44,7 @@ export class State {
     }
 
     public handleGameProgressResponse(game: GameProgressDataset) {
-        this.logic.setLoadedProgress(game)
+        this.logic.setDataset(game)
         this.svg.loadedProgressState(game)
 
         if (this.currentPlayerTurn()) {            
@@ -59,24 +60,36 @@ export class State {
         console.log(data);
         console.log(this.boardState);
         
+        let handlePromise: Promise<void> | undefined
         
         switch(this.boardState) {
             case SvgBoardStates.DICE:
-                await this.handleDocumentClick_diceState(data)
+                handlePromise = this.handleDocumentClick_diceState(data)
                 break
             case SvgBoardStates.DICE_PLAY_BUTTON:
-                await this.handleDocumentClick_dicePlayButtonState(data)
+                handlePromise = this.handleDocumentClick_dicePlayButtonState(data)
                 break
             case SvgBoardStates.HIGHLIGHT_ANIMATION:
-                await this.handleDocumentClick_highlightAnimationState(data)
+                handlePromise = this.handleDocumentClick_highlightAnimationState(data)
                 break
             case SvgBoardStates.NO_MOVES_MODAL:
-                await this.handleDocumentClick_noMovesModalState(data)
+                handlePromise = this.handleDocumentClick_noMovesModalState(data)
                 break
+        }
+
+        if (handlePromise) {
+            console.log('qwe');
+            
+            PromiseInspectorInstance.add(handlePromise)
+            await handlePromise
+            console.log('qwe?');
+            
         }
     }
 
     public async handleGameProgressUpdate(data: { progress: GameProgressDataset, updates: GameProgressUpdate[] }) {
+        await PromiseInspectorInstance.waitForAll()
+
         this.boardState = SvgBoardStates.NEXT_PLAYER_FIGURE_MOVE_ANIMATION
 
         if (this.logic.getCurrentPlayerId() !== this.user.userId) {
@@ -123,9 +136,14 @@ export class State {
 
         const available = this.logic.getAvailable()
         if (available.fields.length) {
-            this.boardState = SvgBoardStates.HIGHLIGHT_ANIMATION
-            console.log(available);
-            this.svg.highlightAnimationState(available)
+            // TODO
+            /* if (available.homeMovesOnly) {            
+                this.boardState = SvgBoardStates.HOME_MOVES_ONLY_MODAL
+                this.svg.homeMovesOnlyModalState()
+            } else { */
+                this.boardState = SvgBoardStates.HIGHLIGHT_ANIMATION
+                this.svg.highlightAnimationState(available)
+            /* } */
         } else {
             this.boardState = SvgBoardStates.NO_MOVES_MODAL
             this.svg.noMovesModalState()

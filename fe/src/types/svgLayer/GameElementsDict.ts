@@ -9,6 +9,7 @@ import { DicePlayButton } from "@/gameProgressControls/svgLayer/DicePlayButton";
 import { NoMovesModal } from "@/gameProgressControls/svgLayer/NoMovesModal";
 import { NextPlayerButton } from "@/gameProgressControls/svgLayer/NextPlayerButton";
 import { Loading } from "@/gameProgressControls/svgLayer/Loading";
+import { HomeMovesOnlyModal } from "@/gameProgressControls/svgLayer/HomeMovesOnlyModal";
 
 export interface GameElementsDict {
     STATIC_BACKGROUND: StaticBackground,
@@ -21,5 +22,6 @@ export interface GameElementsDict {
     DICE_PLAY_BUTTON: DicePlayButton,
     NO_MOVES_MODAL: NoMovesModal,
     NEXT_PLAYER_BUTTON: NextPlayerButton,
-    LOADING: Loading
+    LOADING: Loading,
+    HOME_MOVES_ONLY_MODAL: HomeMovesOnlyModal
 }
