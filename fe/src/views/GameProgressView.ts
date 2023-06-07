@@ -8,18 +8,24 @@ import { PlayerColors, PlayersOrder } from "../types/common/PlayerColors";
 import { GameProgressDataset } from "../types/data/GameProgressDataset";
 import { GameProgressUpdate } from "../types/data/GameProgressUpdate";
 import { State } from "../gameProgressControls/State";
+import { ViewModalState } from "@/types/state/ViewModalState";
+import { ViewModalTypes } from "@/types/state/ViewModalTypes";
 
 export class GameProgressView extends View {
     private state: State
+    private displayModals = true
+    private modals: ViewModalState[] = []
 
     public render(): void {
         const wrapper = document.createElement("div")
         wrapper.classList.add("game-progress-wrapper")
         const headerBar = document.createElement("div")
+        const modalsContainer = document.createElement("div")
+        modalsContainer.id = "modalsContainer"
         const container = document.createElement("div")
         container.id = "svgContainer";
 
-        wrapper.replaceChildren(headerBar, container)
+        wrapper.replaceChildren(headerBar, container, modalsContainer)
         this.rootElem.replaceChildren(wrapper)
         const color = App.getUserInfo().color
         document.body.style.backgroundColor = Consts.COLORS[color].FIGURE_HIGHLIGHT
@@ -42,6 +48,8 @@ export class GameProgressView extends View {
     }
 
     private async onDocumentClick(event: PointerEvent) {
+        this.showViewModal({type: ViewModalTypes.NO_MOVES_MODAL, data: null})
+
         const result: DocumentClickData = {
             field: null,
             figure: null,
@@ -122,7 +130,36 @@ export class GameProgressView extends View {
             } else {
                 headerBar.textContent = "Jiny hrac"
             }
-            
+
         })
+    }
+
+    private showViewModal (state: ViewModalState) {
+        this.displayModals = true
+        this.modals.push(state)
+
+        this.renderModals()
+    }
+
+    private renderModals() {
+        const modalsContainer = document.getElementById("modalsContainer")!
+        const modalElements = [] as HTMLDivElement[]
+
+        this.modals.forEach(modal => {
+            const modalWrapper = document.createElement("div")
+            const modalContent = document.createElement("div")
+
+            if (modal.type === ViewModalTypes.NO_MOVES_MODAL) {
+                const title = document.createElement("h6")
+                title.textContent = "Zadne dalsi tahy"
+
+                modalContent.append(title)
+            }
+            modalWrapper.appendChild(modalContent)
+
+            modalElements.push(modalWrapper)
+        })
+
+        modalsContainer.replaceChildren(...modalElements)
     }
 }

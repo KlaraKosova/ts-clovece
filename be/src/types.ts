@@ -16,6 +16,11 @@ export interface FieldDataset {
     color: PlayerColor | null
 }
 
+export interface FigureDataset {
+    index: number,
+    color: PlayerColor
+}
+
 export interface PlayerStatus {
     color: PlayerColor
     userId: string
@@ -48,5 +53,6 @@ export interface UserInfo {
 export interface GameProgressUpdate {
     type: 'MOVE' | 'KICK',
     prevField: FieldDataset,
-    nextField: FieldDataset
+    nextField: FieldDataset,
+    figure: FigureDataset
 }

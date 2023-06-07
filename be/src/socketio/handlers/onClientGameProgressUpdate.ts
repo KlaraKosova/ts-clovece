@@ -34,8 +34,12 @@ export default async function (io: ServerIO, socket: SocketIO, updates: GameProg
 
 
     const reversedUpdates = [...updates].reverse()
+    for (const update of updates) {
+        const figure = update.figure
 
-    for (let i = 0; i < 4; i++) {
+        statuses[figure.color].figures[figure.index] = update.nextField
+    }
+    /* for (let i = 0; i < 4; i++) {
         const color = PlayersOrder[i]
         for (let j = 0; j < 4; j++) {
             for (const move of reversedUpdates) {
@@ -44,7 +48,7 @@ export default async function (io: ServerIO, socket: SocketIO, updates: GameProg
                 }
             }
         }
-    }
+    } */
 
     const updatedData: Partial<GameProgress> = {
         currentPlayerId: nextPlayer.userId,
