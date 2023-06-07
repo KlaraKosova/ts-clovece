@@ -8,6 +8,7 @@ import {Field} from "@/gameProgressControls/logicLayer/Field";
 import {Figure} from "@/gameProgressControls/logicLayer/Figure";
 import {UserInfo} from "@/types/common/UserInfo";
 import {objectCompare} from "@/utils/common";
+import { GameProgressUpdate } from "@/types/data/GameProgressUpdate";
 
 export class LogicLayer implements HasDataset<GameProgressDataset>{
     private dataset: GameProgressDataset
@@ -76,7 +77,7 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
             for (let i = 0; i < 4; i++) {
                 this.figures[playerColor][i] = new Figure()
                 this.figures[playerColor][i].setDataset({ color: playerColor, index: i })
-                this.figures[playerColor][i].setField(this.startFields[playerColor][i])
+                this.figures[playerColor][i].setField(this.startFields[playerColor][i].getDataset())
                 this.figures[playerColor][i].setPath(path)
             }
         });
@@ -86,7 +87,20 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
     }
 
     public getDataset(): GameProgressDataset {
-        return
+        return cloneDeep(this.dataset)
+    }
+
+    public setLoadedProgress(dataset: GameProgressDataset) {
+        this.setDataset(dataset)
+
+        PlayersOrder.forEach((playerColor, index) => {
+            for (let i = 0; i < 4; i++) {
+                this.figures[playerColor][i].setField(this.dataset.playerStatuses[playerColor].figures[i])
+                if (playerColor === PlayerColors.RED)
+                console.log(this.figures[playerColor][i].getField());
+                
+            }
+        });
     }
 
     public getCurrentPlayerId() {
@@ -118,7 +132,7 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
             if (nextField && !alreadyIncluded) {
                 result.fields.push(nextField)
 
-                const figure = this.getFigureByField(nextField)
+                const figure = this.getFigureByFieldDataset(nextField)
                 if (figure) {
                     result.figures.push(figure.getDataset())
                 }
@@ -128,17 +142,125 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
         return result
     }
 
-    private getFigureByField(field: FieldDataset): Figure | null {
-        PlayersOrder.forEach((playerColor, index) => {
+    public getUpdates(data: { field: FieldDataset | null, figure: FigureDataset | null }): GameProgressUpdate[] {
+        const result = [] as GameProgressUpdate[]
+
+        let destFieldDataset: FieldDataset
+        let srcFigure = null as Figure | null
+        let destFigure = null as Figure | null
+
+        if (data.field) {
+            destFieldDataset = data.field
+            srcFigure = this.getFigureByNextFieldDataset(data.field)
+            destFigure = this.getFigureByFieldDataset(data.field)
+        } else {
+            destFigure = this.getFigureByFigureDataset(data.figure)
+            destFieldDataset = destFigure.getField()
+            srcFigure = this.getFigureByNextFieldDataset(destFieldDataset)
+        }
+
+        if (!srcFigure) {
+            throw new Error("should not happen")
+        }
+
+        if (destFigure) {
+            const startField = this.getFreeStartField(destFigure.getDataset().color)
+            result.push({
+                type: "KICK",
+                prevField: srcFigure.getField(),
+                nextField: destFieldDataset,
+                figure: srcFigure.getDataset()
+            })
+
+            result.push({
+                type: "MOVE",
+                prevField: destFigure.getField(),
+                nextField: startField.getDataset(),
+                figure: destFigure.getDataset()
+            })
+        } else {
+            result.push({
+                type: "MOVE",
+                prevField: srcFigure.getField(),
+                nextField: destFieldDataset,
+                figure: srcFigure.getDataset()
+            })
+        }
+
+        return result
+    }
+
+    private getFigureByFieldDataset(field: FieldDataset): Figure | null {        
+        for (const playerColor of PlayersOrder) {
             for (let i = 0; i < 4; i++) {
                 const figure = this.figures[playerColor][i]
-
-                if (objectCompare(figure.getField().getDataset(), field)) {
+                
+                if (objectCompare(figure.getField(), field)) {
                     return figure
                 }
             }
-        })
+        }
 
         return null
+    }
+
+    private getFigureByNextFieldDataset(field: FieldDataset): Figure | null {
+        const diceResult = this.getDiceResult()        
+        for (const playerColor of PlayersOrder) {
+            for (let i = 0; i < 4; i++) {
+                const figure = this.figures[playerColor][i]
+                
+                if (objectCompare(figure.computeNextField(diceResult), field)) {
+                    return figure
+                }
+            }
+        }
+
+        return null
+    }
+
+    private getFieldByFieldDataset(field: FieldDataset): Field {
+        if (field.isHome) {
+            return this.homeFields[field.color][field.index]
+        }
+        if (field.isStart) {
+            return this.startFields[field.color][field.index]
+        }
+        return this.mainFields[field.index]
+    }
+
+    private getFigureByFigureDataset(figure: FigureDataset): Figure {
+        return this.figures[figure.color][figure.index]
+    }
+
+    private getFreeStartField(color: PlayerColors) {
+        // TODO refactor this
+        const startFields = [...this.startFields[color]] as (Field | null)[]
+
+        for (let i = 0; i < 4; i++) {
+            const figure = this.figures[color][i]
+            // console.log('+++++++++++++++++++++++', i);
+
+            for (let j = 0; j < 4; j++) {
+                if (!startFields[j]) {
+                    continue
+                }
+                const figureFieldDataset = figure.getField()
+                const startFieldDataset = startFields[j].getDataset()
+                // console.log('------------');
+                // console.log(figureFieldDataset);
+
+                // console.log(startFieldDataset);
+                // console.log('/************   ', objectCompare(figureFieldDataset, startFieldDataset), '   ************/');
+
+
+                if (objectCompare(figureFieldDataset, startFieldDataset)) {
+                    startFields[j] = null
+                }
+            }
+            // console.log(startFields);
+        }
+
+        return startFields[0] || startFields[1] || startFields[2] || startFields[3]
     }
 }

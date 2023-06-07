@@ -10,7 +10,6 @@ import { GameProgressUpdate } from "../types/data/GameProgressUpdate";
 import { State } from "../gameProgressControls/State";
 
 export class GameProgressView extends View {
-    // private boardController: BoardController
     private state: State
 
     public render(): void {
@@ -28,13 +27,10 @@ export class GameProgressView extends View {
         const draw = SVG().addTo("#svgContainer").size(Consts.BOARD.SIZE * Consts.K, Consts.BOARD.SIZE * Consts.K)
         this.state = new State(draw, App.getUserInfo())
         this.state.renderInitial()
-        // this.boardController = new BoardController(draw)
-        // this.boardController.render()
     }
 
     private onGameProgressResponse(game: GameProgressDataset) {
         console.log('onGameProgressResponse', game)
-        // this.boardController.renderLoadedProgress(game)
         this.state.handleGameProgressResponse(game)
         this.setHeaderBarColor(game)
     }
@@ -42,10 +38,7 @@ export class GameProgressView extends View {
     private async onGameProgressUpdate(data: { progress: GameProgressDataset, updates: GameProgressUpdate[] }) {
         console.log('onGameProgressUpdate', data)
         this.setHeaderBarColor(data.progress)
-        //this.state.handleGameProgressUpdate(data)
-        /* await this.boardController.animateUpdates(data.updates)
-        this.boardController.setProgress(data.progress)
-        this.boardController.displayDice() */
+        this.state.handleGameProgressUpdate(data)
     }
 
     private async onDocumentClick(event: PointerEvent) {
@@ -88,8 +81,6 @@ export class GameProgressView extends View {
                 }
             }
         }
-        // TODO
-        // await this.boardController.handleClick(result)
        this.state.handleDocumentClick(result)
     }
 

@@ -6,7 +6,7 @@ export abstract class GameElement {
     constructor(draw: Svg) {
         this.svg = new SvgElement(draw)
     }
-    abstract render(): void;
+    abstract render(): void
     public clear() {
         this.svg.removeChildren();
     };

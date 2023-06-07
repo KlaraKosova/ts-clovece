@@ -13,6 +13,8 @@ import { Field } from "./svgLayer/Field";
 import { Figure } from "./svgLayer/Figure";
 import {GameProgressDataset} from "@/types/data/GameProgressDataset";
 import {FieldDataset} from "@/types/data/FieldDataset";
+import { FigureDataset } from "@/types/data/FigureDataset";
+import { GameProgressUpdate } from "@/types/data/GameProgressUpdate";
 
 export class SvgLayer {
     private draw: Svg
@@ -134,6 +136,10 @@ export class SvgLayer {
     public waitingState() {
         this.gameElementsDict.OVERLAY.clear()
         this.gameElementsDict.LOADING.clear()
+        this.gameElementsDict.DICE.clear()
+        this.gameElementsDict.DICE_PLAY_BUTTON.clear()
+        this.gameElementsDict.NO_MOVES_MODAL.clear()
+        this.gameElementsDict.NEXT_PLAYER_BUTTON.clear()
     }
 
     public async diceAnimationState(sequence: number[]) {
@@ -156,6 +162,56 @@ export class SvgLayer {
         this.gameElementsDict.NEXT_PLAYER_BUTTON.moveDown()
     }
 
+    public highlightAnimationState(available: {fields: FieldDataset[], figures: FigureDataset[]}) {
+        this.gameElementsDict.OVERLAY.clear()
+        this.gameElementsDict.DICE.clear()
+        this.gameElementsDict.DICE_PLAY_BUTTON.clear()
+
+
+        available.fields.forEach(fieldDataset => {
+            const field = this.getFieldByFieldDataset(fieldDataset)
+            field.highlightAnimationStart()
+        })
+        available.figures.forEach(figureDataset => {
+            const figure = this.getFigureByFigureDataset(figureDataset)
+            figure.highlightAnimationStart()
+        })
+    }
+
+    public async currentPlayerFigureMoveAnimationState(updates: GameProgressUpdate[]) {
+        this.stopAllHighlightAnimations()
+
+        await this.animateUpdates(updates)
+    }
+
+    public async animateUpdates(updates: GameProgressUpdate[]) {
+        for (const update of updates) {
+            const figure = this.getFigureByFigureDataset(update.figure)
+            const nextField = this.getFieldByFieldDataset(update.nextField)
+            const prevField = this.getFieldByFieldDataset(update.prevField)
+
+            if (update.type === "MOVE") {
+                await figure.animateMoveSequence(nextField)
+            } else if (update.type === 'KICK') {
+                await figure.animateKickSequence(nextField)
+            }
+        }
+    }
+
+    private stopAllHighlightAnimations() {
+        for (let i = 0; i < 40; i++) {
+            this.gameElementsDict.MAIN_FIELDS[i].highlightAnimationStop()
+        }
+
+        PlayersOrder.forEach(playerColor => {
+            for (let i = 0; i < 4; i++) {
+                this.gameElementsDict.HOME_FIELDS[playerColor][i].highlightAnimationStop()
+                this.gameElementsDict.START_FIELDS[playerColor][i].highlightAnimationStop()
+                this.gameElementsDict.FIGURES[playerColor][i].highlightAnimationStop()
+            }
+        })
+    }
+
     private getFieldByFieldDataset(field: FieldDataset): Field {
         if (field.isHome) {
             return this.gameElementsDict.HOME_FIELDS[field.color][field.index]
@@ -164,5 +220,9 @@ export class SvgLayer {
             return this.gameElementsDict.START_FIELDS[field.color][field.index]
         }
         return this.gameElementsDict.MAIN_FIELDS[field.index]
+    }
+
+    private getFigureByFigureDataset(figure: FigureDataset): Figure {
+        return this.gameElementsDict.FIGURES[figure.color][figure.index]
     }
 }

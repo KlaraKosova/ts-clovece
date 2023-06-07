@@ -8,7 +8,7 @@ import {objectCompare} from "@/utils/common";
 export class Figure implements HasDataset<FigureDataset> {
     private dataset: FigureDataset
     private path: FieldDataset[] = []
-    private field: Field
+    private field: FieldDataset
 
     public getDataset(): FigureDataset {
         return cloneDeep(this.dataset)
@@ -22,7 +22,7 @@ export class Figure implements HasDataset<FigureDataset> {
         return this.field
     }
 
-    public setField(field: Field) {
+    public setField(field: FieldDataset) {
         this.field = field
     }
 
@@ -31,10 +31,10 @@ export class Figure implements HasDataset<FigureDataset> {
     }
 
     public computeNextField(diceThrow: number): FieldDataset | null {
-        if (this.field.getDataset().isStart) {
+        if (this.field.isStart) {
             return diceThrow === 6 ? this.path[0] : null
         }
-        const currentIndex = this.path.findIndex(f => objectCompare(f, this.field.getDataset()));
+        const currentIndex = this.path.findIndex(f => objectCompare(f, this.field));
         return this.path[currentIndex + diceThrow] || null
     }
 }

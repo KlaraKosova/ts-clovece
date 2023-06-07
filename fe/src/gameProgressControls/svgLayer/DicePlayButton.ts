@@ -6,6 +6,9 @@ export class DicePlayButton extends GameElement {
     constructor(draw: Svg) {
         super(draw);
         this.svg.setDataset({ playButton: true })
+        this.svg.setCSS({
+            cursor: 'pointer'
+        })
     }
     public render() {
         this.svg.createChild({
