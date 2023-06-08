@@ -74,8 +74,11 @@ export class State {
             case SvgBoardStates.HIGHLIGHT_ANIMATION:
                 handlePromise = this.handleDocumentClick_highlightAnimationState(data)
                 break
-            case SvgBoardStates.NO_MOVES_MODAL:
+            case SvgBoardStates.NO_MOVES:
                 handlePromise = this.handleDocumentClick_noMovesModalState(data)
+                break
+            case SvgBoardStates.HOME_MOVES_ONLY: 
+            handlePromise = this.handleDocumentClick_homeMovesOnlyState(data)
                 break
         }
 
@@ -97,19 +100,10 @@ export class State {
         }
         this.logic.setDataset(data.progress)
 
-        console.log(this.logic.getDataset())
-        console.log(this.user);
-        
-        
-
         if (this.currentPlayerTurn()) {
-            console.log('zde?');
-            
             this.boardState = SvgBoardStates.DICE
             this.svg.diceState()
         } else {
-            console.log('???');
-            
             this.svg.waitingState()
             this.boardState = SvgBoardStates.WAITING
         }
@@ -119,9 +113,6 @@ export class State {
         if (!data.dice) {
             return
         }
-
-        console.log('here');
-        
 
         this.boardState = SvgBoardStates.DICE_ANIMATION
         await this.svg.diceAnimationState(this.logic.getDiceSequence())
@@ -135,18 +126,19 @@ export class State {
 
         const available = this.logic.getAvailable()
         if (available.fields.length) {
-            // TODO
-            /* if (available.homeMovesOnly) {            
-                this.boardState = SvgBoardStates.HOME_MOVES_ONLY_MODAL
-                this.svg.homeMovesOnlyModalState()
-            } else { */
+
+            if (available.homeMovesOnly) {
+                ModalEventBusInstance.publish(ModalEventTypes.SHOW_HOME_MOVES_ONLY_MODAL)
+                this.boardState = SvgBoardStates.HOME_MOVES_ONLY
+                this.svg.highlightAnimationState(available)
+            } else {
                 this.boardState = SvgBoardStates.HIGHLIGHT_ANIMATION
                 this.svg.highlightAnimationState(available)
-            /* } */
+            }
         } else {
-            this.boardState = SvgBoardStates.NO_MOVES_MODAL
+            this.boardState = SvgBoardStates.NO_MOVES
             ModalEventBusInstance.publish(ModalEventTypes.SHOW_NO_MOVES_MODAL)
-            this.svg.noMovesModalState()
+            this.svg.noMovesState()
         }
     }
 
@@ -155,6 +147,61 @@ export class State {
             return
         }
 
+        await this.handleHighlightAnimationStateClicked(data)
+        /* const available = this.logic.getAvailable()
+        const availableIncludesField = available.fields.some(f => objectCompare(f, data.field))
+        const availableIncludesFigure = available.figures.some(f => objectCompare(f, data.figure))
+
+        if (!availableIncludesField && !availableIncludesFigure) {
+            return
+        }
+
+        this.boardState = SvgBoardStates.CURRENT_PLAYER_FIGURE_MOVE_ANIMATION
+        const updates = this.logic.getUpdates({field: data.field, figure: data.figure})
+        SocketIOClientInstance.socket.emit("CLIENT_GAME_PROGRESS_UPDATE", updates)
+        
+        await this.svg.currentPlayerFigureMoveAnimationState(updates)
+
+        this.boardState = SvgBoardStates.WAITING */
+    }
+
+    private async handleDocumentClick_noMovesModalState(data: DocumentClickData) {
+        if (!data.nextPlayerButton) {
+            return
+        }
+
+        this.handleEmptyUpdates()
+        ModalEventBusInstance.publish(ModalEventTypes.CLEAR_ALL_SIDE_MODALS)
+        /* SocketIOClientInstance.socket.emit("CLIENT_GAME_PROGRESS_UPDATE", [])
+
+        this.svg.waitingState()
+        ModalEventBusInstance.publish(ModalEventTypes.CLEAR_ALL_SIDE_MODALS)
+        this.boardState = SvgBoardStates.WAITING */
+    }
+
+    private async handleDocumentClick_homeMovesOnlyState(data: DocumentClickData) {
+        if (!data.nextPlayerButton && !data.field && !data.figure) {
+            return
+        }
+
+        if (data.nextPlayerButton) {
+            await this.handleEmptyUpdates()
+            // await this.handleDocumentClick_noMovesModalState(data)
+        } else {
+            await this.handleHighlightAnimationStateClicked(data)
+        }
+
+        ModalEventBusInstance.publish(ModalEventTypes.CLEAR_ALL_SIDE_MODALS)
+    }
+
+    private handleEmptyUpdates() {
+        SocketIOClientInstance.socket.emit("CLIENT_GAME_PROGRESS_UPDATE", [])
+
+        this.svg.waitingState()
+        this.boardState = SvgBoardStates.WAITING
+    }
+
+    private async handleHighlightAnimationStateClicked(data: DocumentClickData) {
         const available = this.logic.getAvailable()
         const availableIncludesField = available.fields.some(f => objectCompare(f, data.field))
         const availableIncludesFigure = available.figures.some(f => objectCompare(f, data.figure))
@@ -169,18 +216,6 @@ export class State {
         
         await this.svg.currentPlayerFigureMoveAnimationState(updates)
 
-        this.boardState = SvgBoardStates.WAITING
-    }
-
-    private async handleDocumentClick_noMovesModalState(data: DocumentClickData) {
-        if (!data.nextPlayerButton) {
-            return
-        }
-
-        SocketIOClientInstance.socket.emit("CLIENT_GAME_PROGRESS_UPDATE", [])
-
-        this.svg.waitingState()
-        ModalEventBusInstance.publish(ModalEventTypes.CLEAR_ALL_MODALS)
         this.boardState = SvgBoardStates.WAITING
     }
 }

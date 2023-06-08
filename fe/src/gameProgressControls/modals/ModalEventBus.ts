@@ -3,7 +3,8 @@ import {ModalEventTypes} from "@/types/state/ModalEventBusEventTypes";
 class ModalEventBus {
     private events: Record<ModalEventTypes, Function[]> = {
         [ModalEventTypes.SHOW_NO_MOVES_MODAL]: [],
-        [ModalEventTypes.CLEAR_ALL_MODALS]: []
+        [ModalEventTypes.CLEAR_ALL_SIDE_MODALS]: [],
+        [ModalEventTypes.SHOW_HOME_MOVES_ONLY_MODAL]: []
     }
 
     publish(event: ModalEventTypes, ...args: any[]) {

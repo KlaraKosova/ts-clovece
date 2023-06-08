@@ -130,6 +130,8 @@ export class SvgLayer {
     }
 
     public waitingState() {
+        this.stopAllHighlightAnimations()
+
         this.gameElementsDict.OVERLAY.clear()
         this.gameElementsDict.LOADING.clear()
         this.gameElementsDict.DICE.clear()
@@ -144,16 +146,11 @@ export class SvgLayer {
         this.gameElementsDict.DICE_PLAY_BUTTON.animateMoveDown()
     }
 
-    public noMovesModalState() {
+    public noMovesState() {
         this.gameElementsDict.DICE.clear()
         this.gameElementsDict.DICE_PLAY_BUTTON.clear()
 
         this.gameElementsDict.OVERLAY.clear()
-        //this.gameElementsDict.NO_MOVES_MODAL.render()
-        //this.gameElementsDict.NEXT_PLAYER_BUTTON.render()
-
-        // this.gameElementsDict.NO_MOVES_MODAL.moveDown()
-        // this.gameElementsDict.NEXT_PLAYER_BUTTON.moveDown()
     }
 
     public highlightAnimationState(available: {fields: FieldDataset[], figures: FigureDataset[]}) {

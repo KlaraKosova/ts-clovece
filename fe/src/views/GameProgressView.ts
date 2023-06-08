@@ -16,8 +16,8 @@ import { createElement } from "@/utils/domHelpers";
 
 export class GameProgressView extends View {
     private state: State
-    private displayModals = true
-    private modals: ViewModalState[] = []
+    private stateModals: ViewModalState[] = []
+    private infoModals: ViewModalState[] = []
 
     public render(): void {
         const wrapper = document.createElement("div")
@@ -119,7 +119,8 @@ export class GameProgressView extends View {
 
         SocketIOClientInstance.socket.emit("GAME_PROGRESS_REQUEST")
         ModalEventBusInstance.subscribe(ModalEventTypes.SHOW_NO_MOVES_MODAL, this.modalEventBusHandlers_showNoMovesModal.bind(this))
-        ModalEventBusInstance.subscribe(ModalEventTypes.CLEAR_ALL_MODALS, this.modalEventBusHandlers_clearAllModals.bind(this))
+        ModalEventBusInstance.subscribe(ModalEventTypes.CLEAR_ALL_SIDE_MODALS, this.modalEventBusHandlers_clearAllModals.bind(this))
+        ModalEventBusInstance.subscribe(ModalEventTypes.SHOW_HOME_MOVES_ONLY_MODAL, this.modalEventBusHandlers_showHomeMovesOnlyModal.bind(this))
     }
 
     private setHeaderBarColor(progress: GameProgressDataset) {
@@ -138,7 +139,10 @@ export class GameProgressView extends View {
     }
 
     private modalEventBusHandlers_showNoMovesModal() {
-        const modalWrapper = createElement<HTMLDivElement>('div', ['side-modal', 'side-modal-danger'], '')
+        this.infoModals = [ { type: ViewModalTypes.NO_MOVES_MODAL, data: null} ]
+        this.renderModals()
+
+        /* const modalWrapper = createElement<HTMLDivElement>('div', ['side-modal', 'side-modal-danger'], '')
         const modalInner = createElement<HTMLDivElement>('div', ['side-modal-inner'], '')
         const title = createElement<HTMLHeadingElement>('h6', ['side-modal-header'], 'Zadne dalsi tahy')
 
@@ -156,12 +160,102 @@ export class GameProgressView extends View {
         modalWrapper.appendChild(modalInner)
 
         const modalsContainer = document.getElementById("modalsContainer")!
-        modalsContainer.append(modalWrapper)
+        modalsContainer.append(modalWrapper) */
+    }
+
+    private modalEventBusHandlers_showHomeMovesOnlyModal() {
+        this.infoModals = [ { type: ViewModalTypes.HOME_MOVES_ONLY_MODAL, data: null} ]
+        this.renderModals()
+
+        /* const modalWrapper = createElement<HTMLDivElement>('div', ['side-modal'], '')
+        const modalInner = createElement<HTMLDivElement>('div', ['side-modal-inner'], '')
+        const title = createElement<HTMLHeadingElement>('h6', ['side-modal-header'], 'Omezene dostupne tahy')
+
+        const modalContent = createElement<HTMLDivElement>('div', ['side-modal-content'], '')
+        const modalDesription = createElement<HTMLDivElement>('div', [], 'Dostupne tahy pouze pro figurky "v domecku". Preskocit kolo?') // TODO "domecek"
+        const nextPlayerButton = createElement<HTMLButtonElement>('button',
+            ['btn', 'btn-success', 'next-player-btn'],
+            'Dalsi hrac',
+            { nextPlayerButton: 'true' }
+        )
+
+        modalContent.append(modalDesription, nextPlayerButton)
+        modalInner.append(title, modalContent)
+
+
+        modalWrapper.appendChild(modalInner)
+
+        const modalsContainer = document.getElementById("modalsContainer")!
+        modalsContainer.append(modalWrapper) */
     }
 
 
     private modalEventBusHandlers_clearAllModals() {
         const modalsContainer = document.getElementById("modalsContainer")!
         modalsContainer.replaceChildren()
+    }
+
+    private renderModals() {
+        const modalsContainer = document.getElementById("modalsContainer")!
+        modalsContainer.replaceChildren()
+
+        this.stateModals.forEach((modal) => this.renderModal(modal))
+        this.infoModals.forEach((modal) => this.renderModal(modal))
+    }
+
+    private renderModal(modal: ViewModalState) {
+        const sideModalsContainer = document.getElementById("modalsContainer")!
+
+        switch(modal.type) {
+            case ViewModalTypes.NO_MOVES_MODAL:
+                sideModalsContainer.appendChild(this.createNoMovesModal())
+                break
+            case ViewModalTypes.HOME_MOVES_ONLY_MODAL:
+                sideModalsContainer.appendChild(this.createHomeMovesOnlyModal())
+        }
+    }
+
+    private createNoMovesModal() {
+        const modalWrapper = createElement<HTMLDivElement>('div', ['side-modal'], '')
+        const modalInner = createElement<HTMLDivElement>('div', ['side-modal-inner'], '')
+        const title = createElement<HTMLHeadingElement>('h6', ['side-modal-header'], 'Omezene dostupne tahy')
+
+        const modalContent = createElement<HTMLDivElement>('div', ['side-modal-content'], '')
+        const modalDesription = createElement<HTMLDivElement>('div', [], 'Dostupne tahy pouze pro figurky "v domecku". Preskocit kolo?') // TODO "domecek"
+        const nextPlayerButton = createElement<HTMLButtonElement>('button',
+            ['btn', 'btn-success', 'next-player-btn'],
+            'Dalsi hrac',
+            { nextPlayerButton: 'true' }
+        )
+
+        modalContent.append(modalDesription, nextPlayerButton)
+        modalInner.append(title, modalContent)
+
+
+        modalWrapper.appendChild(modalInner)
+
+        return modalWrapper
+    }
+
+    private createHomeMovesOnlyModal() {
+        const modalWrapper = createElement<HTMLDivElement>('div', ['side-modal'], '')
+        const modalInner = createElement<HTMLDivElement>('div', ['side-modal-inner'], '')
+        const title = createElement<HTMLHeadingElement>('h6', ['side-modal-header'], 'Omezene dostupne tahy')
+
+        const modalContent = createElement<HTMLDivElement>('div', ['side-modal-content'], '')
+        const modalDesription = createElement<HTMLDivElement>('div', [], 'Dostupne tahy pouze pro figurky "v domecku". Preskocit kolo?') // TODO "domecek"
+        const nextPlayerButton = createElement<HTMLButtonElement>('button',
+            ['btn', 'btn-success', 'next-player-btn'],
+            'Dalsi hrac',
+            { nextPlayerButton: 'true' }
+        )
+
+        modalContent.append(modalDesription, nextPlayerButton)
+        modalInner.append(title, modalContent)
+
+
+        modalWrapper.appendChild(modalInner)
+
+        return modalWrapper
     }
 }

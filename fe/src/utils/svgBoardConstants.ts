@@ -68,11 +68,6 @@ export default {
             INNER_SIZE: 63,
             DOT_SIZE: 20
         },
-        NO_MOVES_MODAL: {
-            WIDTH: 110,
-            HEIGHT: 70,
-            INITIAL_OFFSET: 50
-        },
         HOME_MOVES_ONLY_MODAL: {
             WIDTH: 110,
             HEIGHT: 70,

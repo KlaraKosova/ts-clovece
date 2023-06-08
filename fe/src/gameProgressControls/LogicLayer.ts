@@ -125,11 +125,26 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
 
             const alreadyIncluded = result.fields.find(f => objectCompare(f, nextField))
             if (nextField && !alreadyIncluded) {
-                result.fields.push(nextField)
 
                 const figure = this.getFigureByFieldDataset(nextField)
-                if (figure) {
-                    result.figures.push(figure.getDataset())
+                if (nextField.isHome && !figure) {
+                    // figurky v domecku by se nemely dat vyhodit ani figurkami stejne barvy
+                    result.fields.push(nextField)
+                }
+
+                /* 
+                // do nothing
+                if (nextField.isHome && figure) {
+                    
+                }
+                */
+
+                if (!nextField.isHome) {
+                    result.fields.push(nextField)
+
+                    if (figure) {
+                        result.figures.push(figure.getDataset())
+                    }
                 }
 
                 if (!nextField.isHome || !currentFigure.getField().isHome ) {
