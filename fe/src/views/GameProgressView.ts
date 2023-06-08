@@ -10,6 +10,8 @@ import { GameProgressUpdate } from "../types/data/GameProgressUpdate";
 import { State } from "../gameProgressControls/State";
 import { ViewModalState } from "@/types/state/ViewModalState";
 import { ViewModalTypes } from "@/types/state/ViewModalTypes";
+import {ModalEventBusInstance} from "@/gameProgressControls/modals/ModalEventBus";
+import {ModalEventTypes} from "@/types/state/ModalEventBusEventTypes";
 
 export class GameProgressView extends View {
     private state: State
@@ -48,8 +50,6 @@ export class GameProgressView extends View {
     }
 
     private async onDocumentClick(event: PointerEvent) {
-        this.showViewModal({type: ViewModalTypes.NO_MOVES_MODAL, data: null})
-
         const result: DocumentClickData = {
             field: null,
             figure: null,
@@ -117,6 +117,8 @@ export class GameProgressView extends View {
         console.log('emit GAME_PROGRESS_REQUEST');
 
         SocketIOClientInstance.socket.emit("GAME_PROGRESS_REQUEST")
+        ModalEventBusInstance.subscribe(ModalEventTypes.SHOW_NO_MOVES_MODAL, this.modalEventBusHandlers_showNoMovesModal.bind(this))
+        ModalEventBusInstance.subscribe(ModalEventTypes.CLEAR_ALL_MODALS, this.modalEventBusHandlers_clearAllModals.bind(this))
     }
 
     private setHeaderBarColor(progress: GameProgressDataset) {
@@ -134,32 +136,33 @@ export class GameProgressView extends View {
         })
     }
 
-    private showViewModal (state: ViewModalState) {
-        this.displayModals = true
-        this.modals.push(state)
+    private modalEventBusHandlers_showNoMovesModal() {
+        const modalWrapper = document.createElement("div")
+        modalWrapper.classList.add('side-modal', 'side-modal-danger')
+        const modalContent = document.createElement("div")
+        modalContent.classList.add('side-modal-content')
 
-        this.renderModals()
+
+        const title = document.createElement("h6")
+        title.textContent = "Zadne dalsi tahy"
+
+        const nextPlayerButton = document.createElement('button')
+        nextPlayerButton.classList.add('next-player-button')
+        nextPlayerButton.dataset.nextPlayerButton = 'true'
+        nextPlayerButton.textContent = 'Dalsi hrac'
+
+        modalContent.append(title, nextPlayerButton)
+
+
+        modalWrapper.appendChild(modalContent)
+
+        const modalsContainer = document.getElementById("modalsContainer")!
+        modalsContainer.append(modalWrapper)
     }
 
-    private renderModals() {
+
+    private modalEventBusHandlers_clearAllModals() {
         const modalsContainer = document.getElementById("modalsContainer")!
-        const modalElements = [] as HTMLDivElement[]
-
-        this.modals.forEach(modal => {
-            const modalWrapper = document.createElement("div")
-            const modalContent = document.createElement("div")
-
-            if (modal.type === ViewModalTypes.NO_MOVES_MODAL) {
-                const title = document.createElement("h6")
-                title.textContent = "Zadne dalsi tahy"
-
-                modalContent.append(title)
-            }
-            modalWrapper.appendChild(modalContent)
-
-            modalElements.push(modalWrapper)
-        })
-
-        modalsContainer.replaceChildren(...modalElements)
+        modalsContainer.replaceChildren()
     }
 }

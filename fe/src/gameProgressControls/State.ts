@@ -9,6 +9,8 @@ import { objectCompare } from "@/utils/common";
 import { SocketIOClientInstance } from "@/socketio/SocketClient";
 import { GameProgressUpdate } from "@/types/data/GameProgressUpdate";
 import { PromiseInspectorInstance } from "@/utils/PromiseInspector";
+import {ModalEventBusInstance} from "@/gameProgressControls/modals/ModalEventBus";
+import {ModalEventTypes} from "@/types/state/ModalEventBusEventTypes";
 
 export class State {
     private _boardState: SvgBoardStates
@@ -78,11 +80,8 @@ export class State {
         }
 
         if (handlePromise) {
-            console.log('qwe');
-            
             PromiseInspectorInstance.add(handlePromise)
             await handlePromise
-            console.log('qwe?');
             
         }
     }
@@ -146,6 +145,7 @@ export class State {
             /* } */
         } else {
             this.boardState = SvgBoardStates.NO_MOVES_MODAL
+            ModalEventBusInstance.publish(ModalEventTypes.SHOW_NO_MOVES_MODAL)
             this.svg.noMovesModalState()
         }
     }
@@ -180,6 +180,7 @@ export class State {
         SocketIOClientInstance.socket.emit("CLIENT_GAME_PROGRESS_UPDATE", [])
 
         this.svg.waitingState()
+        ModalEventBusInstance.publish(ModalEventTypes.CLEAR_ALL_MODALS)
         this.boardState = SvgBoardStates.WAITING
     }
 }

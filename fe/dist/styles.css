@@ -227,3 +227,67 @@ header .border {
     font-weight: bold;
     color: white;
 }
+
+#modalsContainer {
+    position: absolute;
+    top: 4rem;
+    right: 1rem;
+
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 10px;
+}
+
+.side-modal {
+    background-color: rgba(255, 255, 255, 0.75);
+    border-radius: 20px;
+    padding: 1rem 2rem;
+}
+
+.side-modal-danger {
+    border: 2px solid darkred;
+    /* background-color: #f5d8d7; */
+    background-color: white;
+}
+
+.side-modal-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.side-modal-content h6 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+}
+
+.next-player-button {
+    font-size: 1.25rem;
+    background-color: #108c0e;
+    color: white;
+    border: 2px solid #108c0e;
+    border-radius: 15px;
+    padding: 10px;
+    width: 100%;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.5rem;
+
+    transition: color 0.5s ease,
+        background-color 0.5s ease;
+}
+
+.next-player-button:hover {
+    justify-content: space-evenly;
+    color: #108c0e;
+    background-color: #cae3ca;
+}
+
+.next-player-button:hover::after {
+    content: "\279C"; /* right arrow character */
+}

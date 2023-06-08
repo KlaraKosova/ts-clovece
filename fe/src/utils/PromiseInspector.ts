@@ -14,6 +14,7 @@ class PromiseInspector {
     }
 
     public add(p: Promise<any>, label: string = '') {
+        this.queue.push(p);
         p.then(
             (val: any)  => {
                 const index = this.queue.indexOf(p)
@@ -24,7 +25,6 @@ class PromiseInspector {
                 this.queue.splice(index, 1)
             })
 
-        this.queue.push(p);
         return p;
     };
 

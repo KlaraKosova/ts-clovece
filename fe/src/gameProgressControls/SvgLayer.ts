@@ -4,10 +4,8 @@ import {PlayerColors, PlayersOrder} from "@/types/common/PlayerColors";
 import { StaticBackground } from "./svgLayer/StaticBackground";
 import {SvgElements} from "@/types/svgLayer/SvgElements";
 import { Overlay } from "./svgLayer/Overlay";
-import { NoMovesModal } from "./svgLayer/NoMovesModal";
 import { DicePlayButton } from "./svgLayer/DicePlayButton";
 import { Dice } from "./svgLayer/Dice";
-import { NextPlayerButton } from "./svgLayer/NextPlayerButton";
 import { Loading } from "./svgLayer/Loading";
 import { Field } from "./svgLayer/Field";
 import { Figure } from "./svgLayer/Figure";
@@ -15,8 +13,6 @@ import {GameProgressDataset} from "@/types/data/GameProgressDataset";
 import {FieldDataset} from "@/types/data/FieldDataset";
 import { FigureDataset } from "@/types/data/FigureDataset";
 import { GameProgressUpdate } from "@/types/data/GameProgressUpdate";
-import { delay } from "@/utils/common";
-import { HomeMovesOnlyModal } from "./svgLayer/HomeMovesOnlyModal";
 
 export class SvgLayer {
     private draw: Svg
@@ -90,9 +86,6 @@ export class SvgLayer {
             [SvgElements.OVERLAY]: new Overlay(this.draw),
             [SvgElements.DICE]: new Dice(this.draw),
             [SvgElements.DICE_PLAY_BUTTON]: new DicePlayButton(this.draw),
-            [SvgElements.NO_MOVES_MODAL]: new NoMovesModal(this.draw),
-            [SvgElements.HOME_MOVES_ONLY_MODAL]: new HomeMovesOnlyModal(this.draw),
-            [SvgElements.NEXT_PLAYER_BUTTON]: new NextPlayerButton(this.draw),
             [SvgElements.LOADING]: new Loading(this.draw),
         }
     }
@@ -141,8 +134,6 @@ export class SvgLayer {
         this.gameElementsDict.LOADING.clear()
         this.gameElementsDict.DICE.clear()
         this.gameElementsDict.DICE_PLAY_BUTTON.clear()
-        this.gameElementsDict.NO_MOVES_MODAL.clear()
-        this.gameElementsDict.NEXT_PLAYER_BUTTON.clear()
     }
 
     public async diceAnimationState(sequence: number[]) {
@@ -157,12 +148,12 @@ export class SvgLayer {
         this.gameElementsDict.DICE.clear()
         this.gameElementsDict.DICE_PLAY_BUTTON.clear()
 
-        this.gameElementsDict.OVERLAY.render()
-        this.gameElementsDict.NO_MOVES_MODAL.render()
-        this.gameElementsDict.NEXT_PLAYER_BUTTON.render()
+        this.gameElementsDict.OVERLAY.clear()
+        //this.gameElementsDict.NO_MOVES_MODAL.render()
+        //this.gameElementsDict.NEXT_PLAYER_BUTTON.render()
 
-        this.gameElementsDict.NO_MOVES_MODAL.moveDown()
-        this.gameElementsDict.NEXT_PLAYER_BUTTON.moveDown()
+        // this.gameElementsDict.NO_MOVES_MODAL.moveDown()
+        // this.gameElementsDict.NEXT_PLAYER_BUTTON.moveDown()
     }
 
     public highlightAnimationState(available: {fields: FieldDataset[], figures: FigureDataset[]}) {
@@ -186,11 +177,6 @@ export class SvgLayer {
         this.gameElementsDict.DICE_PLAY_BUTTON.clear()
 
         this.gameElementsDict.OVERLAY.render()
-        this.gameElementsDict.HOME_MOVES_ONLY_MODAL.render()
-        this.gameElementsDict.NEXT_PLAYER_BUTTON.render()
-
-        this.gameElementsDict.HOME_MOVES_ONLY_MODAL.moveDown()
-        this.gameElementsDict.NEXT_PLAYER_BUTTON.moveDown()
     }
 
     public async currentPlayerFigureMoveAnimationState(updates: GameProgressUpdate[]) {
