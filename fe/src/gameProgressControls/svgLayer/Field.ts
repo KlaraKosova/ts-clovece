@@ -5,8 +5,8 @@ import { centers, homeCenters, startCenters } from '../../utils/fieldCenters'
 import { HasHighlightAnimation } from './base/HasHighlightAnimation';
 import { Coordinates } from '../../types/svgLayer/Coordinates';
 import { FieldDataset } from '../../types/data/FieldDataset';
-import { HasDataset } from '../../facades/HasDataset';
 import { cloneDeep } from 'lodash';
+import { HasDataset } from '../HasDataset';
 
 export class Field extends GameElement implements HasHighlightAnimation, HasDataset<FieldDataset> {
     private color: { front: string, back: string }

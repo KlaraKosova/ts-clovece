@@ -12,6 +12,7 @@ import { ViewModalState } from "@/types/state/ViewModalState";
 import { ViewModalTypes } from "@/types/state/ViewModalTypes";
 import {ModalEventBusInstance} from "@/gameProgressControls/modals/ModalEventBus";
 import {ModalEventTypes} from "@/types/state/ModalEventBusEventTypes";
+import { createElement } from "@/utils/domHelpers";
 
 export class GameProgressView extends View {
     private state: State
@@ -137,24 +138,22 @@ export class GameProgressView extends View {
     }
 
     private modalEventBusHandlers_showNoMovesModal() {
-        const modalWrapper = document.createElement("div")
-        modalWrapper.classList.add('side-modal', 'side-modal-danger')
-        const modalContent = document.createElement("div")
-        modalContent.classList.add('side-modal-content')
+        const modalWrapper = createElement<HTMLDivElement>('div', ['side-modal', 'side-modal-danger'], '')
+        const modalInner = createElement<HTMLDivElement>('div', ['side-modal-inner'], '')
+        const title = createElement<HTMLHeadingElement>('h6', ['side-modal-header'], 'Zadne dalsi tahy')
+
+        const modalContent = createElement<HTMLDivElement>('div', ['side-modal-content'], '')
+        const nextPlayerButton = createElement<HTMLButtonElement>('button',
+            ['btn', 'btn-success', 'next-player-btn'],
+            'Dalsi hrac',
+            { nextPlayerButton: 'true' }
+        )
+
+        modalContent.append(nextPlayerButton)
+        modalInner.append(title, modalContent)
 
 
-        const title = document.createElement("h6")
-        title.textContent = "Zadne dalsi tahy"
-
-        const nextPlayerButton = document.createElement('button')
-        nextPlayerButton.classList.add('next-player-button')
-        nextPlayerButton.dataset.nextPlayerButton = 'true'
-        nextPlayerButton.textContent = 'Dalsi hrac'
-
-        modalContent.append(title, nextPlayerButton)
-
-
-        modalWrapper.appendChild(modalContent)
+        modalWrapper.appendChild(modalInner)
 
         const modalsContainer = document.getElementById("modalsContainer")!
         modalsContainer.append(modalWrapper)

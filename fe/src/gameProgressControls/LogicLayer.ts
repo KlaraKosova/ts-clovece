@@ -1,4 +1,3 @@
-import {HasDataset} from "@/facades/HasDataset";
 import {GameProgressDataset} from "@/types/data/GameProgressDataset";
 import cloneDeep from "lodash/cloneDeep";
 import {FieldDataset} from "@/types/data/FieldDataset";
@@ -9,6 +8,7 @@ import {Figure} from "@/gameProgressControls/logicLayer/Figure";
 import {UserInfo} from "@/types/common/UserInfo";
 import {objectCompare} from "@/utils/common";
 import { GameProgressUpdate } from "@/types/data/GameProgressUpdate";
+import { HasDataset } from "./HasDataset";
 
 export class LogicLayer implements HasDataset<GameProgressDataset>{
     private dataset: GameProgressDataset

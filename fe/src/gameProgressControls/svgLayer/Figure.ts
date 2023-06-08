@@ -7,8 +7,8 @@ import { Field } from "./Field";
 import { coordinatesDiff } from "../../utils/common";
 import { FigureDataset } from "../../types/data/FigureDataset";
 import { Coordinates } from "../../types/svgLayer/Coordinates";
-import { HasDataset } from "../../facades/HasDataset";
 import { cloneDeep } from "lodash";
+import { HasDataset } from "../HasDataset";
 
 export class Figure extends GameElement implements HasHighlightAnimation, HasDataset<FigureDataset> {
     private field: Field;

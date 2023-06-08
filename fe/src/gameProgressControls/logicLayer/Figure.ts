@@ -1,9 +1,9 @@
-import {HasDataset} from "@/facades/HasDataset";
 import {FigureDataset} from "@/types/data/FigureDataset";
 import cloneDeep from "lodash/cloneDeep";
 import {FieldDataset} from "@/types/data/FieldDataset";
 import {Field} from "@/gameProgressControls/logicLayer/Field";
 import {objectCompare} from "@/utils/common";
+import { HasDataset } from "../HasDataset";
 
 export class Figure implements HasDataset<FigureDataset> {
     private dataset: FigureDataset

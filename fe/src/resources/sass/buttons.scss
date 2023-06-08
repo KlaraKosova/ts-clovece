@@ -1,0 +1,66 @@
+@import './variables.scss';
+
+.btn {
+    cursor: pointer;
+    border-radius: 15px;
+    padding: 10px;
+    font-size: 1.1rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: $base-color;
+    background-color: $base-bg-color;
+    border: 2px solid $base-border-color;
+
+    &:hover {
+        transition: color 2s ease-in-out,
+            background-color 2s ease-in-out;
+
+        background-color: $base-color;
+        color: $base-bg-color;
+    }
+
+    &-success{
+        color: $success-color;
+        background-color: $success-bg-color;
+        border: 2px solid $success-border-color;
+
+        &:hover {
+            background-color: $success-color;
+            color: $success-bg-color;
+        }
+    }
+
+    &-danger{
+        color: $danger-color;
+        background-color: $danger-bg-color;
+        border: 2px solid $danger-border-color;
+
+        &:hover {
+            background-color: $danger-color;
+            color: $danger-bg-color;
+        }
+    }
+
+    &-icon {
+        border-radius: 50px;
+        font-size: 1.2em;
+        width: 1.7em;
+        height: 1.7em;
+    }
+}
+
+.next-player-btn {
+    line-height: 1.5rem;
+
+    &:hover {
+        justify-content: space-evenly;
+
+        &::after {
+            content: "\279C"; /* right arrow character */
+            margin-left: 1rem;
+        }
+    }
+}
