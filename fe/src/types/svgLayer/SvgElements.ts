@@ -8,6 +8,7 @@ export const SvgElements = {
     DICE: 'DICE',
     DICE_PLAY_BUTTON: 'DICE_PLAY_BUTTON',
     LOADING: 'LOADING',
+    WINNER_MODAL: 'WINNER_MODAL'
 } as const
 
 export type SvgElements = typeof SvgElements[keyof typeof SvgElements]

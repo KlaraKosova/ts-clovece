@@ -78,7 +78,8 @@ export class SvgElement {
         type: 'path',
         initialPosition: Coordinates,
         path: string,
-        color: string
+        color: string,
+        pathScale?: number
     }): void;
 
     createChild(data: {
@@ -112,7 +113,8 @@ export class SvgElement {
         text?: string,
         radius?: number,
         ellipseRadius?: Coordinates,
-        addFunction?: (tspan: Tspan) => void
+        addFunction?: (tspan: Tspan) => void,
+        pathScale?: number
     }): void {
         if (data.addFunction) {
             this.draw.text(data.addFunction)
@@ -137,11 +139,12 @@ export class SvgElement {
         } else if (data.type === 'ellipse') {
             element = this.draw.ellipse(data.ellipseRadius.x * Consts.K, data.ellipseRadius.y * Consts.K)
         } else {
+            const scale = data.pathScale ?? Consts.K
             let transformedPath = `M ${data.initialPosition.x * Consts.K} ${data.initialPosition.y * Consts.K} `
                 + data.path
                     .split(' ')
                     .map(pathElement => {
-                        return isNaN(+pathElement) ? pathElement : +pathElement * Consts.K * 0.75
+                        return isNaN(+pathElement) ? pathElement : +pathElement * scale * 0.75
                     })
                     .join(' ')
             // console.log(transformedPath)

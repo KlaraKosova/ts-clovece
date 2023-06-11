@@ -7,6 +7,7 @@ import { Overlay } from "@/gameProgressControls/svgLayer/Overlay";
 import { Dice } from "@/gameProgressControls/svgLayer/Dice";
 import { DicePlayButton } from "@/gameProgressControls/svgLayer/DicePlayButton";
 import { Loading } from "@/gameProgressControls/svgLayer/Loading";
+import { WinnerModal } from "@/gameProgressControls/svgLayer/WinnerModal";
 
 export interface GameElementsDict {
     STATIC_BACKGROUND: StaticBackground,
@@ -18,4 +19,5 @@ export interface GameElementsDict {
     DICE: Dice,
     DICE_PLAY_BUTTON: DicePlayButton,
     LOADING: Loading,
+    WINNER_MODAL: WinnerModal
 }

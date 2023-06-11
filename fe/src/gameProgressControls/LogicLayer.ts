@@ -9,6 +9,7 @@ import {UserInfo} from "@/types/common/UserInfo";
 import {objectCompare} from "@/utils/common";
 import { GameProgressUpdate } from "@/types/data/GameProgressUpdate";
 import { HasDataset } from "./HasDataset";
+import { defaultGameProgressDataset } from "@/utils/constants";
 
 export class LogicLayer implements HasDataset<GameProgressDataset>{
     private dataset: GameProgressDataset
@@ -81,6 +82,8 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
                 this.figures[playerColor][i].setPath(path)
             }
         });
+
+        this.setDataset(defaultGameProgressDataset)
     }
     public setDataset(dataset: GameProgressDataset) {
         this.dataset = cloneDeep(dataset)
@@ -88,7 +91,6 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
         PlayersOrder.forEach((playerColor, index) => {
             for (let i = 0; i < 4; i++) {
                 this.figures[playerColor][i].setField(this.dataset.playerStatuses[playerColor].figures[i])
-                
             }
         });
     }
@@ -99,6 +101,16 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
 
     public getCurrentPlayerId() {
         return this.dataset.currentPlayerId
+    }
+
+    public getPlayerColorById(id: string) {
+        for (const color of PlayersOrder) {
+            if (this.dataset.playerStatuses[color].userId === id) {
+                return color
+            }
+        }
+
+        throw new Error("Player ID doesn't exist")
     }
 
     public getDiceSequence() {

@@ -68,10 +68,12 @@ export default {
             INNER_SIZE: 63,
             DOT_SIZE: 20
         },
-        HOME_MOVES_ONLY_MODAL: {
-            WIDTH: 110,
-            HEIGHT: 70,
-            INITIAL_OFFSET: 50
+        WINNER_MODAL: {
+            FIGURE_INITIAL_POSITION: {
+                X: 315 / 2,
+                Y: 315 / 2 + 30
+            },
+            FIGURE_SCALE: 10
         }
     },
     ELEMENTS: {

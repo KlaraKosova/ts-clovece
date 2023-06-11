@@ -13,18 +13,7 @@ import {ModalEventBusInstance} from "@/gameProgressControls/modals/ModalEventBus
 import {ModalEventTypes} from "@/types/state/ModalEventBusEventTypes";
 
 export class State {
-    private _boardState: SvgBoardStates
-    private get boardState() { return this._boardState}
-    private set boardState (value) {
-        // debug
-        /* try {
-            throw new Error("boardState assignment")
-        } catch (e) {
-            console.log(e);   
-        } */
-
-        this._boardState = value
-    }
+    private boardState: SvgBoardStates
     private svg: SvgLayer
     private logic: LogicLayer
     private user: UserInfo
@@ -46,16 +35,20 @@ export class State {
     }
 
     public handleGameProgressResponse(game: GameProgressDataset) {
+        // testing
         this.logic.setDataset(game)
         this.svg.loadedProgressState(game)
-
+        
+        this.handleGameWinnerUpdate({winnerId: '526e3ae3-325f-45b5-892c-01b06b30a2a4'})
+        console.log('aaa');
+        /* 
         if (this.currentPlayerTurn()) {            
             this.svg.diceState()
             this.boardState = SvgBoardStates.DICE
         } else {
             this.svg.waitingState()
             this.boardState = SvgBoardStates.WAITING
-        }
+        } */
     }
 
     public async handleDocumentClick(data: DocumentClickData) {
@@ -107,6 +100,12 @@ export class State {
             this.svg.waitingState()
             this.boardState = SvgBoardStates.WAITING
         }
+    }
+
+    public async handleGameWinnerUpdate(data: { winnerId: string }) {
+        this.boardState = SvgBoardStates.WINNER_MODAL
+        const winnerColor = this.logic.getPlayerColorById(data.winnerId)
+        this.svg.winnerModalState(winnerColor)
     }
 
     private async handleDocumentClick_diceState(data: DocumentClickData) {

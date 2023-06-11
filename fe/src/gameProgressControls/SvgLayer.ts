@@ -13,6 +13,7 @@ import {GameProgressDataset} from "@/types/data/GameProgressDataset";
 import {FieldDataset} from "@/types/data/FieldDataset";
 import { FigureDataset } from "@/types/data/FigureDataset";
 import { GameProgressUpdate } from "@/types/data/GameProgressUpdate";
+import { WinnerModal } from "./svgLayer/WinnerModal";
 
 export class SvgLayer {
     private draw: Svg
@@ -87,6 +88,7 @@ export class SvgLayer {
             [SvgElements.DICE]: new Dice(this.draw),
             [SvgElements.DICE_PLAY_BUTTON]: new DicePlayButton(this.draw),
             [SvgElements.LOADING]: new Loading(this.draw),
+            [SvgElements.WINNER_MODAL]: new WinnerModal(this.draw)
         }
     }
 
@@ -180,6 +182,16 @@ export class SvgLayer {
         this.stopAllHighlightAnimations()
 
         await this.animateUpdates(updates)
+    }
+
+    public async winnerModalState(winnerColor: PlayerColors) {
+        this.gameElementsDict.LOADING.clear()
+        this.gameElementsDict.DICE.clear()
+        this.gameElementsDict.DICE_PLAY_BUTTON.clear()
+
+        this.gameElementsDict.WINNER_MODAL.setColor(winnerColor)
+        this.gameElementsDict.WINNER_MODAL.render()
+        this.gameElementsDict.WINNER_MODAL.runAnimation()
     }
 
     public async animateUpdates(updates: GameProgressUpdate[]) {
