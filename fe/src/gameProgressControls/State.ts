@@ -30,6 +30,10 @@ export class State {
         return this.logic.getCurrentPlayerId() === this.user.userId
     }
 
+    public getWinnerColor() {
+        return this.logic.getWinnerColor()
+    }
+
     public renderInitial() {
         this.svg.initialState()
     }
@@ -38,17 +42,22 @@ export class State {
         // testing
         this.logic.setDataset(game)
         this.svg.loadedProgressState(game)
-        
-        this.handleGameWinnerUpdate({winnerId: '526e3ae3-325f-45b5-892c-01b06b30a2a4'})
-        console.log('aaa');
-        /* 
+        const winnerColor = this.logic.getWinnerColor()
+
+        if (winnerColor !== null) {
+            this.boardState = SvgBoardStates.WINNER_MODAL
+            this.svg.winnerModalState(winnerColor, this.user.color)
+            ModalEventBusInstance.publish(ModalEventTypes.SHOW_GAME_OVER_MODAL, { winnerColor })
+            return
+        }
+
         if (this.currentPlayerTurn()) {            
             this.svg.diceState()
             this.boardState = SvgBoardStates.DICE
         } else {
             this.svg.waitingState()
             this.boardState = SvgBoardStates.WAITING
-        } */
+        }
     }
 
     public async handleDocumentClick(data: DocumentClickData) {
@@ -71,14 +80,13 @@ export class State {
                 handlePromise = this.handleDocumentClick_noMovesModalState(data)
                 break
             case SvgBoardStates.HOME_MOVES_ONLY: 
-            handlePromise = this.handleDocumentClick_homeMovesOnlyState(data)
+                handlePromise = this.handleDocumentClick_homeMovesOnlyState(data)
                 break
         }
 
         if (handlePromise) {
             PromiseInspectorInstance.add(handlePromise)
             await handlePromise
-            
         }
     }
 
@@ -105,7 +113,7 @@ export class State {
     public async handleGameWinnerUpdate(data: { winnerId: string }) {
         this.boardState = SvgBoardStates.WINNER_MODAL
         const winnerColor = this.logic.getPlayerColorById(data.winnerId)
-        this.svg.winnerModalState(winnerColor)
+        await this.svg.winnerModalState(winnerColor, this.user.color)
     }
 
     private async handleDocumentClick_diceState(data: DocumentClickData) {
@@ -124,8 +132,9 @@ export class State {
         }
 
         const available = this.logic.getAvailable()
+        console.log(available)
         if (available.fields.length) {
-
+            console.log('why')
             if (available.homeMovesOnly) {
                 ModalEventBusInstance.publish(ModalEventTypes.SHOW_HOME_MOVES_ONLY_MODAL)
                 this.boardState = SvgBoardStates.HOME_MOVES_ONLY
@@ -147,21 +156,6 @@ export class State {
         }
 
         await this.handleHighlightAnimationStateClicked(data)
-        /* const available = this.logic.getAvailable()
-        const availableIncludesField = available.fields.some(f => objectCompare(f, data.field))
-        const availableIncludesFigure = available.figures.some(f => objectCompare(f, data.figure))
-
-        if (!availableIncludesField && !availableIncludesFigure) {
-            return
-        }
-
-        this.boardState = SvgBoardStates.CURRENT_PLAYER_FIGURE_MOVE_ANIMATION
-        const updates = this.logic.getUpdates({field: data.field, figure: data.figure})
-        SocketIOClientInstance.socket.emit("CLIENT_GAME_PROGRESS_UPDATE", updates)
-        
-        await this.svg.currentPlayerFigureMoveAnimationState(updates)
-
-        this.boardState = SvgBoardStates.WAITING */
     }
 
     private async handleDocumentClick_noMovesModalState(data: DocumentClickData) {
@@ -171,11 +165,6 @@ export class State {
 
         this.handleEmptyUpdates()
         ModalEventBusInstance.publish(ModalEventTypes.CLEAR_ALL_SIDE_MODALS)
-        /* SocketIOClientInstance.socket.emit("CLIENT_GAME_PROGRESS_UPDATE", [])
-
-        this.svg.waitingState()
-        ModalEventBusInstance.publish(ModalEventTypes.CLEAR_ALL_SIDE_MODALS)
-        this.boardState = SvgBoardStates.WAITING */
     }
 
     private async handleDocumentClick_homeMovesOnlyState(data: DocumentClickData) {
@@ -185,7 +174,6 @@ export class State {
 
         if (data.nextPlayerButton) {
             await this.handleEmptyUpdates()
-            // await this.handleDocumentClick_noMovesModalState(data)
         } else {
             await this.handleHighlightAnimationStateClicked(data)
         }

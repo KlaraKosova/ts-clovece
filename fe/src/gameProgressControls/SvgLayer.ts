@@ -184,12 +184,17 @@ export class SvgLayer {
         await this.animateUpdates(updates)
     }
 
-    public async winnerModalState(winnerColor: PlayerColors) {
+    public async winnerModalState(winnerColor: PlayerColors, playerColor: PlayerColors) {
         this.gameElementsDict.LOADING.clear()
         this.gameElementsDict.DICE.clear()
         this.gameElementsDict.DICE_PLAY_BUTTON.clear()
 
-        this.gameElementsDict.WINNER_MODAL.setColor(winnerColor)
+        console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+        this.gameElementsDict.OVERLAY.render()
+        console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaavvv')
+
+        this.gameElementsDict.WINNER_MODAL.setWinnerColor(winnerColor)
+        this.gameElementsDict.WINNER_MODAL.setPlayerColor(playerColor)
         this.gameElementsDict.WINNER_MODAL.render()
         this.gameElementsDict.WINNER_MODAL.runAnimation()
     }

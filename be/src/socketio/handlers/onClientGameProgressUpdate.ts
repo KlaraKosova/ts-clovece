@@ -31,6 +31,7 @@ export default async function (io: ServerIO, socket: SocketIO, updates: GameProg
     console.log('currentPlayerIndex', currentPlayerIndex)
     console.log('nextPlayerColor', nextPlayerColor)
     console.log('nextPlayer', nextPlayer)
+    console.log('updates', updates)
 
 
     const reversedUpdates = [...updates].reverse()

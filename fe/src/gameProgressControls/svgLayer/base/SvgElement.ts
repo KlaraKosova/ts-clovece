@@ -49,7 +49,7 @@ export class SvgElement {
         center: Coordinates,
         color: string,
         opacity?: number,
-        size: { x: number, y: number },
+        size: Coordinates,
         radius?: number
     }): void;
 

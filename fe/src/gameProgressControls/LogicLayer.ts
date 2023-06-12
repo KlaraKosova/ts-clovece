@@ -222,6 +222,17 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
         return result
     }
 
+    public getWinnerColor(): PlayerColors | null {
+        for (const playerColor of PlayersOrder) {
+            const allHome = this.figures[playerColor].every((f) => f.getField().isHome)
+            if (allHome) {
+                return playerColor
+            }
+        }
+
+        return null
+    }
+
     private getFigureByFieldDataset(field: FieldDataset): Figure | null {        
         for (const playerColor of PlayersOrder) {
             for (let i = 0; i < 4; i++) {
@@ -236,14 +247,25 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
         return null
     }
 
-    private getFigureByNextFieldDataset(field: FieldDataset): Figure | null {
-        const diceResult = this.getDiceResult()        
-        for (const playerColor of PlayersOrder) {
+    private getFigureByNextFieldDataset(field: FieldDataset, color?: PlayerColors): Figure | null {
+        const diceResult = this.getDiceResult()
+
+        if (color !== undefined) {
             for (let i = 0; i < 4; i++) {
-                const figure = this.figures[playerColor][i]
-                
+                const figure = this.figures[color][i]
+
                 if (objectCompare(figure.computeNextField(diceResult), field)) {
                     return figure
+                }
+            }
+        } else {
+            for (const playerColor of PlayersOrder) {
+                for (let i = 0; i < 4; i++) {
+                    const figure = this.figures[playerColor][i]
+
+                    if (objectCompare(figure.computeNextField(diceResult), field)) {
+                        return figure
+                    }
                 }
             }
         }
