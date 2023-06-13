@@ -199,6 +199,7 @@ export class GameProgressView extends View {
                 sideModalsContainer.appendChild(this.createHomeMovesOnlyModal())
                 break
             case ViewModalTypes.GAME_OVER_MODAL:
+                sideModalsContainer.appendChild(this.createGameOverModal({ winnerColor: modal.data}))
                 break
         }
     }
@@ -247,23 +248,19 @@ export class GameProgressView extends View {
         return modalWrapper
     }
 
-    private createHomeMovesOnlyModal(data: { winnerColor: PlayerColors}) {
+    private createGameOverModal(data: { winnerColor: PlayerColors}) {
         const isWinner = App.getUserInfo().color === data.winnerColor
         const modalClass =  isWinner ? 'side-modal-success' : 'side-modal-danger'
-        const modalTitle = isWinner
+        const modalTitle = isWinner ? '☺ Vyhral jste' : '☹ <TODO> vyhral'
+
         const modalWrapper = createElement<HTMLDivElement>('div', ['side-modal', modalClass], '')
         const modalInner = createElement<HTMLDivElement>('div', ['side-modal-inner'], '')
-        const title = createElement<HTMLHeadingElement>('h6', ['side-modal-header'], 'Omezene dostupne tahy')
+        const title = createElement<HTMLHeadingElement>('h6', ['side-modal-header'], modalTitle)
 
         const modalContent = createElement<HTMLDivElement>('div', ['side-modal-content'], '')
-        const modalDesription = createElement<HTMLDivElement>('div', [], 'Dostupne tahy pouze pro figurky "v domecku". Preskocit kolo?') // TODO "domecek"
-        const nextPlayerButton = createElement<HTMLButtonElement>('button',
-            ['btn', 'btn-success', 'next-player-btn'],
-            'Dalsi hrac',
-            { nextPlayerButton: 'true' }
-        )
+        const modalDesription = createElement<HTMLDivElement>('div', [], 'Konec hry')
 
-        modalContent.append(modalDesription, nextPlayerButton)
+        modalContent.append(modalDesription)
         modalInner.append(title, modalContent)
 
 
