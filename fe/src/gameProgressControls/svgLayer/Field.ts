@@ -59,9 +59,6 @@ export class Field extends GameElement implements HasHighlightAnimation, HasData
                 }
             })
         }
-
-        console.log('aaa');
-        
     }
 
     clear() {

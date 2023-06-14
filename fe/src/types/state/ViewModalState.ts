@@ -1,10 +1,13 @@
-import { ViewModalTypes } from "./ViewModalTypes"
-
-export type ViewModalState = /*{
-    type: ViewModalTypes,
-    data: any // TODO
+type ElementState = {
+    tag: keyof HTMLElementTagNameMap
+    content: string
+    classList: string[]
+    dataset?: Record<string, string>
 }
-*/ {
-    type: typeof ViewModalTypes.NO_MOVES_MODAL,
-    data: undefined
-} | undefined
+
+export type ViewModalState = {
+    id: string
+    headerList: ElementState[]
+    wrapperClasslist: string[]
+    contentList: ElementState[]
+}

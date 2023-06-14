@@ -34,6 +34,10 @@ export class State {
         return this.logic.getWinnerColor()
     }
 
+    public getCurrentColor() {
+        return this.logic.getCurrentColor()
+    }
+
     public renderInitial() {
         this.svg.initialState()
     }
@@ -61,9 +65,6 @@ export class State {
     }
 
     public async handleDocumentClick(data: DocumentClickData) {
-        console.log(data);
-        console.log(this.boardState);
-        
         let handlePromise: Promise<void> | undefined
         
         switch(this.boardState) {
@@ -132,9 +133,7 @@ export class State {
         }
 
         const available = this.logic.getAvailable()
-        console.log(available)
         if (available.fields.length) {
-            console.log('why')
             if (available.homeMovesOnly) {
                 ModalEventBusInstance.publish(ModalEventTypes.SHOW_HOME_MOVES_ONLY_MODAL)
                 this.boardState = SvgBoardStates.HOME_MOVES_ONLY
@@ -146,6 +145,7 @@ export class State {
         } else {
             this.boardState = SvgBoardStates.NO_MOVES
             ModalEventBusInstance.publish(ModalEventTypes.SHOW_NO_MOVES_MODAL)
+            
             this.svg.noMovesState()
         }
     }
@@ -164,7 +164,7 @@ export class State {
         }
 
         this.handleEmptyUpdates()
-        ModalEventBusInstance.publish(ModalEventTypes.CLEAR_ALL_SIDE_MODALS)
+        ModalEventBusInstance.publish(ModalEventTypes.CLEAR_ALL)
     }
 
     private async handleDocumentClick_homeMovesOnlyState(data: DocumentClickData) {
@@ -178,7 +178,7 @@ export class State {
             await this.handleHighlightAnimationStateClicked(data)
         }
 
-        ModalEventBusInstance.publish(ModalEventTypes.CLEAR_ALL_SIDE_MODALS)
+        ModalEventBusInstance.publish(ModalEventTypes.CLEAR_ALL)
     }
 
     private handleEmptyUpdates() {

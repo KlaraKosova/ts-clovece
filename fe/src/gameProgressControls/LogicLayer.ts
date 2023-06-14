@@ -233,6 +233,14 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
         return null
     }
 
+    public getCurrentColor(): PlayerColors {
+        for (const playerColor of PlayersOrder) {
+            if (this.dataset.playerStatuses[playerColor].userId === this.dataset.currentPlayerId) {
+                return playerColor
+            }
+        }
+    }
+
     private getFigureByFieldDataset(field: FieldDataset): Figure | null {        
         for (const playerColor of PlayersOrder) {
             for (let i = 0; i < 4; i++) {

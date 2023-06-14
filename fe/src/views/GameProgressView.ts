@@ -8,16 +8,17 @@ import { PlayerColors, PlayersOrder } from "../types/common/PlayerColors";
 import { GameProgressDataset } from "../types/data/GameProgressDataset";
 import { GameProgressUpdate } from "../types/data/GameProgressUpdate";
 import { State } from "../gameProgressControls/State";
-import { ViewModalState } from "@/types/state/ViewModalState";
 import { ViewModalTypes } from "@/types/state/ViewModalTypes";
 import {ModalEventBusInstance} from "@/gameProgressControls/modals/ModalEventBus";
 import {ModalEventTypes} from "@/types/state/ModalEventBusEventTypes";
 import { createElement } from "@/utils/domHelpers";
+import { ViewModalState } from "@/types/state/ViewModalState";
+import { cloneDeep, create } from "lodash";
+import { modals } from "@/utils/modals";
+import { PlayerColorNameMap } from "@/utils/constants";
 
 export class GameProgressView extends View {
     private state: State
-    private stateModals: ViewModalState[] = []
-    private infoModals: ViewModalState[] = []
 
     public render(): void {
         const wrapper = document.createElement("div")
@@ -46,14 +47,19 @@ export class GameProgressView extends View {
         if (winnerColor !== null) {
             this.setGameOverHeaderBar(winnerColor)
         } else {
-            this.setGameProgressHeaderBar(game)
+            const currentPlayerColor = this.state.getCurrentColor()
+            ModalEventBusInstance.publish(ModalEventTypes.CLEAR_ALL)
+            ModalEventBusInstance.publish(ModalEventTypes.SHOW_CURRENT_PLAYER_MODAL, { currentPlayerColor })
         }
     }
 
     private async onGameProgressUpdate(data: { progress: GameProgressDataset, updates: GameProgressUpdate[] }) {
         console.log('onGameProgressUpdate', data)
-        this.setGameProgressHeaderBar(data.progress)
-        this.state.handleGameProgressUpdate(data)
+        await this.state.handleGameProgressUpdate(data)
+
+        const currentPlayerColor = this.state.getCurrentColor()
+        ModalEventBusInstance.publish(ModalEventTypes.CLEAR_ALL)
+        ModalEventBusInstance.publish(ModalEventTypes.SHOW_CURRENT_PLAYER_MODAL, { currentPlayerColor })
     }
 
     private async onGameWinner(data: { winnerId: string }) {
@@ -130,23 +136,9 @@ export class GameProgressView extends View {
         console.log('emit GAME_PROGRESS_REQUEST');
 
         SocketIOClientInstance.socket.emit("GAME_PROGRESS_REQUEST")
-        ModalEventBusInstance.subscribe(ModalEventTypes.SHOW_NO_MOVES_MODAL, this.modalEventBusHandlers_showNoMovesModal.bind(this))
-        ModalEventBusInstance.subscribe(ModalEventTypes.CLEAR_ALL_SIDE_MODALS, this.modalEventBusHandlers_clearAllModals.bind(this))
-        ModalEventBusInstance.subscribe(ModalEventTypes.SHOW_HOME_MOVES_ONLY_MODAL, this.modalEventBusHandlers_showHomeMovesOnlyModal.bind(this))
-    }
-
-    private setGameProgressHeaderBar(progress: GameProgressDataset) {
-        const headerBar = this.rootElem.querySelector('.game-progress-wrapper :first-child') as HTMLElement
-        PlayersOrder.forEach(color => {
-            if (progress.playerStatuses[color].userId === progress.currentPlayerId) {
-                headerBar.style.backgroundColor = Consts.COLORS[color].FIGURE_BODY
-            }
-            if (progress.currentPlayerId === App.getUserInfo().userId) {
-                headerBar.textContent = "Jste na tahu"
-            } else {
-                headerBar.textContent = "Jiny hrac"
-            }
-
+        
+        Object.keys(ModalEventTypes).forEach((eventType: ModalEventTypes) => {
+            ModalEventBusInstance.subscribe(eventType, (data: any) => this.handleModalEvent.call(this, eventType, data))        
         })
     }
 
@@ -157,116 +149,92 @@ export class GameProgressView extends View {
         headerBar.textContent = "Game over. <TODO> won"
     }
 
-    private modalEventBusHandlers_showNoMovesModal() {
-        this.infoModals = [ { type: ViewModalTypes.NO_MOVES_MODAL, data: null} ]
-        this.renderModals()
-    }
 
-    private modalEventBusHandlers_showGameOverModal(data: {winnerColor: PlayerColors}) {
-        this.stateModals = [ { type: ViewModalTypes.GAME_OVER_MODAL, data} ]
-        this.infoModals = []
-        this.renderModals()
-    }
-
-    private modalEventBusHandlers_showHomeMovesOnlyModal() {
-        this.infoModals = [ { type: ViewModalTypes.HOME_MOVES_ONLY_MODAL, data: null} ]
-        this.renderModals()
-    }
+    private handleModalEvent(event: ModalEventTypes, data: any) {
+        console.log('handle');
+        console.log(event);
+        console.log(data);
+        
+        if (event === ModalEventTypes.CLEAR_ALL) {
+            const modalsContainer = document.getElementById("modalsContainer")!
+            modalsContainer.replaceChildren()
+            return
+        }
 
 
-    private modalEventBusHandlers_clearAllModals() {
-        const modalsContainer = document.getElementById("modalsContainer")!
-        modalsContainer.replaceChildren()
-    }
+        let modalType = null as null | ViewModalTypes
 
-    private renderModals() {
-        const modalsContainer = document.getElementById("modalsContainer")!
-        modalsContainer.replaceChildren()
+        if (event === ModalEventTypes.SHOW_NO_MOVES_MODAL) {
+            modalType = ViewModalTypes.NO_MOVES_MODAL
+        } else if (event === ModalEventTypes.SHOW_HOME_MOVES_ONLY_MODAL) {
+            modalType = ViewModalTypes.HOME_MOVES_ONLY_MODAL
+        } else if (event === ModalEventTypes.SHOW_GAME_OVER_MODAL) {
+            modalType = ViewModalTypes.GAME_OVER_MODAL
+        } else if (event === ModalEventTypes.SHOW_CURRENT_PLAYER_MODAL) {
+            modalType = ViewModalTypes.CURRENT_PLAYER_MODAL
+        }
 
-        this.stateModals.forEach((modal) => this.renderModal(modal))
-        this.infoModals.forEach((modal) => this.renderModal(modal))
-    }
-
-    private renderModal(modal: ViewModalState) {
-        const sideModalsContainer = document.getElementById("modalsContainer")!
-
-        switch(modal.type) {
-            case ViewModalTypes.NO_MOVES_MODAL:
-                console.log('case')
-                sideModalsContainer.appendChild(this.createNoMovesModal())
-                break
-            case ViewModalTypes.HOME_MOVES_ONLY_MODAL:
-                sideModalsContainer.appendChild(this.createHomeMovesOnlyModal())
-                break
-            case ViewModalTypes.GAME_OVER_MODAL:
-                sideModalsContainer.appendChild(this.createGameOverModal({ winnerColor: modal.data}))
-                break
+        if (modalType !== null) {            
+            const modalState = this.createModalData(modalType, data)
+            this.renderModal(modalState)
         }
     }
 
-    private createNoMovesModal() {
-        const modalWrapper = createElement<HTMLDivElement>('div', ['side-modal', 'side-modal-danger'], '')
-        const modalInner = createElement<HTMLDivElement>('div', ['side-modal-inner'], '')
-        const title = createElement<HTMLHeadingElement>('h6', ['side-modal-header'], 'Zadne dalsi tahy')
+    private createModalData(modalType: ViewModalTypes, eventData: any) {
+        const modalData = cloneDeep(modals[modalType])
 
-        const modalContent = createElement<HTMLDivElement>('div', ['side-modal-content'], '')
-        const modalDesription = createElement<HTMLDivElement>('div', [], 'Nejsou dostupne zadne dalsi tahy')
-        const nextPlayerButton = createElement<HTMLButtonElement>('button',
-            ['btn', 'btn-success', 'next-player-btn'],
-            'Dalsi hrac',
-            { nextPlayerButton: 'true' }
-        )
+        if (eventData === undefined) {
+            return modalData
+        }
 
-        modalContent.append(modalDesription, nextPlayerButton)
-        modalInner.append(title, modalContent)
+        if (modalType === ViewModalTypes.CURRENT_PLAYER_MODAL) {
+            const data = eventData as {
+                currentPlayerColor: PlayerColors
+            } 
 
+            if (data.currentPlayerColor === App.getUserInfo().color) {
+                modalData.headerList[0].content = "Jste na tahu"
+            } else {
+                modalData.headerList[0].content = PlayerColorNameMap[data.currentPlayerColor] + " hraje"
+            }
+            modalData.wrapperClasslist.push(`side-modal-current-player__${data.currentPlayerColor}`)
+        
+        }
 
-        modalWrapper.appendChild(modalInner)
-
-        return modalWrapper
+        // TODO
+        return modalData
     }
 
-    private createHomeMovesOnlyModal() {
-        const modalWrapper = createElement<HTMLDivElement>('div', ['side-modal'], '')
+    private renderModal(modal: ViewModalState) {
+        console.log(modal);
+        
+        const modalsContainer = document.getElementById("modalsContainer")!
+
+        const modalWrapper = createElement<HTMLDivElement>('div', ['side-modal', ...modal.wrapperClasslist], '')
+        modalWrapper.id = modal.id
         const modalInner = createElement<HTMLDivElement>('div', ['side-modal-inner'], '')
-        const title = createElement<HTMLHeadingElement>('h6', ['side-modal-header'], 'Omezene dostupne tahy')
-
+        const modalHeader = createElement<HTMLDivElement>('div', ['side-modal-header'], '')
         const modalContent = createElement<HTMLDivElement>('div', ['side-modal-content'], '')
-        const modalDesription = createElement<HTMLDivElement>('div', [], 'Dostupne tahy pouze pro figurky "v domecku". Preskocit kolo?') // TODO "domecek"
-        const nextPlayerButton = createElement<HTMLButtonElement>('button',
-            ['btn', 'btn-success', 'next-player-btn'],
-            'Dalsi hrac',
-            { nextPlayerButton: 'true' }
-        )
+        
+        const modalHeaderElements = [] as HTMLElement[]
+        const modalContentElements = [] as HTMLElement[]
 
-        modalContent.append(modalDesription, nextPlayerButton)
-        modalInner.append(title, modalContent)
+        modal.headerList.forEach((e) => {
+            const element = createElement(e.tag, [...e.classList], e.content, e.dataset)
+            modalHeaderElements.push(element)
+        })
 
+        modal.contentList.forEach((e) => {
+            const element = createElement(e.tag, [...e.classList], e.content, e.dataset)
+            modalContentElements.push(element)
+        })
 
+        modalHeader.replaceChildren(...modalHeaderElements)
+        modalContent.replaceChildren(...modalContentElements)
+
+        modalInner.append(modalHeader, modalContent)
         modalWrapper.appendChild(modalInner)
 
-        return modalWrapper
+        modalsContainer.appendChild(modalWrapper)
     }
-
-    private createGameOverModal(data: { winnerColor: PlayerColors}) {
-        const isWinner = App.getUserInfo().color === data.winnerColor
-        const modalClass =  isWinner ? 'side-modal-success' : 'side-modal-danger'
-        const modalTitle = isWinner ? '☺ Vyhral jste' : '☹ <TODO> vyhral'
-
-        const modalWrapper = createElement<HTMLDivElement>('div', ['side-modal', modalClass], '')
-        const modalInner = createElement<HTMLDivElement>('div', ['side-modal-inner'], '')
-        const title = createElement<HTMLHeadingElement>('h6', ['side-modal-header'], modalTitle)
-
-        const modalContent = createElement<HTMLDivElement>('div', ['side-modal-content'], '')
-        const modalDesription = createElement<HTMLDivElement>('div', [], 'Konec hry')
-
-        modalContent.append(modalDesription)
-        modalInner.append(title, modalContent)
-
-
-        modalWrapper.appendChild(modalInner)
-
-        return modalWrapper
-    }
-
 }

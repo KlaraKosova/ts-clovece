@@ -1,6 +1,12 @@
 import { PlayerColors } from "../types/common/PlayerColors";
 import { GameProgressDataset } from "../types/data/GameProgressDataset";
 
+export const PlayerColorNameMap: Record<PlayerColors, string> = {
+    [PlayerColors.RED]: 'RED',
+    [PlayerColors.BLUE]: 'BLUE',
+    [PlayerColors.YELLOW]: 'YELLOW',
+    [PlayerColors.GREEN]: 'GREEN',
+}
 
 export const defaultGameProgressDataset: GameProgressDataset = {
     name: '',

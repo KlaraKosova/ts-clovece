@@ -2,11 +2,11 @@
 
 #modalsContainer {
     position: absolute;
-    top: 4rem;
+    top: 6rem;
     right: 1rem;
 
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
 }
 
 .side-modal {
@@ -14,6 +14,7 @@
     color: $base-color;
     background-color: $base-bg-color-transparent;
     border-left: 7px solid $base-border-color;
+    margin-bottom: 0.5rem;
 
     border-radius: 10px;
     box-shadow: 5px 5px 5px $shadow-color;
@@ -39,7 +40,36 @@
 
         margin-bottom: 1rem;
         margin-top: 1rem;
+
+        &__text {
+            font-size: inherit;
+            margin: 0;
+        }
     }
 
     &-content {}
+
+    &-current-player {
+        /* TODO */
+        background-color: rgba(white, $transparency);
+        &__0 {
+            color: $current-player-RED-color;
+            border-left-color: $current-player-RED-border-color;
+        }
+
+        &__1 {
+            color: $current-player-YELLOW-color;
+            border-left-color: $current-player-YELLOW-border-color;
+        }
+
+        &__2 {
+            color: $current-player-GREEN-color;
+            border-left-color: $current-player-GREEN-border-color;
+        }
+
+        &__3 {
+            color: $current-player-BLUE-color;
+            border-left-color: $current-player-BLUE-border-color;
+        }
+    }
 }

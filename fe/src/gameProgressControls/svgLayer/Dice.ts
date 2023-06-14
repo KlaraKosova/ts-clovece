@@ -96,27 +96,8 @@ export class Dice extends GameElement {
             this.drawDots(sequence[i])
             await delay(25)
         }
-
-        /*
-
-        this.animate((child: Element) => {
-            child.animate(1000, 0, 'after').dmove(0, -30 * k)
-        })
-        this.playBtnSvg.callChildrenFn((child: Element) => {
-            child.animate(1000, 0, 'after').dmove(0, 30 * k)
-        }) */
     }
 
-    /* clear (): void {
-        if (this.diceSvg) {
-            console.log(this.diceSvg)
-            this.diceSvg.removeChildren()
-        }
-        if (this.playBtnSvg) {
-            console.log(this.diceSvg)
-            this.playBtnSvg.removeChildren()
-        }
-    } */
     public async animateMoveUp() {
         this.svg.move({ duration: 1000, offset: { x: 0, y: -30 } })
         this.svg.setCSS({

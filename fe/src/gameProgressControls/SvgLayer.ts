@@ -189,9 +189,7 @@ export class SvgLayer {
         this.gameElementsDict.DICE.clear()
         this.gameElementsDict.DICE_PLAY_BUTTON.clear()
 
-        console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
         this.gameElementsDict.OVERLAY.render()
-        console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaavvv')
 
         this.gameElementsDict.WINNER_MODAL.setWinnerColor(winnerColor)
         this.gameElementsDict.WINNER_MODAL.setPlayerColor(playerColor)
