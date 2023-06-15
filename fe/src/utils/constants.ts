@@ -1,11 +1,12 @@
 import { PlayerColors } from "../types/common/PlayerColors";
 import { GameProgressDataset } from "../types/data/GameProgressDataset";
+import { locale } from "./locale";
 
 export const PlayerColorNameMap: Record<PlayerColors, string> = {
-    [PlayerColors.RED]: 'RED',
-    [PlayerColors.BLUE]: 'BLUE',
-    [PlayerColors.YELLOW]: 'YELLOW',
-    [PlayerColors.GREEN]: 'GREEN',
+    [PlayerColors.RED]: locale.get('colors.red'),
+    [PlayerColors.BLUE]: locale.get('colors.blue'),
+    [PlayerColors.YELLOW]: locale.get('colors.yellow'),
+    [PlayerColors.GREEN]: locale.get('colors.green'),
 }
 
 export const defaultGameProgressDataset: GameProgressDataset = {

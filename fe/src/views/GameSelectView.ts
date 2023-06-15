@@ -2,13 +2,14 @@ import { createElement } from "@/utils/domHelpers";
 import { SocketIOClientInstance } from "../socketio/SocketClient";
 import { GamePreview } from "../types/data/GamePreview";
 import { View } from "./View";
+import { locale } from "@/utils/locale";
 
 export class GameSelectView extends View {
     private games: GamePreview[] = [];
     render() {
         const container = createElement('div', ['gamecards-container'])
         const containerHeader = createElement('div', ['gamecards-header'])
-        const newGameButton = createElement('button', ['btn', 'btn-success', 'btn-newgame'], 'Nová hra')
+        const newGameButton = createElement('button', ['btn', 'btn-success', 'btn-newgame'], locale.get('newGame'))
         const containerContent = createElement('div', ['gamecards-content'], '')
 
         containerHeader.appendChild(newGameButton)
@@ -17,8 +18,8 @@ export class GameSelectView extends View {
         for (let i = 0; i < this.games.length; i++) {
             const cardContainer = createElement('div', ['gamecard-container'], '')
             const cardTitle = createElement('div', ['gamecard-title'], this.games[i].name)
-            const cardSubtitle = createElement('div', ['gamecard-subtitle'], `Hráči: ${this.games[i].players}/4`)
-            const cardJoinButton = createElement('button', ['btn', 'btn-success', 'gamecard-join'], 'Přidat se')
+            const cardSubtitle = createElement('div', ['gamecard-subtitle'], `${locale.get('players')}: ${this.games[i].players}/4`)
+            const cardJoinButton = createElement('button', ['btn', 'btn-success', 'gamecard-join'], locale.get('join'))
 
             cardContainer.append(cardTitle, cardSubtitle, cardJoinButton)
             containerContent.append(cardContainer)
@@ -34,13 +35,13 @@ export class GameSelectView extends View {
         const modalCloseBtn = createElement('button', ['btn', 'btn-icon', 'btn-danger', 'centermodal-close'], '&times;')
         modalCloseBtn.addEventListener('click', this.removeNewGameDialog.bind(this))
 
-        const modalHeader = createElement('div', ['centermodal-header'], 'Nová hra')
+        const modalHeader = createElement('div', ['centermodal-header'], locale.get('newGame'))
         const modalContent = createElement('div', ['centermodal-content'])
 
-        const inputLabel = createElement('label', ['input', 'input-label'], 'Název')
+        const inputLabel = createElement('label', ['input', 'input-label'], locale.get('title'))
         const inputText = createElement('input', ['input', 'input-text'])
-        inputText.setAttribute('placeholder', 'Hra bez názvu')
-        const createButton = createElement('button', ['btn', 'btn-success'], 'Vytvořit')
+        inputText.setAttribute('placeholder', locale.get('untitledGame'))
+        const createButton = createElement('button', ['btn', 'btn-success'], locale.get('create'))
         createButton.addEventListener('click', this.emitNewGame.bind(this))
 
         modalContent.replaceChildren(inputLabel, inputText, createButton)
@@ -62,7 +63,7 @@ export class GameSelectView extends View {
         console.log('emit NEW_GAME');
 
         SocketIOClientInstance.socket.emit("NEW_GAME", {
-            name: inputElement?.value || "Hra bez názvu"
+            name: inputElement?.value || locale.get('untitledGame')
         })
     }
 

@@ -7,6 +7,8 @@ import { SocketIOClientInstance } from "./socketio/SocketClient";
 import { UserInfo } from "./types/common/UserInfo";
 import { ViewName } from "./types/state/ViewName";
 import { PlayersOrder } from "./types/common/PlayerColors";
+import { locale } from "./utils/locale";
+import { createElement } from "./utils/domHelpers";
 
 class App {
     private userInfo: UserInfo | null = null;
@@ -23,6 +25,8 @@ class App {
         this.currentView = this.viewsDict.LOADING
         this.currentView.mount()
         this.registerSocketListeners()
+
+        this.renderLangOptions()
     }
 
     /**
@@ -96,6 +100,43 @@ class App {
         this.currentView.unmount()
         this.currentView = this.viewsDict[view]
         this.currentView.mount()
+    }
+
+
+    public async renderLangOptions() {
+        const headerEnd = document.querySelector('.header-end')!
+        const select = createElement('select', [])
+        select.id = 'langSelect'
+
+        locale.getSupportedLangs().forEach(lang => {
+            const option = createElement('option', [], lang.label)
+            option.setAttribute('value', lang.value)
+
+            if (locale.getLang().value === lang.value) {
+                option.setAttribute('selected', 'selected')
+            }
+
+            select.appendChild(option)
+        })
+    
+        headerEnd.appendChild(select)
+
+        // @ts-ignore
+        const SlimSelect = window.SlimSelect
+
+        new SlimSelect({
+            select: '#langSelect',
+            settings: {
+                showSearch: false
+            },
+            events: {
+                afterChange: (data: { text: string, value: string }[]) => this.setLang.call(this, data)
+            }
+        })
+    }
+
+    private setLang(data: { text: string, value: string }[]) {
+        locale.setLang(data[0].value)
     }
 }
 

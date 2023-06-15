@@ -1,24 +1,25 @@
 import { ViewModalState } from "@/types/state/ViewModalState";
 import { ViewModalTypes } from "@/types/state/ViewModalTypes";
+import { locale } from "./locale";
 
 export const modals:  Record<ViewModalTypes, ViewModalState> = {
     [ViewModalTypes.NO_MOVES_MODAL]: {
         headerList: [
             {
                 tag: 'h6',
-                content: 'Zadne dalsi tahy',
+                content: locale.get('noMovesHeader'),
                 classList: ['sidemodal-header__text']
             }
         ],
         contentList: [
             {
                 tag: 'div',
-                content: 'Nejsou dostupne zadne dalsi tahy',
+                content: locale.get('noMovesDescription'),
                 classList: []
             },
             {
                 tag: 'button',
-                content: 'Dalsi hrac',
+                content: locale.get('nextPlayer'),
                 classList:['btn', 'btn-success', 'btn-nextplayer'],
                 dataset: { nextPlayerButton: 'true' }
             }
@@ -30,19 +31,19 @@ export const modals:  Record<ViewModalTypes, ViewModalState> = {
         headerList: [
             {
                 tag: 'h6',
-                content: 'Omezene dostupne tahy',
+                content: locale.get('homeMovesOnlyHeader'),
                 classList: ['sidemodal-header__text']
             }
         ],
         contentList: [
             {
                 tag: 'div',
-                content: 'Dostupne tahy pouze pro figurky "v domecku". Preskocit kolo?',
+                content: locale.get('homeMovesOnlyDescription'),
                 classList: []
             },
             {
                 tag: 'button',
-                content: 'Dalsi hrac',
+                content: locale.get('nextPlayer'),
                 classList:['btn', 'btn-success', 'btn-nextplayer'],
                 dataset: { nextPlayerButton: 'true' }
             }
@@ -66,12 +67,12 @@ export const modals:  Record<ViewModalTypes, ViewModalState> = {
         contentList: [
             {
                 tag: 'div',
-                content: 'Konec hry',
+                content: locale.get('gameOver'),
                 classList: []
             },
             {
                 tag: 'button',
-                content: 'Nová hra',
+                content: locale.get('newGame'),
                 classList: ['btn', 'btn-success', 'btn-full']
             },
         ],

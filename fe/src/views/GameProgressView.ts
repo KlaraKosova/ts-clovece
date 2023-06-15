@@ -16,6 +16,7 @@ import { ViewModalState } from "@/types/state/ViewModalState";
 import { cloneDeep, create } from "lodash";
 import { modals } from "@/utils/modals";
 import { PlayerColorNameMap } from "@/utils/constants";
+import { locale } from "@/utils/locale";
 
 export class GameProgressView extends View {
     private state: State
@@ -173,9 +174,9 @@ export class GameProgressView extends View {
             } 
 
             if (data.currentPlayerColor === App.getUserInfo().color) {
-                modalData.headerList[0].content = "Jste na tahu"
+                modalData.headerList[0].content = locale.get('yourTurn')
             } else {
-                modalData.headerList[0].content = PlayerColorNameMap[data.currentPlayerColor] + " hraje"
+                modalData.headerList[0].content = PlayerColorNameMap[data.currentPlayerColor] + locale.get('otherPlayerTurnSuffix')
             }
             modalData.containerClasslist.push(`sidemodal-current-player__${data.currentPlayerColor}`)
         
@@ -188,11 +189,11 @@ export class GameProgressView extends View {
 
             if (App.getUserInfo().color === data.winnerColor) {
                 modalData.headerList[0].content = '☺'
-                modalData.headerList[1].content = "Vyhrali jste"
+                modalData.headerList[1].content = locale.get('youWon')
                 modalData.containerClasslist.push('sidemodal-success')
             } else {
                 modalData.headerList[0].content = '☹'
-                modalData.headerList[1].content = PlayerColorNameMap[data.winnerColor] + ' vyhral'
+                modalData.headerList[1].content = PlayerColorNameMap[data.winnerColor] + locale.get('otherPlayerWonSuffix')
                 modalData.containerClasslist.push('sidemodal-danger')
             }
         }
