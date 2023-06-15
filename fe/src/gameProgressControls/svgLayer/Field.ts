@@ -3,42 +3,42 @@ import { Runner, Svg } from '@svgdotjs/svg.js'
 import Consts from "../../utils/svgBoardConstants";
 import { centers, homeCenters, startCenters } from '../../utils/fieldCenters'
 import { HasHighlightAnimation } from './base/HasHighlightAnimation';
-import { Coordinates } from '../../types/svgLayer/Coordinates';
-import { FieldDataset } from '../../types/data/FieldDataset';
+import { Coordinates } from '../../types/Coordinates';
+import { FieldDTO } from '../../types/dtos/FieldDTO';
 import { cloneDeep } from 'lodash';
-import { HasDataset } from '../HasDataset';
+import { HasDTO } from '../HasDTO';
 
-export class Field extends GameElement implements HasHighlightAnimation, HasDataset<FieldDataset> {
+export class Field extends GameElement implements HasHighlightAnimation, HasDTO<FieldDTO> {
     private color: { front: string, back: string }
     private center: Coordinates
     private text = ''
     private animationRunner: Runner
-    private dataset: FieldDataset
+    private dto: FieldDTO
 
-    constructor(draw: Svg, dataset: FieldDataset) {
+    constructor(draw: Svg, dto: FieldDTO) {
         super(draw)
 
-        this.dataset = dataset
+        this.dto = dto
         this.svg.addClass('field')
         this.animationRunner = new Runner()
 
-        if (dataset.isHome) {
-            this.center = homeCenters[dataset.color][dataset.index]
-        } else if (dataset.isStart) {
-            this.center = startCenters[dataset.color][dataset.index]
+        if (dto.isHome) {
+            this.center = homeCenters[dto.color][dto.index]
+        } else if (dto.isStart) {
+            this.center = startCenters[dto.color][dto.index]
         } else {
-            this.center = centers[dataset.index]
-            if (dataset.index % 10 === 0) {
+            this.center = centers[dto.index]
+            if (dto.index % 10 === 0) {
                 this.text = 'A'
             }
         }
 
-        if (dataset.color === null) {
+        if (dto.color === null) {
             this.color = { front: '#ffffff', back: "#000000" }
         } else {
             this.color = {
-                front: Consts.COLORS[dataset.color].FIELD_FRONT,
-                back: Consts.COLORS[dataset.color].FIELD_BACK,
+                front: Consts.COLORS[dto.color].FIELD_FRONT,
+                back: Consts.COLORS[dto.color].FIELD_BACK,
             }
         }
     }
@@ -46,7 +46,7 @@ export class Field extends GameElement implements HasHighlightAnimation, HasData
     render(): void {
         this.svg.createChild({ type: 'circle', diameter: Consts.BOARD.FIELDS.OUTER_SIZE, color: this.color.back, center: this.center })
         this.svg.createChild({ type: 'circle', diameter: Consts.BOARD.FIELDS.INNER_SIZE, color: this.color.front, center: this.center })
-        this.svg.setDataset(this.dataset)
+        this.svg.setDataset(this.dto)
 
 
         if (this.text) {
@@ -87,46 +87,22 @@ export class Field extends GameElement implements HasHighlightAnimation, HasData
             cursor: 'default'
         })
     }
-    // TODO
-    /* highlightAnimationStart(): void {
-        // TODO
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        this.animationRunner = this.group.getNthChild(2).animate({
-            duration: 500,
-            delay: 0,
-            when: 'now',
-            swing: true,
-            times: Infinity,
-            wait: 200
-        }).attr({ fill: '#fc9c2d' })
-        this.svg.setCSS({
-            cursor: 'pointer'
-        })
+    
+    public getDTO() {
+        return cloneDeep(this.dto)
     }
 
-    highlightAnimationStop(): void {
-        this.animationRunner.loops(2)
-        this.animationRunner.unschedule()
-        this.svg.setCSS({
-            cursor: 'default'
-        })
-    } */
-    public getDataset() {
-        return cloneDeep(this.dataset)
-    }
-
-    public setDataset(dataset: FieldDataset) {
-        this.dataset = cloneDeep(dataset)
+    public setDTO(dto: FieldDTO) {
+        this.dto = cloneDeep(dto)
     }
 
     public getCoordinates(): Coordinates {
-        if (this.dataset.isHome) {
-            return homeCenters[this.dataset.color][this.dataset.index]
+        if (this.dto.isHome) {
+            return homeCenters[this.dto.color][this.dto.index]
         }
-        if (this.dataset.isStart) {
-            return startCenters[this.dataset.color][this.dataset.index]
+        if (this.dto.isStart) {
+            return startCenters[this.dto.color][this.dto.index]
         }
-        return centers[this.dataset.index]
+        return centers[this.dto.index]
     }
 }

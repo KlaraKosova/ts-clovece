@@ -1,17 +1,18 @@
 import { Socket } from 'socket.io-client'
-import { UserInfo } from '../types/common/UserInfo'
-import { GamePreview } from '../types/data/GamePreview'
-import { GameProgressDataset } from '../types/data/GameProgressDataset'
-import { GameProgressUpdate } from '../types/data/GameProgressUpdate'
+import { UserInfo } from '../types/UserInfo'
+import { GamePreviewDTO } from '../types/dtos/GamePreviewDTO'
+import { GameProgressDTO } from '../types/dtos/GameProgressDTO'
+import { GameProgressUpdateDTO } from '../types/dtos/GameProgressUpdateDTO'
 
-// redirect_ eventy se resi primo v App, ostatni v samostatnych funkcich
+// redirect_X events are handled in App
+// other in dedicated functions
 export interface ServerToClientEvents {
     REDIRECT_GAME_SELECT: () => void,
     REDIRECT_GAME_WAIT: (data: UserInfo) => void,
-    GAME_SELECT_RESPONSE: (data: { games: GamePreview[] }) => void,
+    GAME_SELECT_RESPONSE: (data: { games: GamePreviewDTO[] }) => void,
     REDIRECT_GAME_PROGRESS: () => void,
-    GAME_PROGRESS_RESPONSE: (data: GameProgressDataset) => void,
-    GAME_PROGRESS_UPDATE: (data: { progress: GameProgressDataset, updates: GameProgressUpdate[] }) => void,
+    GAME_PROGRESS_RESPONSE: (data: GameProgressDTO) => void,
+    GAME_PROGRESS_UPDATE: (data: { progress: GameProgressDTO, updates: GameProgressUpdateDTO[] }) => void,
     GAME_WINNER: (data: { winnerId: string }) => void
 }
 
@@ -21,7 +22,7 @@ export interface ClientToServerEvents {
     NEW_GAME: (data: { name: string }) => void,
     JOIN_GAME: (data: { gameId: string }) => void,
     GAME_PROGRESS_REQUEST: () => void,
-    CLIENT_GAME_PROGRESS_UPDATE: (data: GameProgressUpdate[]) => void,
+    CLIENT_GAME_PROGRESS_UPDATE: (data: GameProgressUpdateDTO[]) => void,
     NEXT_PLAYER_MOVE: () => void
 }
 

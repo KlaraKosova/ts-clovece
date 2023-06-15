@@ -1,5 +1,5 @@
-import { PlayerColors } from "../types/common/PlayerColors";
-import { GameProgressDataset } from "../types/data/GameProgressDataset";
+import { PlayerColors } from "../types/PlayerColors";
+import { GameProgressDTO } from "../types/dtos/GameProgressDTO";
 import { locale } from "./locale";
 
 export const PlayerColorNameMap: Record<PlayerColors, string> = {
@@ -9,7 +9,7 @@ export const PlayerColorNameMap: Record<PlayerColors, string> = {
     [PlayerColors.GREEN]: locale.get('colors.green'),
 }
 
-export const defaultGameProgressDataset: GameProgressDataset = {
+export const defaultGameProgressDTO: GameProgressDTO = {
     name: '',
     players: 0,
     lastDiceSequence: [],

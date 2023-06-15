@@ -5,30 +5,27 @@ import { centers, homeCenters, startCenters } from "../../utils/fieldCenters";
 import { HasHighlightAnimation } from "./base/HasHighlightAnimation";
 import { Field } from "./Field";
 import { coordinatesDiff } from "../../utils/common";
-import { FigureDataset } from "../../types/data/FigureDataset";
-import { Coordinates } from "../../types/svgLayer/Coordinates";
+import { FigureDTO } from "../../types/dtos/FigureDTO";
+import { Coordinates } from "../../types/Coordinates";
 import { cloneDeep } from "lodash";
-import { HasDataset } from "../HasDataset";
+import { HasDTO } from "../HasDTO";
 
-export class Figure extends GameElement implements HasHighlightAnimation, HasDataset<FigureDataset> {
+export class Figure extends GameElement implements HasHighlightAnimation, HasDTO<FigureDTO> {
     private field: Field;
     private nextField = null as Field | null
-    private dataset: FigureDataset
+    private dto: FigureDTO
     private animationRunners = [] as Runner[]
     private path = null as Field[] | null
-    // --------------------------------------
-    private initialPosition: Coordinates
 
-    constructor(draw: Svg, info: FigureDataset, field: Field) {
+    constructor(draw: Svg, info: FigureDTO, field: Field) {
         super(draw)
-        this.dataset = info
+        this.dto = info
         this.field = field
         this.svg.setDataset(info)
         this.svg.addClass('figure')
 
         this.animationRunners[0] = new Runner()
         this.animationRunners[1] = new Runner()
-        this.initialPosition = { x: 0, y: 0 }
     }
 
     public setPath(path: Field[]) {
@@ -51,27 +48,26 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDat
         this.nextField = field
     }
 
-    public getDataset() {
-        return cloneDeep(this.dataset)
+    public getDTO() {
+        return cloneDeep(this.dto)
     }
 
-    public setDataset(dataset: FigureDataset) {
-        this.dataset = cloneDeep(dataset)
+    public setDTO(dto: FigureDTO) {
+        this.dto = cloneDeep(dto)
     }
 
     public render() {
-        this.svg.debug()
         this.clear()
-        const color = Consts.COLORS[this.dataset.color]
-        const dataset = this.field.getDataset()
+        const color = Consts.COLORS[this.dto.color]
+        const dto = this.field.getDTO()
 
         let center
-        if (dataset.isHome) {
-            center = homeCenters[this.dataset.color][dataset.index]
-        } else if (dataset.isStart) {
-            center = startCenters[this.dataset.color][dataset.index]
+        if (dto.isHome) {
+            center = homeCenters[this.dto.color][dto.index]
+        } else if (dto.isStart) {
+            center = startCenters[this.dto.color][dto.index]
         } else {
-            center = centers[dataset.index]
+            center = centers[dto.index]
         }
 
         this.svg.createChild({
@@ -124,7 +120,7 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDat
         if (this.path === null) {
             throw new Error("Path not set")
         }
-        if (this.field.getDataset().isStart) {
+        if (this.field.getDTO().isStart) {
             return dice === 6 ? this.path[0] : null
         }
         const currentIndex = this.path.indexOf(this.field);
@@ -133,9 +129,9 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDat
 
     public async animateMoveSequence(finalField: Field): Promise<void> {
         const checkpoints = [] as Field[]
-        const finalFieldDataset = finalField.getDataset()
+        const finalFieldDTO = finalField.getDTO()
 
-        if (finalFieldDataset.isStart) {
+        if (finalFieldDTO.isStart) {
             checkpoints.push(finalField)
         } else {
             const checkpointIndexes = [4, 8, 10, 14, 18, 20, 24, 28, 30, 34, 38, 39]
@@ -189,8 +185,7 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDat
 
     private getSideStepCenter(): Coordinates {
         const currentCoordinates = this.field.getCoordinates()
-        // console.log(this.field)
-        switch (this.field.getDataset().index) {
+        switch (this.field.getDTO().index) {
             case 0:
             case 1:
             case 2:
@@ -200,7 +195,7 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDat
             case 15:
             case 16:
             case 17:
-                // return SideStepDirection.UP_RIGHT
+                // up right
                 return {
                     x: currentCoordinates.x + Consts.BOARD.FIELDS.OUTER_SIZE + Consts.BOARD.FIELDS.GAP,
                     y: currentCoordinates.y - Consts.BOARD.FIELDS.OUTER_SIZE - Consts.BOARD.FIELDS.GAP
@@ -214,7 +209,7 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDat
             case 32:
             case 38:
             case 39:
-                // return SideStepDirection.UP_LEFT
+                // up left
                 return {
                     x: currentCoordinates.x - Consts.BOARD.FIELDS.OUTER_SIZE - Consts.BOARD.FIELDS.GAP,
                     y: currentCoordinates.y - Consts.BOARD.FIELDS.OUTER_SIZE - Consts.BOARD.FIELDS.GAP
@@ -228,7 +223,7 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDat
             case 25:
             case 26:
             case 27:
-                // return SideStepDirection.DOWN_RIGHT
+                // down right
                 return {
                     x: currentCoordinates.x + Consts.BOARD.FIELDS.OUTER_SIZE + Consts.BOARD.FIELDS.GAP,
                     y: currentCoordinates.y + Consts.BOARD.FIELDS.OUTER_SIZE + Consts.BOARD.FIELDS.GAP
@@ -242,31 +237,31 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDat
             case 35:
             case 36:
             case 37:
-                // return SideStepDirection.DOWN_LEFT
+                // down left
                 return {
                     x: currentCoordinates.x - Consts.BOARD.FIELDS.OUTER_SIZE - Consts.BOARD.FIELDS.GAP,
                     y: currentCoordinates.y + Consts.BOARD.FIELDS.OUTER_SIZE + Consts.BOARD.FIELDS.GAP
                 }
             case 3:
-                // return SideStepDirection.UP
+                // up
                 return {
                     x: currentCoordinates.x,
                     y: currentCoordinates.y - Consts.BOARD.FIELDS.OUTER_SIZE - Consts.BOARD.FIELDS.GAP
                 }
             case 13:
-                // return SideStepDirection.RIGHT
+                // right
                 return {
                     x: currentCoordinates.x + Consts.BOARD.FIELDS.OUTER_SIZE + Consts.BOARD.FIELDS.GAP,
                     y: currentCoordinates.y
                 }
             case 23:
-                // return SideStepDirection.DOWN
+                // down
                 return {
                     x: currentCoordinates.x,
                     y: currentCoordinates.y + Consts.BOARD.FIELDS.OUTER_SIZE + Consts.BOARD.FIELDS.GAP
                 }
             case 33:
-                // return SideStepDirection.LEFT
+                // left
                 return {
                     x: currentCoordinates.x - Consts.BOARD.FIELDS.OUTER_SIZE - Consts.BOARD.FIELDS.GAP,
                     y: currentCoordinates.y

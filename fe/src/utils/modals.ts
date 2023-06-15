@@ -1,5 +1,5 @@
-import { ViewModalState } from "@/types/state/ViewModalState";
-import { ViewModalTypes } from "@/types/state/ViewModalTypes";
+import { ViewModalState } from "@/types/ViewModalState";
+import { ViewModalTypes } from "@/types/ViewModalTypes";
 import { locale } from "./locale";
 
 export const modals:  Record<ViewModalTypes, ViewModalState> = {

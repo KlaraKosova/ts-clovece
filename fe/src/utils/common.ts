@@ -1,4 +1,4 @@
-import { Coordinates } from "../types/svgLayer/Coordinates";
+import { Coordinates } from "../types/Coordinates";
 
 export async function delay(ms: number): Promise<void> {
     return new Promise((resolve) => {

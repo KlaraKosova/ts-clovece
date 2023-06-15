@@ -49,14 +49,6 @@ export class Dice extends GameElement {
         })
     }
 
-    /* animate (fn: (elem: Element) => void): void {
-        if (!this.diceSvg) {
-            // TODO
-            throw new Error()
-        }
-        this.diceSvg.callChildrenFn(fn, [0])
-    } */
-
     private drawDots(dots: number): void {
         this.svg.createChild({
             type: "rect",

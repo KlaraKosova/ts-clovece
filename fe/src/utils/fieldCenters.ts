@@ -1,5 +1,5 @@
-import { Coordinates } from '../types/svgLayer/Coordinates'
-import { PlayerColors } from '../types/common/PlayerColors'
+import { Coordinates } from '../types/Coordinates'
+import { PlayerColors } from '../types/PlayerColors'
 import Consts from './svgBoardConstants'
 
 const centers = [] as Coordinates[]

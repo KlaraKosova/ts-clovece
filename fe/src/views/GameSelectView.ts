@@ -1,11 +1,11 @@
 import { createElement } from "@/utils/domHelpers";
 import { SocketIOClientInstance } from "../socketio/SocketClient";
-import { GamePreview } from "../types/data/GamePreview";
+import { GamePreviewDTO } from "../types/dtos/GamePreviewDTO";
 import { View } from "./View";
 import { locale } from "@/utils/locale";
 
 export class GameSelectView extends View {
-    private games: GamePreview[] = [];
+    private games: GamePreviewDTO[] = [];
     render() {
         const container = createElement('div', ['gamecards-container'])
         const containerHeader = createElement('div', ['gamecards-header'])
@@ -20,7 +20,8 @@ export class GameSelectView extends View {
             const cardTitle = createElement('div', ['gamecard-title'], this.games[i].name)
             const cardSubtitle = createElement('div', ['gamecard-subtitle'], `${locale.get('players')}: ${this.games[i].players}/4`)
             const cardJoinButton = createElement('button', ['btn', 'btn-success', 'gamecard-join'], locale.get('join'))
-
+            cardJoinButton.addEventListener('click', this.joinGame.bind(this, this.games[i]._id))
+    
             cardContainer.append(cardTitle, cardSubtitle, cardJoinButton)
             containerContent.append(cardContainer)
         }
@@ -58,8 +59,6 @@ export class GameSelectView extends View {
 
     private emitNewGame() {
         const inputElement = document.querySelector(".centermodal .input-text") as HTMLInputElement | null
-        // console.log(inputElement);
-
         console.log('emit NEW_GAME');
 
         SocketIOClientInstance.socket.emit("NEW_GAME", {
@@ -72,7 +71,7 @@ export class GameSelectView extends View {
         SocketIOClientInstance.socket.emit("JOIN_GAME", { gameId });
     }
 
-    private onGameSelectResponse(data: { games: GamePreview[] }) {
+    private onGameSelectResponse(data: { games: GamePreviewDTO[] }) {
         console.log('onGameSelectResponse')
         this.games = data.games
         this.render()

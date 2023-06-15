@@ -1,5 +1,5 @@
 
-import { PlayerColors } from "../common/PlayerColors";
+import { PlayerColors } from "./PlayerColors";
 import {StaticBackground} from "@/gameProgressControls/svgLayer/StaticBackground";
 import { Field } from "@/gameProgressControls/svgLayer/Field";
 import { Figure } from "@/gameProgressControls/svgLayer/Figure";

@@ -1,6 +1,6 @@
-import { PlayerColors } from "../common/PlayerColors";
+import { PlayerColors } from "../PlayerColors";
 
-export type FieldDataset = {
+export type FieldDTO = {
     index: number,
     isStart: boolean,
     isHome: boolean,

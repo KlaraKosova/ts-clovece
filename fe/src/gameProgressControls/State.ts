@@ -1,16 +1,16 @@
 import {Svg} from "@svgdotjs/svg.js";
 import {SvgLayer} from "@/gameProgressControls/SvgLayer";
-import {SvgBoardStates} from "@/types/state/SvgBoardStates";
+import {SvgBoardStates} from "@/types/SvgBoardStates";
 import {LogicLayer} from "@/gameProgressControls/LogicLayer";
-import { GameProgressDataset } from "@/types/data/GameProgressDataset";
-import {UserInfo} from "@/types/common/UserInfo";
-import {DocumentClickData} from "@/types/state/DocumentClickData";
+import { GameProgressDTO } from "@/types/dtos/GameProgressDTO";
+import {UserInfo} from "@/types/UserInfo";
+import {DocumentClickData} from "@/types/DocumentClickData";
 import { objectCompare } from "@/utils/common";
 import { SocketIOClientInstance } from "@/socketio/SocketClient";
-import { GameProgressUpdate } from "@/types/data/GameProgressUpdate";
+import { GameProgressUpdateDTO } from "@/types/dtos/GameProgressUpdateDTO";
 import { PromiseInspectorInstance } from "@/utils/PromiseInspector";
 import {ModalEventBusInstance} from "@/gameProgressControls/modals/ModalEventBus";
-import {ModalEventTypes} from "@/types/state/ModalEventBusEventTypes";
+import {ModalEventTypes} from "@/types/ModalEventBusEventTypes";
 
 export class State {
     private boardState: SvgBoardStates
@@ -42,9 +42,8 @@ export class State {
         this.svg.initialState()
     }
 
-    public handleGameProgressResponse(game: GameProgressDataset) {
-        // testing
-        this.logic.setDataset(game)
+    public handleGameProgressResponse(game: GameProgressDTO) {
+        this.logic.setDTO(game)
         this.svg.loadedProgressState(game)
         const winnerColor = this.logic.getWinnerColor()
 
@@ -97,7 +96,7 @@ export class State {
         }
     }
 
-    public async handleGameProgressUpdate(data: { progress: GameProgressDataset, updates: GameProgressUpdate[] }) {
+    public async handleGameProgressUpdate(data: { progress: GameProgressDTO, updates: GameProgressUpdateDTO[] }) {
         await PromiseInspectorInstance.waitForAll()
 
         this.boardState = SvgBoardStates.NEXT_PLAYER_FIGURE_MOVE_ANIMATION
@@ -106,7 +105,7 @@ export class State {
             // prevent running same animation twice
             await this.svg.animateUpdates(data.updates)
         }
-        this.logic.setDataset(data.progress)
+        this.logic.setDTO(data.progress)
 
         if (this.currentPlayerTurn()) {
             this.boardState = SvgBoardStates.DICE

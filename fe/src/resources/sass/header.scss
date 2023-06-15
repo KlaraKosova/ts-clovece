@@ -15,9 +15,12 @@
         align-items: center;
     }
 
+    &-end {
+        margin-right: 2rem;
+    }
+
     &__text {
         font-family: Arial, Helvetica, sans-serif;
-
     }
 
     &__logo {

@@ -1,18 +1,17 @@
 import {Svg} from "@svgdotjs/svg.js";
-import { GameElementsDict } from "@/types/svgLayer/GameElementsDict";
-import {PlayerColors, PlayersOrder} from "@/types/common/PlayerColors";
+import { GameElementsDict } from "@/types/GameElementsDict";
+import {PlayerColors, PlayersOrder} from "@/types/PlayerColors";
 import { StaticBackground } from "./svgLayer/StaticBackground";
-import {SvgElements} from "@/types/svgLayer/SvgElements";
 import { Overlay } from "./svgLayer/Overlay";
 import { DicePlayButton } from "./svgLayer/DicePlayButton";
 import { Dice } from "./svgLayer/Dice";
 import { Loading } from "./svgLayer/Loading";
 import { Field } from "./svgLayer/Field";
 import { Figure } from "./svgLayer/Figure";
-import {GameProgressDataset} from "@/types/data/GameProgressDataset";
-import {FieldDataset} from "@/types/data/FieldDataset";
-import { FigureDataset } from "@/types/data/FigureDataset";
-import { GameProgressUpdate } from "@/types/data/GameProgressUpdate";
+import {GameProgressDTO} from "@/types/dtos/GameProgressDTO";
+import {FieldDTO} from "@/types/dtos/FieldDTO";
+import { FigureDTO } from "@/types/dtos/FigureDTO";
+import { GameProgressUpdateDTO } from "@/types/dtos/GameProgressUpdateDTO";
 import { WinnerModal } from "./svgLayer/WinnerModal";
 
 export class SvgLayer {
@@ -44,7 +43,7 @@ export class SvgLayer {
             const path = [] as Field[]
             const pathStart = index * 10;
             for (let i = 0; i < 40; i++) {
-                const field = /*this.*/mainFields[(pathStart + i) % 40];
+                const field = mainFields[(pathStart + i) % 40];
                 path.push(field);
             }
 
@@ -79,26 +78,26 @@ export class SvgLayer {
         });
 
         this.gameElementsDict = {
-            [SvgElements.STATIC_BACKGROUND]: background,
-            [SvgElements.MAIN_FIELDS]: mainFields,
-            [SvgElements.START_FIELDS]: startFields,
-            [SvgElements.HOME_FIELDS]: homeFields,
-            [SvgElements.FIGURES]: figures,
-            [SvgElements.OVERLAY]: new Overlay(this.draw),
-            [SvgElements.DICE]: new Dice(this.draw),
-            [SvgElements.DICE_PLAY_BUTTON]: new DicePlayButton(this.draw),
-            [SvgElements.LOADING]: new Loading(this.draw),
-            [SvgElements.WINNER_MODAL]: new WinnerModal(this.draw)
+            STATIC_BACKGROUND: background,
+            MAIN_FIELDS: mainFields,
+            START_FIELDS: startFields,
+            HOME_FIELDS: homeFields,
+            FIGURES: figures,
+            OVERLAY: new Overlay(this.draw),
+            DICE: new Dice(this.draw),
+            DICE_PLAY_BUTTON: new DicePlayButton(this.draw),
+            LOADING: new Loading(this.draw),
+            WINNER_MODAL: new WinnerModal(this.draw)
         }
     }
 
-    public loadedProgressState(game: GameProgressDataset) {
+    public loadedProgressState(game: GameProgressDTO) {
         PlayersOrder.forEach((color: PlayerColors) => {
             for (let i = 0; i < 4; i++) {
                 const progressPosition = game.playerStatuses[color].figures[i];
-                const field = this.getFieldByFieldDataset(progressPosition)
-                this.gameElementsDict[SvgElements.FIGURES][color][i].setField(field);
-                this.gameElementsDict[SvgElements.FIGURES][color][i].render();
+                const field = this.getFieldByFieldDTO(progressPosition)
+                this.gameElementsDict.FIGURES[color][i].setField(field);
+                this.gameElementsDict.FIGURES[color][i].render();
             }
         })
     }
@@ -155,18 +154,18 @@ export class SvgLayer {
         this.gameElementsDict.OVERLAY.clear()
     }
 
-    public highlightAnimationState(available: {fields: FieldDataset[], figures: FigureDataset[]}) {
+    public highlightAnimationState(available: {fields: FieldDTO[], figures: FigureDTO[]}) {
         this.gameElementsDict.OVERLAY.clear()
         this.gameElementsDict.DICE.clear()
         this.gameElementsDict.DICE_PLAY_BUTTON.clear()
 
 
-        available.fields.forEach(fieldDataset => {
-            const field = this.getFieldByFieldDataset(fieldDataset)
+        available.fields.forEach(fieldDTO => {
+            const field = this.getFieldByFieldDTO(fieldDTO)
             field.highlightAnimationStart()
         })
-        available.figures.forEach(figureDataset => {
-            const figure = this.getFigureByFigureDataset(figureDataset)
+        available.figures.forEach(figureDTO => {
+            const figure = this.getFigureByFigureDTO(figureDTO)
             figure.highlightAnimationStart()
         })
     }
@@ -178,7 +177,7 @@ export class SvgLayer {
         this.gameElementsDict.OVERLAY.render()
     }
 
-    public async currentPlayerFigureMoveAnimationState(updates: GameProgressUpdate[]) {
+    public async currentPlayerFigureMoveAnimationState(updates: GameProgressUpdateDTO[]) {
         this.stopAllHighlightAnimations()
 
         await this.animateUpdates(updates)
@@ -197,11 +196,11 @@ export class SvgLayer {
         this.gameElementsDict.WINNER_MODAL.runAnimation()
     }
 
-    public async animateUpdates(updates: GameProgressUpdate[]) {
+    public async animateUpdates(updates: GameProgressUpdateDTO[]) {
         for (const update of updates) {
-            const figure = this.getFigureByFigureDataset(update.figure)
-            const nextField = this.getFieldByFieldDataset(update.nextField)
-            const prevField = this.getFieldByFieldDataset(update.prevField)
+            const figure = this.getFigureByFigureDTO(update.figure)
+            const nextField = this.getFieldByFieldDTO(update.nextField)
+            const prevField = this.getFieldByFieldDTO(update.prevField)
 
             if (update.type === "MOVE") {
                 await figure.animateMoveSequence(nextField)
@@ -225,7 +224,7 @@ export class SvgLayer {
         })
     }
 
-    private getFieldByFieldDataset(field: FieldDataset): Field {
+    private getFieldByFieldDTO(field: FieldDTO): Field {
         if (field.isHome) {
             return this.gameElementsDict.HOME_FIELDS[field.color][field.index]
         }
@@ -235,7 +234,7 @@ export class SvgLayer {
         return this.gameElementsDict.MAIN_FIELDS[field.index]
     }
 
-    private getFigureByFigureDataset(figure: FigureDataset): Figure {
+    private getFigureByFigureDTO(figure: FigureDTO): Figure {
         return this.gameElementsDict.FIGURES[figure.color][figure.index]
     }
 }

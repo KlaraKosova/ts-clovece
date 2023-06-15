@@ -6,7 +6,7 @@ class SocketClient {
     public socket: SocketIO | null;
 
     private constructor() {
-        this.socket = io(process.env.VUE_APP_SOCKET_SERVER || 'http://localhost:3001', {});
+        this.socket = io(process.env.SOCKET_SERVER_URL || 'http://localhost:3001', {});
     }
 
     public static getInstance(): SocketClient {

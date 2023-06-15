@@ -1,4 +1,4 @@
-import {ModalEventTypes} from "@/types/state/ModalEventBusEventTypes";
+import {ModalEventTypes} from "@/types/ModalEventBusEventTypes";
 
 class ModalEventBus {
     private events: Record<ModalEventTypes, Function[]> = {
@@ -18,7 +18,6 @@ class ModalEventBus {
     }
 
     subscribe(event: ModalEventTypes, callback: Function) {
-        // store the callback function of the subscriber
         this.events[event].push(callback);
     }
 }

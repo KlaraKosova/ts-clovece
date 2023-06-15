@@ -1,7 +1,7 @@
 import {GameElement} from "./base/GameElement";
 import Consts from "../../utils/svgBoardConstants"
 import {Runner, Svg} from "@svgdotjs/svg.js";
-import {PlayerColors} from "@/types/common/PlayerColors";
+import {PlayerColors} from "@/types/PlayerColors";
 import {delay} from "@/utils/common";
 
 export class WinnerModal extends GameElement {

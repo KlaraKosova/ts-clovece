@@ -3,16 +3,16 @@ import Consts from "../utils/svgBoardConstants";
 import { SocketIOClientInstance } from "../socketio/SocketClient";
 import { View } from "./View";
 import App from "../App";
-import { DocumentClickData } from "../types/state/DocumentClickData";
-import { PlayerColors, PlayersOrder } from "../types/common/PlayerColors";
-import { GameProgressDataset } from "../types/data/GameProgressDataset";
-import { GameProgressUpdate } from "../types/data/GameProgressUpdate";
+import { DocumentClickData } from "../types/DocumentClickData";
+import { PlayerColors, PlayersOrder } from "../types/PlayerColors";
+import { GameProgressDTO } from "../types/dtos/GameProgressDTO";
+import { GameProgressUpdateDTO } from "../types/dtos/GameProgressUpdateDTO";
 import { State } from "../gameProgressControls/State";
-import { ViewModalTypes } from "@/types/state/ViewModalTypes";
+import { ViewModalTypes } from "@/types/ViewModalTypes";
 import {ModalEventBusInstance} from "@/gameProgressControls/modals/ModalEventBus";
-import {ModalEventTypes} from "@/types/state/ModalEventBusEventTypes";
+import {ModalEventTypes} from "@/types/ModalEventBusEventTypes";
 import { createElement } from "@/utils/domHelpers";
-import { ViewModalState } from "@/types/state/ViewModalState";
+import { ViewModalState } from "@/types/ViewModalState";
 import { cloneDeep, create } from "lodash";
 import { modals } from "@/utils/modals";
 import { PlayerColorNameMap } from "@/utils/constants";
@@ -23,7 +23,8 @@ export class GameProgressView extends View {
 
     public render(): void {
         const mainContainer = createElement("div", ["game-progress-container"])
-        const modalsContainer = createElement("div", ["modalsContainer"])
+        const modalsContainer = createElement("div", [])
+        modalsContainer.id = 'modalsContainer'
         const svgContainer = createElement("div", [])
         svgContainer.id = "svgContainer";
 
@@ -37,12 +38,12 @@ export class GameProgressView extends View {
         this.state.renderInitial()
     }
 
-    private onGameProgressResponse(game: GameProgressDataset) {
+    private onGameProgressResponse(game: GameProgressDTO) {
         console.log('onGameProgressResponse', game)
         this.state.handleGameProgressResponse(game)
     }
 
-    private async onGameProgressUpdate(data: { progress: GameProgressDataset, updates: GameProgressUpdate[] }) {
+    private async onGameProgressUpdate(data: { progress: GameProgressDTO, updates: GameProgressUpdateDTO[] }) {
         console.log('onGameProgressUpdate', data)
         await this.state.handleGameProgressUpdate(data)
 

@@ -1,15 +1,15 @@
-import {FieldDataset} from "@/types/data/FieldDataset";
+import {FieldDTO} from "@/types/dtos/FieldDTO";
 import cloneDeep from "lodash/cloneDeep";
-import { HasDataset } from "../HasDataset";
+import { HasDTO } from "../HasDTO";
 
-export class Field implements HasDataset<FieldDataset> {
-    private dataset: FieldDataset
+export class Field implements HasDTO<FieldDTO> {
+    private dto: FieldDTO
 
-    public setDataset(dataset: FieldDataset) {
-        this.dataset = cloneDeep(dataset)
+    public setDTO(dto: FieldDTO) {
+        this.dto = cloneDeep(dto)
     }
 
-    public getDataset(): FieldDataset {
-        return cloneDeep(this.dataset)
+    public getDTO(): FieldDTO {
+        return cloneDeep(this.dto)
     }
 }

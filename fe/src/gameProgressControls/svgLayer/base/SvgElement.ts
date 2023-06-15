@@ -3,7 +3,7 @@ import Consts from "../../../utils/svgBoardConstants";
 import { camelToKebabCase, delay } from "../../../utils/common";
 import { centers, homeCenters } from "../../../utils/fieldCenters";
 import * as path from "path";
-import { Coordinates } from '../../../types/svgLayer/Coordinates';
+import { Coordinates } from '../../../types/Coordinates';
 
 export class SvgElement {
     private draw: Svg;
@@ -29,17 +29,8 @@ export class SvgElement {
         })
     }
 
-    /***
-     * Adds existing element to the group
-     * @param {Element} element
-     * @returns {number} Index of the added element
-     */
-    /* addChild(element: Element): number {
-        this.group.add(element)
-        return this.group.children().length - 1
-    } */
 
-    /***
+    /**
      * Creates new child element and adds it to the group
      * @param data
      * @param {string} data.type type
@@ -147,7 +138,6 @@ export class SvgElement {
                         return isNaN(+pathElement) ? pathElement : +pathElement * scale * 0.75
                     })
                     .join(' ')
-            // console.log(transformedPath)
             element = this.draw.path(transformedPath + ' z')
         }
         if (data.center) {
@@ -201,41 +191,15 @@ export class SvgElement {
 
         await delay(data.duration)
     }
-
-    // TODO recursive
-    /***
+    /**
      * Removes all children from document tree
-     * Not recursive
      */
     removeChildren() {
-        // console.log('------------------------------------------');
-        //console.log(JSON.parse(JSON.stringify(this.group.dom)));
         this.group.clear()
-        // console.log(JSON.parse(JSON.stringify(this.group.dom)));
     }
 
     destroy(): void {
         this.removeChildren()
         this.group.remove()
     }
-
-    debug() {
-        /* const test= this.draw.path('M 0 45 C 5 50 15 50 20 45 C 20 35 15 30 15 20 C 15 15 20 15 20 10 C 20 5 15 0 10 0 C 5 0 0 5 0 10 C 0 15 5 15 5 20 C 5 30 0 35 0 45')
-            .fill(Consts.COLORS[PlayerColors.RED].front)
-            //.center(centers[0].x *Consts.K ,centers[0].y*Consts.K)
-            //.scale(Consts.K)
-            .move(centers[0].x *Consts.K ,centers[0].y*Consts.K)
-            this.draw.path('M 7 2 C 6 1 1 8 2 8 C 4 8 8 2 7 2')
-                .fill(Consts.COLORS[PlayerColors.RED].highlight)
-                .move(centers[0].x *Consts.K ,centers[0].y*Consts.K) */
-
-    }
-
-    /* public addListener(event: string, handler: (this: Svg) => void) {
-        this.group.on(event, handler.bind(this.group))
-    }
-
-    public removeListener(event: string, handler: () => void) {
-        this.group.off(event, handler.bind(this.group))
-    } */
 }

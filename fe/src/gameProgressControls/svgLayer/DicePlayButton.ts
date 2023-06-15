@@ -20,7 +20,7 @@ export class DicePlayButton extends GameElement {
         })
         this.svg.createChild({
             type: 'text',
-            text: '>'/*'\u{1F80A}'*/, // TODO fix unicode
+            text: '>', // TODO fix unicode
             center: { x: Consts.BOARD.SIZE / 2, y: Consts.BOARD.SIZE / 2 },
             font: {
                 weight: 'bold',
@@ -32,13 +32,4 @@ export class DicePlayButton extends GameElement {
     public animateMoveDown() {
         this.svg.move({ duration: 1000, offset: { x: 0, y: 30 } })
     }
-
-    private registerListeners() {
-        // this.svg.
-    }
-    private onMouseEnter() {
-
-    }
-
-    private onMouseLeave() { }
 }

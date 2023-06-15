@@ -4,9 +4,9 @@ import { GameWaitingView } from "./views/GameWaitingView";
 import { LoadingView } from "./views/LoadingView";
 import { View } from "./views/View";
 import { SocketIOClientInstance } from "./socketio/SocketClient";
-import { UserInfo } from "./types/common/UserInfo";
-import { ViewName } from "./types/state/ViewName";
-import { PlayersOrder } from "./types/common/PlayerColors";
+import { UserInfo } from "./types/UserInfo";
+import { ViewName } from "./types/ViewName";
+import { PlayersOrder } from "./types/PlayerColors";
 import { locale } from "./utils/locale";
 import { createElement } from "./utils/domHelpers";
 
@@ -30,8 +30,7 @@ class App {
     }
 
     /**
-     * getUserInfo
-     * Loads user information from local storage and returns it.
+     * Load user information from local storage.
      */
     private loadUserInfo() {
         this.userInfo = null
@@ -57,8 +56,8 @@ class App {
     }
 
     /**
-     * init
-     * vola se po po 'connect' socket serveru
+     * Called after socketio'connect' event
+     * Load user info and request info from server
      */
     public async init() {
         console.log('init');
@@ -122,6 +121,7 @@ class App {
         headerEnd.appendChild(select)
 
         // @ts-ignore
+        // injected using CDN
         const SlimSelect = window.SlimSelect
 
         new SlimSelect({

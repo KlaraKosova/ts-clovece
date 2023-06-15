@@ -1,4 +1,4 @@
-import { AppSettings } from "@/types/common/AppSettings"
+import { AppSettings } from "@/types/AppSettings"
 import { cloneDeep } from "lodash"
 
 class Locale {
@@ -20,9 +20,9 @@ class Locale {
         if (settings) {
             const langValid = ['en', 'cs'].includes(settings.lang)
 
-            this.lang = langValid ? settings.lang : process.env.VUE_APP_DEFAULT_LOCALE
+            this.lang = langValid ? settings.lang : process.env.DEFAULT_LOCALE
         } else {
-            this.setLang(process.env.VUE_APP_DEFAULT_LOCALE)
+            this.setLang(process.env.DEFAULT_LOCALE)
         }
     }
 

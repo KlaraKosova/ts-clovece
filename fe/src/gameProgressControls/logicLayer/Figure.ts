@@ -1,36 +1,36 @@
-import {FigureDataset} from "@/types/data/FigureDataset";
+import {FigureDTO} from "@/types/dtos/FigureDTO";
 import cloneDeep from "lodash/cloneDeep";
-import {FieldDataset} from "@/types/data/FieldDataset";
+import {FieldDTO} from "@/types/dtos/FieldDTO";
 import {Field} from "@/gameProgressControls/logicLayer/Field";
 import {objectCompare} from "@/utils/common";
-import { HasDataset } from "../HasDataset";
+import { HasDTO } from "../HasDTO";
 
-export class Figure implements HasDataset<FigureDataset> {
-    private dataset: FigureDataset
-    private path: FieldDataset[] = []
-    private field: FieldDataset
+export class Figure implements HasDTO<FigureDTO> {
+    private dto: FigureDTO
+    private path: FieldDTO[] = []
+    private field: FieldDTO
 
-    public getDataset(): FigureDataset {
-        return cloneDeep(this.dataset)
+    public getDTO(): FigureDTO {
+        return cloneDeep(this.dto)
     }
 
-    public setDataset(dataset: FigureDataset) {
-        this.dataset = cloneDeep(dataset)
+    public setDTO(dto: FigureDTO) {
+        this.dto = cloneDeep(dto)
     }
 
     public getField() {
         return this.field
     }
 
-    public setField(field: FieldDataset) {
+    public setField(field: FieldDTO) {
         this.field = field
     }
 
-    public setPath(path: FieldDataset[]) {
+    public setPath(path: FieldDTO[]) {
         this.path = cloneDeep(path)
     }
 
-    public computeNextField(diceThrow: number): FieldDataset | null {
+    public computeNextField(diceThrow: number): FieldDTO | null {
         if (this.field.isStart) {
             return diceThrow === 6 ? this.path[0] : null
         }

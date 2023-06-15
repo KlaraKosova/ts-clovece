@@ -1,18 +1,18 @@
-import {GameProgressDataset} from "@/types/data/GameProgressDataset";
+import {GameProgressDTO} from "@/types/dtos/GameProgressDTO";
 import cloneDeep from "lodash/cloneDeep";
-import {FieldDataset} from "@/types/data/FieldDataset";
-import {FigureDataset} from "@/types/data/FigureDataset";
-import {PlayerColors, PlayersOrder} from "@/types/common/PlayerColors";
+import {FieldDTO} from "@/types/dtos/FieldDTO";
+import {FigureDTO} from "@/types/dtos/FigureDTO";
+import {PlayerColors, PlayersOrder} from "@/types/PlayerColors";
 import {Field} from "@/gameProgressControls/logicLayer/Field";
 import {Figure} from "@/gameProgressControls/logicLayer/Figure";
-import {UserInfo} from "@/types/common/UserInfo";
+import {UserInfo} from "@/types/UserInfo";
 import {objectCompare} from "@/utils/common";
-import { GameProgressUpdate } from "@/types/data/GameProgressUpdate";
-import { HasDataset } from "./HasDataset";
-import { defaultGameProgressDataset } from "@/utils/constants";
+import { GameProgressUpdateDTO } from "@/types/dtos/GameProgressUpdateDTO";
+import { HasDTO } from "./HasDTO";
+import { defaultGameProgressDTO } from "@/utils/constants";
 
-export class LogicLayer implements HasDataset<GameProgressDataset>{
-    private dataset: GameProgressDataset
+export class LogicLayer implements HasDTO<GameProgressDTO> {
+    private dto: GameProgressDTO
     private user: UserInfo
     private mainFields: Field[]
     private startFields: Record<PlayerColors, Field[]>
@@ -29,7 +29,7 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
 
         for (let i = 0; i < 40; i++) {
             this.mainFields[i] = new Field()
-            this.mainFields[i].setDataset({
+            this.mainFields[i].setDTO({
                 index: i,
                 color:
                     i % 10 === 0 ? (`${Math.floor(i / 10)}` as PlayerColors) : null,
@@ -39,11 +39,11 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
         }
 
         PlayersOrder.forEach((playerColor, index) => {
-            const path = [] as FieldDataset[]
+            const path = [] as FieldDTO[]
             const pathStart = index * 10
             for (let i = 0; i < 40; i++) {
                 const field = this.mainFields[(pathStart + i) % 40]
-                path.push(field.getDataset())
+                path.push(field.getDTO())
             }
 
             this.startFields[playerColor] = []
@@ -52,7 +52,7 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
 
             for (let i = 0; i < 4; i++) {
                 this.homeFields[playerColor][i] = new Field()
-                this.homeFields[playerColor][i].setDataset({
+                this.homeFields[playerColor][i].setDTO({
                     index: i,
                     color: playerColor,
                     isHome: true,
@@ -60,7 +60,7 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
                 })
 
                 this.startFields[playerColor][i] = new Field()
-                this.startFields[playerColor][i].setDataset({
+                this.startFields[playerColor][i].setDTO({
                     index: i,
                     color: playerColor,
                     isHome: false,
@@ -77,35 +77,35 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
 
             for (let i = 0; i < 4; i++) {
                 this.figures[playerColor][i] = new Figure()
-                this.figures[playerColor][i].setDataset({ color: playerColor, index: i })
-                this.figures[playerColor][i].setField(this.startFields[playerColor][i].getDataset())
+                this.figures[playerColor][i].setDTO({ color: playerColor, index: i })
+                this.figures[playerColor][i].setField(this.startFields[playerColor][i].getDTO())
                 this.figures[playerColor][i].setPath(path)
             }
         });
 
-        this.setDataset(defaultGameProgressDataset)
+        this.setDTO(defaultGameProgressDTO)
     }
-    public setDataset(dataset: GameProgressDataset) {
-        this.dataset = cloneDeep(dataset)
+    public setDTO(dto: GameProgressDTO) {
+        this.dto = cloneDeep(dto)
 
         PlayersOrder.forEach((playerColor, index) => {
             for (let i = 0; i < 4; i++) {
-                this.figures[playerColor][i].setField(this.dataset.playerStatuses[playerColor].figures[i])
+                this.figures[playerColor][i].setField(this.dto.playerStatuses[playerColor].figures[i])
             }
         });
     }
 
-    public getDataset(): GameProgressDataset {
-        return cloneDeep(this.dataset)
+    public getDTO(): GameProgressDTO {
+        return cloneDeep(this.dto)
     }
 
     public getCurrentPlayerId() {
-        return this.dataset.currentPlayerId
+        return this.dto.currentPlayerId
     }
 
     public getPlayerColorById(id: string) {
         for (const color of PlayersOrder) {
-            if (this.dataset.playerStatuses[color].userId === id) {
+            if (this.dto.playerStatuses[color].userId === id) {
                 return color
             }
         }
@@ -114,17 +114,17 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
     }
 
     public getDiceSequence() {
-        return [...this.dataset.lastDiceSequence]
+        return [...this.dto.lastDiceSequence]
     }
 
     public getDiceResult() {
-        return this.dataset.lastDiceSequence[this.dataset.lastDiceSequence.length - 1]
+        return this.dto.lastDiceSequence[this.dto.lastDiceSequence.length - 1]
     }
 
     public getAvailable() {
         const result = {
-            fields: [] as FieldDataset[],
-            figures: [] as FigureDataset[],
+            fields: [] as FieldDTO[],
+            figures: [] as FigureDTO[],
             homeMovesOnly: true
         }
 
@@ -133,29 +133,27 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
 
         for (let i = 0; i < 4; i++) {
             const currentFigure = playerFigures[i]
-            const nextField: FieldDataset | null = currentFigure.computeNextField(diceResult)
+            const nextField: FieldDTO | null = currentFigure.computeNextField(diceResult)
 
             const alreadyIncluded = result.fields.find(f => objectCompare(f, nextField))
             if (nextField && !alreadyIncluded) {
+                const figure = this.getFigureByFieldDTO(nextField)
+                
+                // figures at home should not be eliminated not even by figures of the same color
+                // so do nothing 
+                /* if (nextField.isHome && figure) {
+                    
+                } */
 
-                const figure = this.getFigureByFieldDataset(nextField)
                 if (nextField.isHome && !figure) {
-                    // figurky v domecku by se nemely dat vyhodit ani figurkami stejne barvy
                     result.fields.push(nextField)
                 }
-
-                /* 
-                // do nothing
-                if (nextField.isHome && figure) {
-                    
-                }
-                */
 
                 if (!nextField.isHome) {
                     result.fields.push(nextField)
 
                     if (figure) {
-                        result.figures.push(figure.getDataset())
+                        result.figures.push(figure.getDTO())
                     }
                 }
 
@@ -168,21 +166,21 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
         return result
     }
 
-    public getUpdates(playerColor: PlayerColors, data: { field: FieldDataset | null, figure: FigureDataset | null }): GameProgressUpdate[] {
-        const result = [] as GameProgressUpdate[]
+    public getUpdates(playerColor: PlayerColors, data: { field: FieldDTO | null, figure: FigureDTO | null }): GameProgressUpdateDTO[] {
+        const result = [] as GameProgressUpdateDTO[]
 
-        let destFieldDataset: FieldDataset
+        let destFieldDTO: FieldDTO
         let srcFigure = null as Figure | null
         let destFigure = null as Figure | null
 
         if (data.field) {
-            destFieldDataset = data.field
-            srcFigure = this.getFigureByNextFieldDataset(data.field, playerColor)
-            destFigure = this.getFigureByFieldDataset(data.field)
+            destFieldDTO = data.field
+            srcFigure = this.getFigureByNextFieldDTO(data.field, playerColor)
+            destFigure = this.getFigureByFieldDTO(data.field)
         } else {
-            destFigure = this.getFigureByFigureDataset(data.figure)
-            destFieldDataset = destFigure.getField()
-            srcFigure = this.getFigureByNextFieldDataset(destFieldDataset, playerColor)
+            destFigure = this.getFigureByFigureDTO(data.figure)
+            destFieldDTO = destFigure.getField()
+            srcFigure = this.getFigureByNextFieldDTO(destFieldDTO, playerColor)
         }
 
         if (!srcFigure) {
@@ -190,33 +188,33 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
         }
 
         if (destFigure) {
-            const startField = this.getFreeStartField(destFigure.getDataset().color)
+            const startField = this.getFreeStartField(destFigure.getDTO().color)
             result.push({
                 type: "KICK",
                 prevField: srcFigure.getField(),
-                nextField: destFieldDataset,
-                figure: srcFigure.getDataset()
+                nextField: destFieldDTO,
+                figure: srcFigure.getDTO()
             })
 
 
             result.push({
                 type: "MOVE",
                 prevField: destFigure.getField(),
-                nextField: startField.getDataset(),
-                figure: destFigure.getDataset()
+                nextField: startField.getDTO(),
+                figure: destFigure.getDTO()
             })
 
-            srcFigure.setField(destFieldDataset)
-            destFigure.setField(startField.getDataset())
+            srcFigure.setField(destFieldDTO)
+            destFigure.setField(startField.getDTO())
         } else {
             result.push({
                 type: "MOVE",
                 prevField: srcFigure.getField(),
-                nextField: destFieldDataset,
-                figure: srcFigure.getDataset()
+                nextField: destFieldDTO,
+                figure: srcFigure.getDTO()
             })
 
-            srcFigure.setField(destFieldDataset)
+            srcFigure.setField(destFieldDTO)
         }
 
         return result
@@ -235,13 +233,13 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
 
     public getCurrentColor(): PlayerColors {
         for (const playerColor of PlayersOrder) {
-            if (this.dataset.playerStatuses[playerColor].userId === this.dataset.currentPlayerId) {
+            if (this.dto.playerStatuses[playerColor].userId === this.dto.currentPlayerId) {
                 return playerColor
             }
         }
     }
 
-    private getFigureByFieldDataset(field: FieldDataset): Figure | null {        
+    private getFigureByFieldDTO(field: FieldDTO): Figure | null {        
         for (const playerColor of PlayersOrder) {
             for (let i = 0; i < 4; i++) {
                 const figure = this.figures[playerColor][i]
@@ -255,7 +253,7 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
         return null
     }
 
-    private getFigureByNextFieldDataset(field: FieldDataset, color?: PlayerColors): Figure | null {
+    private getFigureByNextFieldDTO(field: FieldDTO, color?: PlayerColors): Figure | null {
         const diceResult = this.getDiceResult()
 
         if (color !== undefined) {
@@ -281,7 +279,7 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
         return null
     }
 
-    private getFieldByFieldDataset(field: FieldDataset): Field {
+    private getFieldByFieldDTO(field: FieldDTO): Field {
         if (field.isHome) {
             return this.homeFields[field.color][field.index]
         }
@@ -291,7 +289,7 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
         return this.mainFields[field.index]
     }
 
-    private getFigureByFigureDataset(figure: FigureDataset): Figure {
+    private getFigureByFigureDTO(figure: FigureDTO): Figure {
         return this.figures[figure.color][figure.index]
     }
 
@@ -301,26 +299,18 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
 
         for (let i = 0; i < 4; i++) {
             const figure = this.figures[color][i]
-            // console.log('+++++++++++++++++++++++', i);
 
             for (let j = 0; j < 4; j++) {
                 if (!startFields[j]) {
                     continue
                 }
-                const figureFieldDataset = figure.getField()
-                const startFieldDataset = startFields[j].getDataset()
-                // console.log('------------');
-                // console.log(figureFieldDataset);
+                const figureFieldDTO = figure.getField()
+                const startFieldDTO = startFields[j].getDTO()
 
-                // console.log(startFieldDataset);
-                // console.log('/************   ', objectCompare(figureFieldDataset, startFieldDataset), '   ************/');
-
-
-                if (objectCompare(figureFieldDataset, startFieldDataset)) {
+                if (objectCompare(figureFieldDTO, startFieldDTO)) {
                     startFields[j] = null
                 }
             }
-            // console.log(startFields);
         }
 
         return startFields[0] || startFields[1] || startFields[2] || startFields[3]
