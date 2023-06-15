@@ -8,6 +8,6 @@ type ElementState = {
 export type ViewModalState = {
     id: string
     headerList: ElementState[]
-    wrapperClasslist: string[]
+    containerClasslist: string[]
     contentList: ElementState[]
 }

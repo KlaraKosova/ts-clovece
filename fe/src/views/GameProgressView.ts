@@ -21,15 +21,13 @@ export class GameProgressView extends View {
     private state: State
 
     public render(): void {
-        const wrapper = document.createElement("div")
-        wrapper.classList.add("game-progress-wrapper")
-        const modalsContainer = document.createElement("div")
-        modalsContainer.id = "modalsContainer"
-        const container = document.createElement("div")
-        container.id = "svgContainer";
+        const mainContainer = createElement("div", ["game-progress-container"])
+        const modalsContainer = createElement("div", ["modalsContainer"])
+        const svgContainer = createElement("div", [])
+        svgContainer.id = "svgContainer";
 
-        wrapper.replaceChildren(container, modalsContainer)
-        this.rootElem.replaceChildren(wrapper)
+        mainContainer.replaceChildren(svgContainer, modalsContainer)
+        this.rootElem.replaceChildren(mainContainer)
         const color = App.getUserInfo().color
         document.body.style.backgroundColor = Consts.COLORS[color].FIGURE_HIGHLIGHT
 
@@ -179,7 +177,7 @@ export class GameProgressView extends View {
             } else {
                 modalData.headerList[0].content = PlayerColorNameMap[data.currentPlayerColor] + " hraje"
             }
-            modalData.wrapperClasslist.push(`sidemodal-current-player__${data.currentPlayerColor}`)
+            modalData.containerClasslist.push(`sidemodal-current-player__${data.currentPlayerColor}`)
         
         }
 
@@ -191,15 +189,13 @@ export class GameProgressView extends View {
             if (App.getUserInfo().color === data.winnerColor) {
                 modalData.headerList[0].content = '☺'
                 modalData.headerList[1].content = "Vyhrali jste"
-                modalData.wrapperClasslist.push('sidemodal-success')
+                modalData.containerClasslist.push('sidemodal-success')
             } else {
                 modalData.headerList[0].content = '☹'
                 modalData.headerList[1].content = PlayerColorNameMap[data.winnerColor] + ' vyhral'
-                modalData.wrapperClasslist.push('sidemodal-danger')
+                modalData.containerClasslist.push('sidemodal-danger')
             }
         }
-
-        // TODO
         return modalData
     }
 
@@ -208,8 +204,8 @@ export class GameProgressView extends View {
         
         const modalsContainer = document.getElementById("modalsContainer")!
 
-        const modalWrapper = createElement<HTMLDivElement>('div', ['sidemodal', ...modal.wrapperClasslist], '')
-        modalWrapper.id = modal.id
+        const modalContainer = createElement<HTMLDivElement>('div', ['sidemodal', ...modal.containerClasslist], '')
+        modalContainer.id = modal.id
         const modalInner = createElement<HTMLDivElement>('div', ['sidemodal-inner'], '')
         const modalHeader = createElement<HTMLDivElement>('div', ['sidemodal-header'], '')
         const modalContent = createElement<HTMLDivElement>('div', ['sidemodal-content'], '')
@@ -231,8 +227,8 @@ export class GameProgressView extends View {
         modalContent.replaceChildren(...modalContentElements)
 
         modalInner.append(modalHeader, modalContent)
-        modalWrapper.appendChild(modalInner)
+        modalContainer.appendChild(modalInner)
 
-        modalsContainer.appendChild(modalWrapper)
+        modalsContainer.appendChild(modalContainer)
     }
 }

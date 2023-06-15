@@ -23,7 +23,7 @@ export const modals:  Record<ViewModalTypes, ViewModalState> = {
                 dataset: { nextPlayerButton: 'true' }
             }
         ],
-        wrapperClasslist: ['sidemodal-danger'],
+        containerClasslist: ['sidemodal-danger'],
         id: 'noMovesModal'
     },
     [ViewModalTypes.HOME_MOVES_ONLY_MODAL]: {
@@ -47,7 +47,7 @@ export const modals:  Record<ViewModalTypes, ViewModalState> = {
                 dataset: { nextPlayerButton: 'true' }
             }
         ],
-        wrapperClasslist: [],
+        containerClasslist: [],
         id: 'homeMovesOnlyModal'
     },
     [ViewModalTypes.GAME_OVER_MODAL]: {
@@ -75,7 +75,7 @@ export const modals:  Record<ViewModalTypes, ViewModalState> = {
                 classList: ['btn', 'btn-success', 'btn-full']
             },
         ],
-        wrapperClasslist: [],
+        containerClasslist: [],
         id: 'gameOverModal'
     },
 
@@ -88,7 +88,7 @@ export const modals:  Record<ViewModalTypes, ViewModalState> = {
             }
         ],
         contentList: [],
-        wrapperClasslist: [],
+        containerClasslist: [],
         id: 'currentPlayerModal'
     }
 }

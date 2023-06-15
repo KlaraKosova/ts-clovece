@@ -6,27 +6,13 @@ import { View } from "./View";
 export class GameSelectView extends View {
     private games: GamePreview[] = [];
     render() {
-        const container = document.createElement('div')
-        container.classList.add('gamecards-container')
-
-        const containerHeader = document.createElement('div')
-        containerHeader.classList.add('gamecards-header')
-
+        const container = createElement('div', ['gamecards-container'])
+        const containerHeader = createElement('div', ['gamecards-header'])
         const newGameButton = createElement('button', ['btn', 'btn-success', 'btn-newgame'], 'Nová hra')
-        containerHeader.appendChild(newGameButton)
-
         const containerContent = createElement('div', ['gamecards-content'], '')
+
+        containerHeader.appendChild(newGameButton)
         container.replaceChildren(containerHeader, containerContent)
-
-        /* const createGameCard = document.createElement('div')
-        createGameCard.classList.add('gamecard')
-        createGameCard.innerHTML = '<div>+ Vytvořit</div>'
-
-        let resultHtml =
-            `<div class="gamecards-container">
-                <div class="game-card">
-                    <div>+ Vytvořit</div>
-                </div>` */
 
         for (let i = 0; i < this.games.length; i++) {
             const cardContainer = createElement('div', ['gamecard-container'], '')
