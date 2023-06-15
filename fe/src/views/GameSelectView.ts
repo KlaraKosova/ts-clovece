@@ -1,3 +1,4 @@
+import { createElement } from "@/utils/domHelpers";
 import { SocketIOClientInstance } from "../socketio/SocketClient";
 import { GamePreview } from "../types/data/GamePreview";
 import { View } from "./View";
@@ -6,34 +7,35 @@ export class GameSelectView extends View {
     private games: GamePreview[] = [];
     render() {
         const container = document.createElement('div')
-        container.classList.add('game-cards-container')
-        const createGameCard = document.createElement('div')
-        createGameCard.classList.add('game-card')
+        container.classList.add('gamecards-container')
+
+        const containerHeader = document.createElement('div')
+        containerHeader.classList.add('gamecards-header')
+
+        const newGameButton = createElement('button', ['btn', 'btn-success', 'btn-newgame'], 'Nová hra')
+        containerHeader.appendChild(newGameButton)
+
+        const containerContent = createElement('div', ['gamecards-content'], '')
+        container.replaceChildren(containerHeader, containerContent)
+
+        /* const createGameCard = document.createElement('div')
+        createGameCard.classList.add('gamecard')
         createGameCard.innerHTML = '<div>+ Vytvořit</div>'
 
-        container.appendChild(createGameCard)
         let resultHtml =
-            `<div class="game-cards-container">
+            `<div class="gamecards-container">
                 <div class="game-card">
                     <div>+ Vytvořit</div>
-                </div>`
+                </div>` */
 
         for (let i = 0; i < this.games.length; i++) {
-            const wrapper = document.createElement('div')
-            wrapper.classList.add('game-card')
+            const cardContainer = createElement('div', ['gamecard-container'], '')
+            const cardTitle = createElement('div', ['gamecard-title'], this.games[i].name)
+            const cardSubtitle = createElement('div', ['gamecard-subtitle'], `Hráči: ${this.games[i].players}/4`)
+            const cardJoinButton = createElement('button', ['btn', 'btn-success', 'gamecard-join'], 'Přidat se')
 
-            const nameWrapper = document.createElement('div')
-            nameWrapper.classList.add('game-name')
-            nameWrapper.textContent = this.games[i].name
-            const playersWrapper = document.createElement('div')
-            playersWrapper.textContent = `Hráči: ${this.games[i].players}/4`
-            const joinButton = document.createElement('button')
-            joinButton.classList.add('btn-full', 'btn-green')
-            joinButton.textContent = 'Přidat se'
-            joinButton.addEventListener('click', this.joinGame.bind(this, this.games[i]._id))
-
-            wrapper.append(nameWrapper, playersWrapper, joinButton)
-            container.append(wrapper)
+            cardContainer.append(cardTitle, cardSubtitle, cardJoinButton)
+            containerContent.append(cardContainer)
         }
 
         this.rootElem.replaceChildren(container);
@@ -41,31 +43,34 @@ export class GameSelectView extends View {
     }
 
     private renderNewGameDialog() {
-        const modalElement = document.createElement('div')
-        modalElement.classList.add('modal', 'modal-background')
-        modalElement.innerHTML = `
-            <div class="modal-wrapper">
-                <button class="btn-icon btn-red modal-close-btn">&times;</button>
-                <div class="modal-content">
-                    <h2>Nová hra</h2>
-                    <label class="input-label">Název</label>
-                    <input class="input-text" placeholder="Hra bez názvu" />
-                    <button class="btn-full btn-green" id="new-game-btn">Vytvořit</button>
-                </div>
-            </div>
-        `
-        this.rootElem.appendChild(modalElement)
-        document.querySelector(".modal-close-btn").addEventListener('click', this.removeNewGameDialog.bind(this))
-        document.querySelector("#new-game-btn").addEventListener('click', this.emitNewGame.bind(this))
+        const modalBackground = createElement('div', ['centermodal', 'centermodal-background'])
+        const modalContainer = createElement('div', ['centermodal-container'])
+        const modalCloseBtn = createElement('button', ['btn', 'btn-icon', 'btn-danger', 'centermodal-close'], '&times;')
+        modalCloseBtn.addEventListener('click', this.removeNewGameDialog.bind(this))
+
+        const modalHeader = createElement('div', ['centermodal-header'], 'Nová hra')
+        const modalContent = createElement('div', ['centermodal-content'])
+
+        const inputLabel = createElement('label', ['input', 'input-label'], 'Název')
+        const inputText = createElement('input', ['input', 'input-text'])
+        inputText.setAttribute('placeholder', 'Hra bez názvu')
+        const createButton = createElement('button', ['btn', 'btn-success'], 'Vytvořit')
+        createButton.addEventListener('click', this.emitNewGame.bind(this))
+
+        modalContent.replaceChildren(inputLabel, inputText, createButton)
+        modalContainer.replaceChildren(modalCloseBtn, modalHeader, modalContent)
+        modalBackground.appendChild(modalContainer)
+
+        this.rootElem.appendChild(modalBackground)
     }
 
     private removeNewGameDialog() {
-        const modalElement = document.querySelector('.modal')
+        const modalElement = document.querySelector('.centermodal')
         this.rootElem.removeChild(modalElement)
     }
 
     private emitNewGame() {
-        const inputElement = document.querySelector(".modal .input-text") as HTMLInputElement | null
+        const inputElement = document.querySelector(".centermodal .input-text") as HTMLInputElement | null
         // console.log(inputElement);
 
         console.log('emit NEW_GAME');
@@ -86,7 +91,7 @@ export class GameSelectView extends View {
         this.render()
     }
     public registerHtmlListeners(): void {
-        document.querySelector(".game-card:first-child").addEventListener('click', this.renderNewGameDialog.bind(this))
+        document.querySelector(".gamecards-header .btn-newgame").addEventListener('click', this.renderNewGameDialog.bind(this))
     }
     public registerSocketListeners(): void {
         SocketIOClientInstance.socket.on("GAME_SELECT_RESPONSE", this.onGameSelectResponse.bind(this))

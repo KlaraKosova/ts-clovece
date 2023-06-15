@@ -51,9 +51,15 @@ export class State {
         if (winnerColor !== null) {
             this.boardState = SvgBoardStates.WINNER_MODAL
             this.svg.winnerModalState(winnerColor, this.user.color)
+            ModalEventBusInstance.publish(ModalEventTypes.CLEAR_ALL)
             ModalEventBusInstance.publish(ModalEventTypes.SHOW_GAME_OVER_MODAL, { winnerColor })
             return
         }
+
+
+        const currentPlayerColor = this.getCurrentColor()
+        ModalEventBusInstance.publish(ModalEventTypes.CLEAR_ALL)
+        ModalEventBusInstance.publish(ModalEventTypes.SHOW_CURRENT_PLAYER_MODAL, { currentPlayerColor })
 
         if (this.currentPlayerTurn()) {            
             this.svg.diceState()
@@ -113,7 +119,11 @@ export class State {
 
     public async handleGameWinnerUpdate(data: { winnerId: string }) {
         this.boardState = SvgBoardStates.WINNER_MODAL
+
         const winnerColor = this.logic.getPlayerColorById(data.winnerId)
+        ModalEventBusInstance.publish(ModalEventTypes.CLEAR_ALL)
+        ModalEventBusInstance.publish(ModalEventTypes.SHOW_GAME_OVER_MODAL, { winnerColor })
+        
         await this.svg.winnerModalState(winnerColor, this.user.color)
     }
 
@@ -198,7 +208,7 @@ export class State {
         }
 
         this.boardState = SvgBoardStates.CURRENT_PLAYER_FIGURE_MOVE_ANIMATION
-        const updates = this.logic.getUpdates({field: data.field, figure: data.figure})
+        const updates = this.logic.getUpdates(this.user.color, {field: data.field, figure: data.figure})
         SocketIOClientInstance.socket.emit("CLIENT_GAME_PROGRESS_UPDATE", updates)
         
         await this.svg.currentPlayerFigureMoveAnimationState(updates)

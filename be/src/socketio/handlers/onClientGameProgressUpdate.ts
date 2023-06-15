@@ -76,7 +76,7 @@ export default async function (io: ServerIO, socket: SocketIO, updates: GameProg
         console.log("!!!!!!!!!!!!!!! WINNER !!!!!!!!!!!!!!!!!!!!");
         console.log(socket.data.userId, socket.data.color);
 
-        socket.to(socket.data.gameId!).emit("GAME_WINNER", { winnerId: socket.data.userId! })
+        io.to(socket.data.gameId!).emit("GAME_WINNER", { winnerId: socket.data.userId! })
         await client.disconnect()
         return
     }

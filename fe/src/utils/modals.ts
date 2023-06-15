@@ -7,7 +7,7 @@ export const modals:  Record<ViewModalTypes, ViewModalState> = {
             {
                 tag: 'h6',
                 content: 'Zadne dalsi tahy',
-                classList: ['side-modal-header__text']
+                classList: ['sidemodal-header__text']
             }
         ],
         contentList: [
@@ -19,11 +19,11 @@ export const modals:  Record<ViewModalTypes, ViewModalState> = {
             {
                 tag: 'button',
                 content: 'Dalsi hrac',
-                classList:['btn', 'btn-success', 'next-player-btn'],
+                classList:['btn', 'btn-success', 'btn-nextplayer'],
                 dataset: { nextPlayerButton: 'true' }
             }
         ],
-        wrapperClasslist: ['side-modal-danger'],
+        wrapperClasslist: ['sidemodal-danger'],
         id: 'noMovesModal'
     },
     [ViewModalTypes.HOME_MOVES_ONLY_MODAL]: {
@@ -31,7 +31,7 @@ export const modals:  Record<ViewModalTypes, ViewModalState> = {
             {
                 tag: 'h6',
                 content: 'Omezene dostupne tahy',
-                classList: ['side-modal-header__text']
+                classList: ['sidemodal-header__text']
             }
         ],
         contentList: [
@@ -43,7 +43,7 @@ export const modals:  Record<ViewModalTypes, ViewModalState> = {
             {
                 tag: 'button',
                 content: 'Dalsi hrac',
-                classList:['btn', 'btn-success', 'next-player-btn'],
+                classList:['btn', 'btn-success', 'btn-nextplayer'],
                 dataset: { nextPlayerButton: 'true' }
             }
         ],
@@ -55,12 +55,12 @@ export const modals:  Record<ViewModalTypes, ViewModalState> = {
             {
                 tag: 'span',
                 content: '',
-                classList: []
+                classList: ['sidemodal-header__icon-left']
             },
             {
                 tag: 'h6',
                 content: '',
-                classList: ['side-modal-header__text']
+                classList: ['sidemodal-header__text']
             }
         ],
         contentList: [
@@ -68,6 +68,11 @@ export const modals:  Record<ViewModalTypes, ViewModalState> = {
                 tag: 'div',
                 content: 'Konec hry',
                 classList: []
+            },
+            {
+                tag: 'button',
+                content: 'Nová hra',
+                classList: ['btn', 'btn-success', 'btn-full']
             },
         ],
         wrapperClasslist: [],
@@ -79,7 +84,7 @@ export const modals:  Record<ViewModalTypes, ViewModalState> = {
             {
                 tag: 'h6',
                 content: '',
-                classList: ['side-modal-header__text']
+                classList: ['sidemodal-header__text']
             }
         ],
         contentList: [],

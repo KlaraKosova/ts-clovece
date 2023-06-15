@@ -1,5 +1,5 @@
 import { PlayerColors } from "../types/common/PlayerColors";
-const K = 2.8
+const K = 2.6
 export default {
     K,
     COLORS: {

@@ -44,24 +44,35 @@
         }
     }
 
+    &-full {
+        width: 100%;
+    }
+
     &-icon {
         border-radius: 50px;
         font-size: 1.2em;
         width: 1.7em;
         height: 1.7em;
     }
-}
 
-.next-player-btn {
-    margin-top: 0.5rem;
-    line-height: 1.5rem;
+    &-nextplayer {
+        margin-top: 0.5rem;
+        line-height: 1.5rem;
+    
+        &:hover {
+            justify-content: space-evenly;
+    
+            &::after {
+                content: "\279C"; /* right arrow character */
+                margin-left: 1rem;
+            }
+        }
+    }
 
-    &:hover {
-        justify-content: space-evenly;
-
-        &::after {
-            content: "\279C"; /* right arrow character */
-            margin-left: 1rem;
+    &-newgame {
+        &::before {
+            content: '+';
+            margin-right: 0.5rem;
         }
     }
 }

@@ -9,7 +9,7 @@
     flex-direction: column;
 }
 
-.side-modal {
+.sidemodal {
     width: 15rem;
     color: $base-color;
     background-color: $base-bg-color-transparent;
@@ -17,7 +17,7 @@
     margin-bottom: 0.5rem;
 
     border-radius: 10px;
-    box-shadow: 5px 5px 5px $shadow-color;
+    box-shadow: 3px 3px 3px $shadow-color;
 
     &-danger {
         color: $danger-color;
@@ -25,7 +25,12 @@
         border-left-color: $danger-border-color;
     }
 
-    
+    &-success {
+        color: $success-color;
+        background-color: $success-bg-color-transparent;
+        border-left-color: $success-border-color;
+    }
+
     &-inner {
         padding: 1rem;
 
@@ -36,6 +41,7 @@
     }
 
     &-header {
+        display: flex;
         font-size: 1.25rem;
 
         margin-bottom: 1rem;
@@ -45,9 +51,19 @@
             font-size: inherit;
             margin: 0;
         }
+
+        &__icon-left {
+            margin-right: 1rem;
+        }
     }
 
-    &-content {}
+    &-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
 
     &-current-player {
         /* TODO */

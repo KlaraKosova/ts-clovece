@@ -168,7 +168,7 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
         return result
     }
 
-    public getUpdates(data: { field: FieldDataset | null, figure: FigureDataset | null }): GameProgressUpdate[] {
+    public getUpdates(playerColor: PlayerColors, data: { field: FieldDataset | null, figure: FigureDataset | null }): GameProgressUpdate[] {
         const result = [] as GameProgressUpdate[]
 
         let destFieldDataset: FieldDataset
@@ -177,12 +177,12 @@ export class LogicLayer implements HasDataset<GameProgressDataset>{
 
         if (data.field) {
             destFieldDataset = data.field
-            srcFigure = this.getFigureByNextFieldDataset(data.field)
+            srcFigure = this.getFigureByNextFieldDataset(data.field, playerColor)
             destFigure = this.getFigureByFieldDataset(data.field)
         } else {
             destFigure = this.getFigureByFigureDataset(data.figure)
             destFieldDataset = destFigure.getField()
-            srcFigure = this.getFigureByNextFieldDataset(destFieldDataset)
+            srcFigure = this.getFigureByNextFieldDataset(destFieldDataset, playerColor)
         }
 
         if (!srcFigure) {

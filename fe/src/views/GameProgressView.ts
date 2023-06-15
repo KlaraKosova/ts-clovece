@@ -23,13 +23,12 @@ export class GameProgressView extends View {
     public render(): void {
         const wrapper = document.createElement("div")
         wrapper.classList.add("game-progress-wrapper")
-        const headerBar = document.createElement("div")
         const modalsContainer = document.createElement("div")
         modalsContainer.id = "modalsContainer"
         const container = document.createElement("div")
         container.id = "svgContainer";
 
-        wrapper.replaceChildren(headerBar, container, modalsContainer)
+        wrapper.replaceChildren(container, modalsContainer)
         this.rootElem.replaceChildren(wrapper)
         const color = App.getUserInfo().color
         document.body.style.backgroundColor = Consts.COLORS[color].FIGURE_HIGHLIGHT
@@ -42,15 +41,6 @@ export class GameProgressView extends View {
     private onGameProgressResponse(game: GameProgressDataset) {
         console.log('onGameProgressResponse', game)
         this.state.handleGameProgressResponse(game)
-
-        const winnerColor = this.state.getWinnerColor()
-        if (winnerColor !== null) {
-            this.setGameOverHeaderBar(winnerColor)
-        } else {
-            const currentPlayerColor = this.state.getCurrentColor()
-            ModalEventBusInstance.publish(ModalEventTypes.CLEAR_ALL)
-            ModalEventBusInstance.publish(ModalEventTypes.SHOW_CURRENT_PLAYER_MODAL, { currentPlayerColor })
-        }
     }
 
     private async onGameProgressUpdate(data: { progress: GameProgressDataset, updates: GameProgressUpdate[] }) {
@@ -142,14 +132,6 @@ export class GameProgressView extends View {
         })
     }
 
-    private setGameOverHeaderBar(color: PlayerColors) {
-        const headerBar = this.rootElem.querySelector('.game-progress-wrapper :first-child') as HTMLElement
-
-        headerBar.style.backgroundColor = Consts.COLORS[color].FIGURE_BODY
-        headerBar.textContent = "Game over. <TODO> won"
-    }
-
-
     private handleModalEvent(event: ModalEventTypes, data: any) {
         console.log('handle');
         console.log(event);
@@ -197,8 +179,24 @@ export class GameProgressView extends View {
             } else {
                 modalData.headerList[0].content = PlayerColorNameMap[data.currentPlayerColor] + " hraje"
             }
-            modalData.wrapperClasslist.push(`side-modal-current-player__${data.currentPlayerColor}`)
+            modalData.wrapperClasslist.push(`sidemodal-current-player__${data.currentPlayerColor}`)
         
+        }
+
+        if (modalType === ViewModalTypes.GAME_OVER_MODAL) {
+            const data = eventData as {
+                winnerColor: PlayerColors
+            }
+
+            if (App.getUserInfo().color === data.winnerColor) {
+                modalData.headerList[0].content = '☺'
+                modalData.headerList[1].content = "Vyhrali jste"
+                modalData.wrapperClasslist.push('sidemodal-success')
+            } else {
+                modalData.headerList[0].content = '☹'
+                modalData.headerList[1].content = PlayerColorNameMap[data.winnerColor] + ' vyhral'
+                modalData.wrapperClasslist.push('sidemodal-danger')
+            }
         }
 
         // TODO
@@ -210,11 +208,11 @@ export class GameProgressView extends View {
         
         const modalsContainer = document.getElementById("modalsContainer")!
 
-        const modalWrapper = createElement<HTMLDivElement>('div', ['side-modal', ...modal.wrapperClasslist], '')
+        const modalWrapper = createElement<HTMLDivElement>('div', ['sidemodal', ...modal.wrapperClasslist], '')
         modalWrapper.id = modal.id
-        const modalInner = createElement<HTMLDivElement>('div', ['side-modal-inner'], '')
-        const modalHeader = createElement<HTMLDivElement>('div', ['side-modal-header'], '')
-        const modalContent = createElement<HTMLDivElement>('div', ['side-modal-content'], '')
+        const modalInner = createElement<HTMLDivElement>('div', ['sidemodal-inner'], '')
+        const modalHeader = createElement<HTMLDivElement>('div', ['sidemodal-header'], '')
+        const modalContent = createElement<HTMLDivElement>('div', ['sidemodal-content'], '')
         
         const modalHeaderElements = [] as HTMLElement[]
         const modalContentElements = [] as HTMLElement[]
