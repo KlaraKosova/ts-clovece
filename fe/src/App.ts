@@ -34,7 +34,7 @@ class App {
      */
     private loadUserInfo(): void {
         this.userInfo = null
-        const localStorageInfo = JSON.parse(localStorage.getItem('user'))
+        const localStorageInfo = JSON.parse(localStorage.getItem('user') || '{}')
 
         if (localStorageInfo &&
             typeof localStorageInfo.userId === 'string' &&
@@ -52,6 +52,10 @@ class App {
     }
 
     public getUserInfo(): UserInfo {
+        if (!this.userInfo) {
+            throw new Error('User info not set')
+        }
+
         return this.userInfo
     }
 

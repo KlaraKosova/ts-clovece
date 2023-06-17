@@ -80,7 +80,11 @@ export class GameProgressView extends View {
                 ) { // dataset.color is optional
                     result.field = {
                         index: +dataset.index,
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
+                        // @ts-ignore
                         isHome: dataset.isHome === 'true',
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
+                        // @ts-ignore
                         isStart: dataset.isStart === 'true',
                         color: dataset.color as PlayerColors || null
                     }

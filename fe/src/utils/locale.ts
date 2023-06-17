@@ -49,6 +49,10 @@ class Locale {
 
     public getLang(): { label: string, value: string } {
         const lang = this.supportedLangs.find(l => l.value === this.lang)
+        if (!lang) {
+            throw new Error(`Lang ${this.lang} not supported`)
+        }
+
         return cloneDeep(lang)
     }
 
@@ -58,7 +62,7 @@ class Locale {
         let currentObject: RecursiveRecord<string, string> = this.messages
 
         while (split.length > 0) {
-            const currentKey: string = split.shift() as keyof typeof currentObject
+            const currentKey = split.shift() as string
 
             if (!Object.hasOwnProperty.call(currentObject, currentKey)) {
                 throw new Error(`Locale property '${currentKey}' does not exist (current lang ${this.lang})`)
@@ -67,8 +71,9 @@ class Locale {
             if (split.length === 0) {
                 // last key === lang
                 if (typeof currentObject[currentKey] !== 'string') {
-                    throw new Error(`Incomplete path to locale property: '${property}'`)
+                    throw new Error(`Incomplete path or undefined locale property: '${property}'`)
                 }
+
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
                 // @ts-ignore
                 return currentObject[currentKey]
@@ -81,6 +86,8 @@ class Locale {
             // @ts-ignore
             currentObject = currentObject[currentKey]
         }
+
+        throw new Error(`Incomplete path or undefined locale property: '${property}'`)
     }
 
     private readonly messages = {

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "npx webpack serve",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint ./src --ext .tsx,.ts --fix"
+    "lint": "npx eslint ./src --ext .tsx,.ts --fix"
   },
   "author": "",
   "license": "ISC",
