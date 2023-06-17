@@ -1,17 +1,17 @@
 import { GameElement } from './base/GameElement'
-import { Runner, Svg } from '@svgdotjs/svg.js'
-import Consts from "../../utils/svgBoardConstants";
+import { Runner, type Svg } from '@svgdotjs/svg.js'
+import Consts from '../../utils/svgBoardConstants'
 import { centers, homeCenters, startCenters } from '../../utils/fieldCenters'
-import { HasHighlightAnimation } from './base/HasHighlightAnimation';
-import { Coordinates } from '../../types/Coordinates';
-import { FieldDTO } from '../../types/dtos/FieldDTO';
-import { cloneDeep } from 'lodash';
-import { HasDTO } from '../HasDTO';
+import { type HasHighlightAnimation } from './base/HasHighlightAnimation'
+import { type Coordinates } from '../../types/Coordinates'
+import { type FieldDTO } from '../../types/dtos/FieldDTO'
+import { cloneDeep } from 'lodash'
+import { type HasDTO } from '../HasDTO'
 
 export class Field extends GameElement implements HasHighlightAnimation, HasDTO<FieldDTO> {
-    private color: { front: string, back: string }
-    private center: Coordinates
-    private text = ''
+    private readonly color: { front: string, back: string }
+    private readonly center: Coordinates
+    private readonly text: string
     private animationRunner: Runner
     private dto: FieldDTO
 
@@ -34,11 +34,11 @@ export class Field extends GameElement implements HasHighlightAnimation, HasDTO<
         }
 
         if (dto.color === null) {
-            this.color = { front: '#ffffff', back: "#000000" }
+            this.color = { front: '#ffffff', back: '#000000' }
         } else {
             this.color = {
                 front: Consts.COLORS[dto.color].FIELD_FRONT,
-                back: Consts.COLORS[dto.color].FIELD_BACK,
+                back: Consts.COLORS[dto.color].FIELD_BACK
             }
         }
     }
@@ -47,7 +47,6 @@ export class Field extends GameElement implements HasHighlightAnimation, HasDTO<
         this.svg.createChild({ type: 'circle', diameter: Consts.BOARD.FIELDS.OUTER_SIZE, color: this.color.back, center: this.center })
         this.svg.createChild({ type: 'circle', diameter: Consts.BOARD.FIELDS.INNER_SIZE, color: this.color.front, center: this.center })
         this.svg.setDataset(this.dto)
-
 
         if (this.text) {
             this.svg.createChild({
@@ -61,7 +60,7 @@ export class Field extends GameElement implements HasHighlightAnimation, HasDTO<
         }
     }
 
-    clear() {
+    clear(): void {
         this.svg.removeChildren()
     }
 
@@ -87,12 +86,12 @@ export class Field extends GameElement implements HasHighlightAnimation, HasDTO<
             cursor: 'default'
         })
     }
-    
-    public getDTO() {
+
+    public getDTO(): FieldDTO {
         return cloneDeep(this.dto)
     }
 
-    public setDTO(dto: FieldDTO) {
+    public setDTO(dto: FieldDTO): void {
         this.dto = cloneDeep(dto)
     }
 

@@ -1,3 +1,3 @@
-export type AppSettings = {
+export interface AppSettings {
     lang: string
 }

@@ -1,13 +1,12 @@
-import { G, Svg, Element, Circle, Rect, Text, Tspan, Path, Ellipse } from '@svgdotjs/svg.js'
-import Consts from "../../../utils/svgBoardConstants";
-import { camelToKebabCase, delay } from "../../../utils/common";
-import { centers, homeCenters } from "../../../utils/fieldCenters";
-import * as path from "path";
-import { Coordinates } from '../../../types/Coordinates';
+import { type G, type Svg, type Element, type Circle, type Rect, type Text, type Tspan, type Path, type Ellipse } from '@svgdotjs/svg.js'
+import Consts from '../../../utils/svgBoardConstants'
+import { camelToKebabCase, delay } from '../../../utils/common'
+import * as path from 'path'
+import { type Coordinates } from '../../../types/Coordinates'
 
 export class SvgElement {
-    private draw: Svg;
-    protected group: G;
+    private readonly draw: Svg
+    protected group: G
     constructor(draw: Svg) {
         this.draw = draw
         this.group = draw.group()
@@ -23,12 +22,11 @@ export class SvgElement {
 
     setDataset(data: Record<string, any>): void {
         Object.keys(data).forEach(key => {
-            if (data.hasOwnProperty(key)) {
+            if (Object.hasOwnProperty.call(data, key)) {
                 this.group.data(camelToKebabCase(key), data[key], true)
             }
         })
     }
-
 
     /**
      * Creates new child element and adds it to the group
@@ -36,47 +34,47 @@ export class SvgElement {
      * @param {string} data.type type
      */
     createChild(data: {
-        type: 'rect',
-        center: Coordinates,
-        color: string,
-        opacity?: number,
-        size: Coordinates,
+        type: 'rect'
+        center: Coordinates
+        color: string
+        opacity?: number
+        size: Coordinates
         radius?: number
-    }): void;
+    }): void
 
     createChild(data: {
-        type: 'ellipse',
-        center: Coordinates,
-        color: string,
-        opacity?: number,
-        ellipseRadius: Coordinates,
-    }): void;
+        type: 'ellipse'
+        center: Coordinates
+        color: string
+        opacity?: number
+        ellipseRadius: Coordinates
+    }): void
 
     createChild(data: {
-        type: 'circle',
-        center: Coordinates,
-        color: string,
-        opacity?: number,
+        type: 'circle'
+        center: Coordinates
+        color: string
+        opacity?: number
         diameter: number
-    }): void;
+    }): void
 
     createChild(data: {
-        type: 'functionText',
+        type: 'functionText'
         addFunction?: (add: any) => void
-    }): void;
+    }): void
 
     createChild(data: {
-        type: 'path',
-        initialPosition: Coordinates,
-        path: string,
-        color: string,
+        type: 'path'
+        initialPosition: Coordinates
+        path: string
+        color: string
         pathScale?: number
-    }): void;
+    }): void
 
     createChild(data: {
-        type: 'text',
-        text: string,
-        center: Coordinates,
+        type: 'text'
+        text: string
+        center: Coordinates
         font: {
             leading?: string
             anchor?: string
@@ -85,26 +83,25 @@ export class SvgElement {
             stretch?: string
             style?: string
             variant?: string
-            weight?: string,
+            weight?: string
             fill?: string
         }
-    }): void;
-
+    }): void
 
     createChild(data: {
-        type: 'rect' | 'ellipse' | 'circle' | 'text' | 'functionText' | 'path',
-        path?: string,
-        initialPosition?: Coordinates,
-        center?: { x: number, y: number },
-        color?: string,
-        opacity?: number,
+        type: 'rect' | 'ellipse' | 'circle' | 'text' | 'functionText' | 'path'
+        path?: string
+        initialPosition?: Coordinates
+        center?: { x: number, y: number }
+        color?: string
+        opacity?: number
         diameter?: number
-        size?: { x: number, y: number },
-        font?: Record<string, any>,
-        text?: string,
-        radius?: number,
-        ellipseRadius?: Coordinates,
-        addFunction?: (tspan: Tspan) => void,
+        size?: { x: number, y: number }
+        font?: Record<string, any>
+        text?: string
+        radius?: number
+        ellipseRadius?: Coordinates
+        addFunction?: (tspan: Tspan) => void
         pathScale?: number
     }): void {
         if (data.addFunction) {
@@ -121,6 +118,9 @@ export class SvgElement {
                 element.radius(data.radius * Consts.K)
             }
         } else if (data.type === 'circle') {
+            // type safety ensured by overloading
+            // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             element = this.draw.circle(data.diameter * Consts.K)
         } else if (data.type === 'text') {
             element = this.draw.text(data.text || '')
@@ -128,11 +128,20 @@ export class SvgElement {
                 element.font(data.font)
             }
         } else if (data.type === 'ellipse') {
+            // type safety ensured by overloading
+            // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             element = this.draw.ellipse(data.ellipseRadius.x * Consts.K, data.ellipseRadius.y * Consts.K)
         } else {
-            const scale = data.pathScale ?? Consts.K
-            let transformedPath = `M ${data.initialPosition.x * Consts.K} ${data.initialPosition.y * Consts.K} `
-                + data.path
+            const scale = data.pathScale || Consts.K
+            // type safety ensured by overloading
+            // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const transformedPath = `M ${data.initialPosition.x * Consts.K} ${data.initialPosition.y * Consts.K} ` +
+            // type safety ensured by overloading
+            // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+                data.path
                     .split(' ')
                     .map(pathElement => {
                         return isNaN(+pathElement) ? pathElement : +pathElement * scale * 0.75
@@ -144,7 +153,7 @@ export class SvgElement {
             element.center(data.center.x * Consts.K, data.center.y * Consts.K)
         }
         if (data.color) {
-            element.fill({ color: data.color, opacity: data.opacity ?? 1 })
+            element.fill({ color: data.color, opacity: data.opacity || 1 })
         }
 
         this.group.add(element)
@@ -166,20 +175,20 @@ export class SvgElement {
     }
 
     public async move(data: {
-        duration: number,
+        duration: number
         offset: Coordinates
-    }): Promise<void>;
+    }): Promise<void>
 
     public async move(data: {
-        duration: number,
+        duration: number
         center: Coordinates
-    }): Promise<void>;
+    }): Promise<void>
 
     public async move(data: {
-        duration: number,
-        offset?: Coordinates,
+        duration: number
+        offset?: Coordinates
         center?: Coordinates
-    }) {
+    }): Promise<void> {
         this.group.children().forEach((child: Element) => {
             const runner = child.animate(data.duration, 0, 'last')
             if (data.offset) {
@@ -191,10 +200,11 @@ export class SvgElement {
 
         await delay(data.duration)
     }
+
     /**
      * Removes all children from document tree
      */
-    removeChildren() {
+    removeChildren(): void {
         this.group.clear()
     }
 

@@ -1,14 +1,9 @@
-import { GameElement } from "./base/GameElement";
-import Consts from "../../utils/svgBoardConstants";
-import { Svg } from "@svgdotjs/svg.js";
+import { GameElement } from './base/GameElement'
+import Consts from '../../utils/svgBoardConstants'
 
 export class StaticBackground extends GameElement {
-    constructor(draw: Svg) {
-        super(draw)
-    }
-
     render(): void {
-        // Green frame
+    // Green frame
         this.svg.createChild({
             type: 'rect',
             center: { x: Consts.BOARD.SIZE / 2, y: Consts.BOARD.SIZE / 2 },

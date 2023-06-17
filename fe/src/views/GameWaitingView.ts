@@ -1,5 +1,5 @@
-import { createElement } from "@/utils/domHelpers";
-import { View } from "./View";
+import { createElement } from '@/utils/domHelpers'
+import { View } from './View'
 
 export class GameWaitingView extends View {
     public render(): void {

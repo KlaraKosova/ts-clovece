@@ -1,7 +1,7 @@
-import { PlayerColors } from "../PlayerColors"
-import { PlayerStatusDTO } from "./PlayerStatusDTO"
+import { type PlayerColors } from '../PlayerColors'
+import { type PlayerStatusDTO } from './PlayerStatusDTO'
 
-export type GameProgressDTO = {
+export interface GameProgressDTO {
     name: string
     players: number
     playerStatuses: Record<PlayerColors, PlayerStatusDTO>

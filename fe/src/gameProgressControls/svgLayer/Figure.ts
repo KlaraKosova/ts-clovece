@@ -1,21 +1,20 @@
-import { Runner, Svg } from "@svgdotjs/svg.js";
-import { GameElement } from "./base/GameElement";
-import Consts from "../../utils/svgBoardConstants"
-import { centers, homeCenters, startCenters } from "../../utils/fieldCenters";
-import { HasHighlightAnimation } from "./base/HasHighlightAnimation";
-import { Field } from "./Field";
-import { coordinatesDiff } from "../../utils/common";
-import { FigureDTO } from "../../types/dtos/FigureDTO";
-import { Coordinates } from "../../types/Coordinates";
-import { cloneDeep } from "lodash";
-import { HasDTO } from "../HasDTO";
+import { Runner, type Svg } from '@svgdotjs/svg.js'
+import { GameElement } from './base/GameElement'
+import Consts from '../../utils/svgBoardConstants'
+import { centers, homeCenters, startCenters } from '../../utils/fieldCenters'
+import { type HasHighlightAnimation } from './base/HasHighlightAnimation'
+import { type Field } from './Field'
+import { coordinatesDiff } from '../../utils/common'
+import { type FigureDTO } from '../../types/dtos/FigureDTO'
+import { type Coordinates } from '../../types/Coordinates'
+import { cloneDeep } from 'lodash'
+import { type HasDTO } from '../HasDTO'
 
 export class Figure extends GameElement implements HasHighlightAnimation, HasDTO<FigureDTO> {
-    private field: Field;
-    private nextField = null as Field | null
+    private field: Field
     private dto: FigureDTO
     private animationRunners = [] as Runner[]
-    private path = null as Field[] | null
+    private path = [] as Field[]
 
     constructor(draw: Svg, info: FigureDTO, field: Field) {
         super(draw)
@@ -28,35 +27,27 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDTO
         this.animationRunners[1] = new Runner()
     }
 
-    public setPath(path: Field[]) {
+    public setPath(path: Field[]): void {
         this.path = path
     }
 
-    public setField(field: Field) {
+    public setField(field: Field): void {
         this.field = field
     }
 
-    public getField() {
+    public getField(): Field {
         return this.field
     }
 
-    public getNextField() {
-        return this.nextField
-    }
-
-    public setNextField(field: Field | null) {
-        this.nextField = field
-    }
-
-    public getDTO() {
+    public getDTO(): FigureDTO {
         return cloneDeep(this.dto)
     }
 
-    public setDTO(dto: FigureDTO) {
+    public setDTO(dto: FigureDTO): void {
         this.dto = cloneDeep(dto)
     }
 
-    public render() {
+    public render(): void {
         this.clear()
         const color = Consts.COLORS[this.dto.color]
         const dto = this.field.getDTO()
@@ -118,12 +109,12 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDTO
 
     public computeNextField(dice: number): Field | null {
         if (this.path === null) {
-            throw new Error("Path not set")
+            throw new Error('Path not set')
         }
         if (this.field.getDTO().isStart) {
             return dice === 6 ? this.path[0] : null
         }
-        const currentIndex = this.path.indexOf(this.field);
+        const currentIndex = this.path.indexOf(this.field)
         return this.path[currentIndex + dice] || null
     }
 
@@ -172,7 +163,7 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDTO
         this.field = finalField
     }
 
-    private async moveToField(field: Field) {
+    private async moveToField(field: Field): Promise<void> {
         const currentCoordinates = this.field.getCoordinates()
         const nextCoordinates = field.getCoordinates()
         await this.svg.move({
@@ -195,7 +186,7 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDTO
             case 15:
             case 16:
             case 17:
-                // up right
+            // up right
                 return {
                     x: currentCoordinates.x + Consts.BOARD.FIELDS.OUTER_SIZE + Consts.BOARD.FIELDS.GAP,
                     y: currentCoordinates.y - Consts.BOARD.FIELDS.OUTER_SIZE - Consts.BOARD.FIELDS.GAP
@@ -209,7 +200,7 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDTO
             case 32:
             case 38:
             case 39:
-                // up left
+            // up left
                 return {
                     x: currentCoordinates.x - Consts.BOARD.FIELDS.OUTER_SIZE - Consts.BOARD.FIELDS.GAP,
                     y: currentCoordinates.y - Consts.BOARD.FIELDS.OUTER_SIZE - Consts.BOARD.FIELDS.GAP
@@ -223,7 +214,7 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDTO
             case 25:
             case 26:
             case 27:
-                // down right
+            // down right
                 return {
                     x: currentCoordinates.x + Consts.BOARD.FIELDS.OUTER_SIZE + Consts.BOARD.FIELDS.GAP,
                     y: currentCoordinates.y + Consts.BOARD.FIELDS.OUTER_SIZE + Consts.BOARD.FIELDS.GAP
@@ -237,35 +228,37 @@ export class Figure extends GameElement implements HasHighlightAnimation, HasDTO
             case 35:
             case 36:
             case 37:
-                // down left
+            // down left
                 return {
                     x: currentCoordinates.x - Consts.BOARD.FIELDS.OUTER_SIZE - Consts.BOARD.FIELDS.GAP,
                     y: currentCoordinates.y + Consts.BOARD.FIELDS.OUTER_SIZE + Consts.BOARD.FIELDS.GAP
                 }
             case 3:
-                // up
+            // up
                 return {
                     x: currentCoordinates.x,
                     y: currentCoordinates.y - Consts.BOARD.FIELDS.OUTER_SIZE - Consts.BOARD.FIELDS.GAP
                 }
             case 13:
-                // right
+            // right
                 return {
                     x: currentCoordinates.x + Consts.BOARD.FIELDS.OUTER_SIZE + Consts.BOARD.FIELDS.GAP,
                     y: currentCoordinates.y
                 }
             case 23:
-                // down
+            // down
                 return {
                     x: currentCoordinates.x,
                     y: currentCoordinates.y + Consts.BOARD.FIELDS.OUTER_SIZE + Consts.BOARD.FIELDS.GAP
                 }
             case 33:
-                // left
+            // left
                 return {
                     x: currentCoordinates.x - Consts.BOARD.FIELDS.OUTER_SIZE - Consts.BOARD.FIELDS.GAP,
                     y: currentCoordinates.y
                 }
+            default:
+                return currentCoordinates
         }
     }
 }

@@ -5,4 +5,6 @@ export const ViewModalTypes = {
     CURRENT_PLAYER_MODAL: 'CURRENT_PLAYER_MODAL'
 } as const
 
+// disable eslint for enums and their types
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export type ViewModalTypes = typeof ViewModalTypes[keyof typeof ViewModalTypes]

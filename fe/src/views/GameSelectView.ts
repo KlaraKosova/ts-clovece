@@ -1,12 +1,12 @@
-import { createElement } from "@/utils/domHelpers";
-import { SocketIOClientInstance } from "../socketio/SocketClient";
-import { GamePreviewDTO } from "../types/dtos/GamePreviewDTO";
-import { View } from "./View";
-import { locale } from "@/utils/locale";
+import { createElement } from '@/utils/domHelpers'
+import { SocketIOClientInstance } from '../socketio/SocketClient'
+import { type GamePreviewDTO } from '../types/dtos/GamePreviewDTO'
+import { View } from './View'
+import { locale } from '@/utils/locale'
 
 export class GameSelectView extends View {
-    private games: GamePreviewDTO[] = [];
-    render() {
+    private games: GamePreviewDTO[] = []
+    render(): void {
         const container = createElement('div', ['gamecards-container'])
         const containerHeader = createElement('div', ['gamecards-header'])
         const newGameButton = createElement('button', ['btn', 'btn-success', 'btn-newgame'], locale.get('newGame'))
@@ -21,16 +21,16 @@ export class GameSelectView extends View {
             const cardSubtitle = createElement('div', ['gamecard-subtitle'], `${locale.get('players')}: ${this.games[i].players}/4`)
             const cardJoinButton = createElement('button', ['btn', 'btn-success', 'gamecard-join'], locale.get('join'))
             cardJoinButton.addEventListener('click', this.joinGame.bind(this, this.games[i]._id))
-    
+
             cardContainer.append(cardTitle, cardSubtitle, cardJoinButton)
             containerContent.append(cardContainer)
         }
 
-        this.rootElem.replaceChildren(container);
-        this.registerHtmlListeners();
+        this.rootElem.replaceChildren(container)
+        this.registerHtmlListeners()
     }
 
-    private renderNewGameDialog() {
+    private renderNewGameDialog(): void {
         const modalBackground = createElement('div', ['centermodal', 'centermodal-background'])
         const modalContainer = createElement('div', ['centermodal-container'])
         const modalCloseBtn = createElement('button', ['btn', 'btn-icon', 'btn-danger', 'centermodal-close'], '&times;')
@@ -52,48 +52,54 @@ export class GameSelectView extends View {
         this.rootElem.appendChild(modalBackground)
     }
 
-    private removeNewGameDialog() {
-        const modalElement = document.querySelector('.centermodal')
+    private removeNewGameDialog(): void {
+        // at this point the modal should be visible
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const modalElement = document.querySelector('.centermodal')!
         this.rootElem.removeChild(modalElement)
     }
 
-    private emitNewGame() {
-        const inputElement = document.querySelector(".centermodal .input-text") as HTMLInputElement | null
-        console.log('emit NEW_GAME');
+    private emitNewGame(): void {
+        const inputElement = document.querySelector<HTMLInputElement>('.centermodal .input-text')
+        console.log('emit NEW_GAME')
 
-        SocketIOClientInstance.socket.emit("NEW_GAME", {
+        SocketIOClientInstance.socket.emit('NEW_GAME', {
             name: inputElement?.value || locale.get('untitledGame')
         })
     }
 
-    private joinGame(gameId: string) {
-        console.log('emit JOIN_GAME');
-        SocketIOClientInstance.socket.emit("JOIN_GAME", { gameId });
+    private joinGame(gameId: string): void {
+        console.log('emit JOIN_GAME')
+        SocketIOClientInstance.socket.emit('JOIN_GAME', { gameId })
     }
 
-    private onGameSelectResponse(data: { games: GamePreviewDTO[] }) {
+    private onGameSelectResponse(data: { games: GamePreviewDTO[] }): void {
         console.log('onGameSelectResponse')
         this.games = data.games
         this.render()
     }
+
     public registerHtmlListeners(): void {
-        document.querySelector(".gamecards-header .btn-newgame").addEventListener('click', this.renderNewGameDialog.bind(this))
+        document.querySelector('.gamecards-header .btn-newgame')?.addEventListener('click', this.renderNewGameDialog.bind(this))
     }
+
     public registerSocketListeners(): void {
-        SocketIOClientInstance.socket.on("GAME_SELECT_RESPONSE", this.onGameSelectResponse.bind(this))
+        SocketIOClientInstance.socket.on('GAME_SELECT_RESPONSE', this.onGameSelectResponse.bind(this))
     }
+
     public removeHtmlListeners(): void {
-        document.querySelector(".game-card:first-child")?.removeEventListener('click', this.renderNewGameDialog)
-        document.querySelector(".modal-close-btn")?.removeEventListener('click', this.removeNewGameDialog)
-        document.querySelector("#new-game-btn")?.removeEventListener('click', this.emitNewGame)
+        document.querySelector('.game-card:first-child')?.removeEventListener('click', this.renderNewGameDialog)
+        document.querySelector('.modal-close-btn')?.removeEventListener('click', this.removeNewGameDialog)
+        document.querySelector('#new-game-btn')?.removeEventListener('click', this.emitNewGame)
     }
+
     public removeSocketListeners(): void {
-        SocketIOClientInstance.socket.off("GAME_SELECT_RESPONSE")
+        SocketIOClientInstance.socket.off('GAME_SELECT_RESPONSE')
     }
 
     public mount(): void {
         super.mount()
-        console.log('emit GAME_SELECT_REQUEST');
-        SocketIOClientInstance.socket.emit("GAME_SELECT_REQUEST")
+        console.log('emit GAME_SELECT_REQUEST')
+        SocketIOClientInstance.socket.emit('GAME_SELECT_REQUEST')
     }
 }

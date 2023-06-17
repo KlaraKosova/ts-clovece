@@ -1,6 +1,6 @@
-import { PlayerColors } from "../PlayerColors";
+import { type PlayerColors } from '../PlayerColors'
 
-export type FigureDTO = {
-    index: number,
+export interface FigureDTO {
+    index: number
     color: PlayerColors
 }

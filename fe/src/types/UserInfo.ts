@@ -1,7 +1,7 @@
-import { PlayerColors } from "./PlayerColors";
+import { type PlayerColors } from './PlayerColors'
 
-export type UserInfo = {
-    userId: string,
-    gameId: string,
+export interface UserInfo {
+    userId: string
+    gameId: string
     color: PlayerColors
 }

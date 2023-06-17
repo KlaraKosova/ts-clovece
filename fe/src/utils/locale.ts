@@ -1,78 +1,89 @@
-import { AppSettings } from "@/types/AppSettings"
-import { cloneDeep } from "lodash"
+import { type AppSettings } from '@/types/AppSettings'
+import { type RecursiveRecord } from '@/types/utils'
+import { cloneDeep } from 'lodash'
 
 class Locale {
-    private lang: string
-    private supportedLangs = [
+    private readonly lang: string
+    private readonly supportedLangs = [
         {
             value: 'cs',
-            label: "\u{1F1E8}\u{1F1FF} CZ"
+            label: '\u{1F1E8}\u{1F1FF} CZ'
         },
         {
             value: 'en',
-            label: "\u{1F1EC}\u{1F1E7} EN"
-        },
+            label: '\u{1F1EC}\u{1F1E7} EN'
+        }
     ]
 
     constructor() {
-        const settings = JSON.parse(localStorage.getItem('app')) as AppSettings
+        const settings = JSON.parse(localStorage.getItem('app') || '{}') as AppSettings
 
         if (settings) {
             const langValid = ['en', 'cs'].includes(settings.lang)
 
-            this.lang = langValid ? settings.lang : process.env.DEFAULT_LOCALE
+            this.lang = langValid ? settings.lang : process.env.DEFAULT_LOCALE || 'en'
         } else {
-            this.setLang(process.env.DEFAULT_LOCALE)
+            this.setLang(process.env.DEFAULT_LOCALE || 'en')
         }
     }
 
-    public getSupportedLangs () {
+    public getSupportedLangs(): Array<{ label: string, value: string }> {
         return cloneDeep(this.supportedLangs)
     }
 
-    public setLang(lang: string) {        
+    public setLang(lang: string): void {
         const isSuported = this.supportedLangs.some(s => s.value === lang)
         if (!isSuported) {
             throw new Error(`'${lang}' is not valid language option`)
         }
 
-        const oldSettings = JSON.parse(localStorage.getItem('app')) as AppSettings
+        const oldSettings = JSON.parse(localStorage.getItem('app') || '{}') as AppSettings
         const newSetings = {
             ...oldSettings,
             lang
         }
-        
+
         localStorage.setItem('app', JSON.stringify(newSetings))
         location.reload()
     }
 
-    public getLang() {
+    public getLang(): { label: string, value: string } {
         const lang = this.supportedLangs.find(l => l.value === this.lang)
         return cloneDeep(lang)
     }
 
-    public get(property: string) {
+    public get(property: string): string {
         const split = property.split('.')
         split.push(this.lang)
-        let currentObject: Record<string, any> = this.messages
+        let currentObject: RecursiveRecord<string, string> = this.messages
 
-        while(split.length) {
-            const currentKey = split.shift()
+        while (split.length > 0) {
+            const currentKey: string = split.shift() as keyof typeof currentObject
 
-            if (!currentObject.hasOwnProperty(currentKey)) {
+            if (!Object.hasOwnProperty.call(currentObject, currentKey)) {
                 throw new Error(`Locale property '${currentKey}' does not exist (current lang ${this.lang})`)
             }
 
-            if (!split.length) {
+            if (split.length === 0) {
                 // last key === lang
+                if (typeof currentObject[currentKey] !== 'string') {
+                    throw new Error(`Incomplete path to locale property: '${property}'`)
+                }
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
+                // @ts-ignore
                 return currentObject[currentKey]
             }
 
+            if (typeof currentObject[currentKey] === 'string') {
+                throw new Error(`Terminated path to locale property: '${property}'`)
+            }
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
+            // @ts-ignore
             currentObject = currentObject[currentKey]
         }
     }
 
-    private messages = {
+    private readonly messages = {
         newGame: {
             cs: 'Nová hra',
             en: 'New game'

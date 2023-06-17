@@ -1,9 +1,9 @@
-import { FieldDTO } from "./FieldDTO";
-import { FigureDTO } from "./FigureDTO";
+import { type FieldDTO } from './FieldDTO'
+import { type FigureDTO } from './FigureDTO'
 
-export type GameProgressUpdateDTO = {
-    type: 'MOVE' | 'KICK',
-    prevField: FieldDTO,
-    nextField: FieldDTO,
+export interface GameProgressUpdateDTO {
+    type: 'MOVE' | 'KICK'
+    prevField: FieldDTO
+    nextField: FieldDTO
     figure: FigureDTO
 }

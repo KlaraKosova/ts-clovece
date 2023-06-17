@@ -1,7 +1,7 @@
-import { FieldDTO } from "./dtos/FieldDTO"
-import { FigureDTO } from "./dtos/FigureDTO"
+import { type FieldDTO } from './dtos/FieldDTO'
+import { type FigureDTO } from './dtos/FigureDTO'
 
-export type DocumentClickData = {
+export interface DocumentClickData {
     field: FieldDTO | null
     figure: FigureDTO | null
     dice: boolean

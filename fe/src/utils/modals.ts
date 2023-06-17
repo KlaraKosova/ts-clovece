@@ -1,8 +1,8 @@
-import { ViewModalState } from "@/types/ViewModalState";
-import { ViewModalTypes } from "@/types/ViewModalTypes";
-import { locale } from "./locale";
+import { type ViewModalState } from '@/types/ViewModalState'
+import { ViewModalTypes } from '@/types/ViewModalTypes'
+import { locale } from './locale'
 
-export const modals:  Record<ViewModalTypes, ViewModalState> = {
+export const modals: Record<ViewModalTypes, ViewModalState> = {
     [ViewModalTypes.NO_MOVES_MODAL]: {
         headerList: [
             {
@@ -20,7 +20,7 @@ export const modals:  Record<ViewModalTypes, ViewModalState> = {
             {
                 tag: 'button',
                 content: locale.get('nextPlayer'),
-                classList:['btn', 'btn-success', 'btn-nextplayer'],
+                classList: ['btn', 'btn-success', 'btn-nextplayer'],
                 dataset: { nextPlayerButton: 'true' }
             }
         ],
@@ -44,7 +44,7 @@ export const modals:  Record<ViewModalTypes, ViewModalState> = {
             {
                 tag: 'button',
                 content: locale.get('nextPlayer'),
-                classList:['btn', 'btn-success', 'btn-nextplayer'],
+                classList: ['btn', 'btn-success', 'btn-nextplayer'],
                 dataset: { nextPlayerButton: 'true' }
             }
         ],
@@ -74,7 +74,7 @@ export const modals:  Record<ViewModalTypes, ViewModalState> = {
                 tag: 'button',
                 content: locale.get('newGame'),
                 classList: ['btn', 'btn-success', 'btn-full']
-            },
+            }
         ],
         containerClasslist: [],
         id: 'gameOverModal'

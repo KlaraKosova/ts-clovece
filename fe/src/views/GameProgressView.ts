@@ -1,49 +1,49 @@
-import { SVG } from "@svgdotjs/svg.js";
-import Consts from "../utils/svgBoardConstants";
-import { SocketIOClientInstance } from "../socketio/SocketClient";
-import { View } from "./View";
-import App from "../App";
-import { DocumentClickData } from "../types/DocumentClickData";
-import { PlayerColors, PlayersOrder } from "../types/PlayerColors";
-import { GameProgressDTO } from "../types/dtos/GameProgressDTO";
-import { GameProgressUpdateDTO } from "../types/dtos/GameProgressUpdateDTO";
-import { State } from "../gameProgressControls/State";
-import { ViewModalTypes } from "@/types/ViewModalTypes";
-import {ModalEventBusInstance} from "@/gameProgressControls/modals/ModalEventBus";
-import {ModalEventTypes} from "@/types/ModalEventBusEventTypes";
-import { createElement } from "@/utils/domHelpers";
-import { ViewModalState } from "@/types/ViewModalState";
-import { cloneDeep, create } from "lodash";
-import { modals } from "@/utils/modals";
-import { PlayerColorNameMap } from "@/utils/constants";
-import { locale } from "@/utils/locale";
+import { SVG } from '@svgdotjs/svg.js'
+import Consts from '../utils/svgBoardConstants'
+import { SocketIOClientInstance } from '../socketio/SocketClient'
+import { View } from './View'
+import App from '../App'
+import { type DocumentClickData } from '../types/DocumentClickData'
+import { type PlayerColors } from '../types/PlayerColors'
+import { type GameProgressDTO } from '../types/dtos/GameProgressDTO'
+import { type GameProgressUpdateDTO } from '../types/dtos/GameProgressUpdateDTO'
+import { State } from '../gameProgressControls/State'
+import { ViewModalTypes } from '@/types/ViewModalTypes'
+import { ModalEventBusInstance } from '@/gameProgressControls/modals/ModalEventBus'
+import { ModalEventTypes } from '@/types/ModalEventBusEventTypes'
+import { createElement } from '@/utils/domHelpers'
+import { type ViewModalState } from '@/types/ViewModalState'
+import { cloneDeep } from 'lodash'
+import { modals } from '@/utils/modals'
+import { PlayerColorNameMap } from '@/utils/constants'
+import { locale } from '@/utils/locale'
 
 export class GameProgressView extends View {
     private state: State
 
     public render(): void {
-        const mainContainer = createElement("div", ["game-progress-container"])
-        const modalsContainer = createElement("div", [])
+        const mainContainer = createElement('div', ['game-progress-container'])
+        const modalsContainer = createElement('div', [])
         modalsContainer.id = 'modalsContainer'
-        const svgContainer = createElement("div", [])
-        svgContainer.id = "svgContainer";
+        const svgContainer = createElement('div', [])
+        svgContainer.id = 'svgContainer'
 
         mainContainer.replaceChildren(svgContainer, modalsContainer)
         this.rootElem.replaceChildren(mainContainer)
         const color = App.getUserInfo().color
         document.body.style.backgroundColor = Consts.COLORS[color].FIGURE_HIGHLIGHT
 
-        const draw = SVG().addTo("#svgContainer").size(Consts.BOARD.SIZE * Consts.K, Consts.BOARD.SIZE * Consts.K)
+        const draw = SVG().addTo('#svgContainer').size(Consts.BOARD.SIZE * Consts.K, Consts.BOARD.SIZE * Consts.K)
         this.state = new State(draw, App.getUserInfo())
         this.state.renderInitial()
     }
 
-    private onGameProgressResponse(game: GameProgressDTO) {
+    private async onGameProgressResponse(game: GameProgressDTO): Promise<void> {
         console.log('onGameProgressResponse', game)
-        this.state.handleGameProgressResponse(game)
+        await this.state.handleGameProgressResponse(game)
     }
 
-    private async onGameProgressUpdate(data: { progress: GameProgressDTO, updates: GameProgressUpdateDTO[] }) {
+    private async onGameProgressUpdate(data: { progress: GameProgressDTO, updates: GameProgressUpdateDTO[] }): Promise<void> {
         console.log('onGameProgressUpdate', data)
         await this.state.handleGameProgressUpdate(data)
 
@@ -52,12 +52,12 @@ export class GameProgressView extends View {
         ModalEventBusInstance.publish(ModalEventTypes.SHOW_CURRENT_PLAYER_MODAL, { currentPlayerColor })
     }
 
-    private async onGameWinner(data: { winnerId: string }) {
+    private async onGameWinner(data: { winnerId: string }): Promise<void> {
         console.log('onGameWinner', data)
-        this.state.handleGameWinnerUpdate(data)
+        await this.state.handleGameWinnerUpdate(data)
     }
 
-    private async onDocumentClick(event: PointerEvent) {
+    private async onDocumentClick(event: PointerEvent): Promise<void> {
         const result: DocumentClickData = {
             field: null,
             figure: null,
@@ -73,10 +73,10 @@ export class GameProgressView extends View {
                 result.playButton = result.playButton || !!dataset.playButton
                 result.nextPlayerButton = result.nextPlayerButton || !!dataset.nextPlayerButton
 
-                if (element.classList.contains('field')
-                    && dataset.index
-                    && dataset.isHome
-                    && dataset.isStart
+                if (element.classList.contains('field') &&
+                    dataset.index &&
+                    dataset.isHome &&
+                    dataset.isStart
                 ) { // dataset.color is optional
                     result.field = {
                         index: +dataset.index,
@@ -86,9 +86,9 @@ export class GameProgressView extends View {
                     }
                 }
 
-                if (element.classList.contains('figure')
-                    && dataset.color
-                    && dataset.index
+                if (element.classList.contains('figure') &&
+                    dataset.color &&
+                    dataset.index
                 ) {
                     result.figure = {
                         index: +dataset.index,
@@ -97,52 +97,56 @@ export class GameProgressView extends View {
                 }
             }
         }
-       this.state.handleDocumentClick(result)
+        await this.state.handleDocumentClick(result)
     }
 
     protected registerSocketListeners(): void {
-        SocketIOClientInstance.socket.on("GAME_PROGRESS_RESPONSE", this.onGameProgressResponse.bind(this))
-        SocketIOClientInstance.socket.on("GAME_PROGRESS_UPDATE", this.onGameProgressUpdate.bind(this))
-        SocketIOClientInstance.socket.on("GAME_WINNER", this.onGameWinner.bind(this))
+        SocketIOClientInstance.socket.on('GAME_PROGRESS_RESPONSE', this.onGameProgressResponse.bind(this))
+        SocketIOClientInstance.socket.on('GAME_PROGRESS_UPDATE', this.onGameProgressUpdate.bind(this))
+        SocketIOClientInstance.socket.on('GAME_WINNER', this.onGameWinner.bind(this))
     }
 
     protected removeSocketListeners(): void {
-        SocketIOClientInstance.socket.off("GAME_PROGRESS_RESPONSE")
-        SocketIOClientInstance.socket.off("GAME_PROGRESS_UPDATE")
+        SocketIOClientInstance.socket.off('GAME_PROGRESS_RESPONSE')
+        SocketIOClientInstance.socket.off('GAME_PROGRESS_UPDATE')
     }
 
-    protected registerHtmlListeners() {
-        super.registerHtmlListeners();
+    protected registerHtmlListeners(): void {
+        super.registerHtmlListeners()
         document.addEventListener('click', this.onDocumentClick.bind(this))
     }
 
-    protected removeHtmlListeners() {
-        super.removeHtmlListeners();
+    protected removeHtmlListeners(): void {
+        super.removeHtmlListeners()
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         document.removeEventListener('click', this.onDocumentClick)
     }
 
     public mount(): void {
         super.mount()
-        console.log('emit GAME_PROGRESS_REQUEST');
+        console.log('emit GAME_PROGRESS_REQUEST')
 
-        SocketIOClientInstance.socket.emit("GAME_PROGRESS_REQUEST")
-        
+        SocketIOClientInstance.socket.emit('GAME_PROGRESS_REQUEST')
+
         Object.keys(ModalEventTypes).forEach((eventType: ModalEventTypes) => {
-            ModalEventBusInstance.subscribe(eventType, (data: any) => this.handleModalEvent.call(this, eventType, data))        
+            ModalEventBusInstance.subscribe(eventType, (data: any) => {
+                this.handleModalEvent(eventType, data)
+            })
         })
     }
 
-    private handleModalEvent(event: ModalEventTypes, data: any) {
-        console.log('handle');
-        console.log(event);
-        console.log(data);
-        
+    private handleModalEvent(event: ModalEventTypes, data: any): void {
+        console.log('handle')
+        console.log(event)
+        console.log(data)
+
         if (event === ModalEventTypes.CLEAR_ALL) {
-            const modalsContainer = document.getElementById("modalsContainer")!
+            // modalsContainer should always exist
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const modalsContainer = document.getElementById('modalsContainer')!
             modalsContainer.replaceChildren()
             return
         }
-
 
         let modalType = null as null | ViewModalTypes
 
@@ -156,13 +160,13 @@ export class GameProgressView extends View {
             modalType = ViewModalTypes.CURRENT_PLAYER_MODAL
         }
 
-        if (modalType !== null) {            
+        if (modalType !== null) {
             const modalState = this.createModalData(modalType, data)
             this.renderModal(modalState)
         }
     }
 
-    private createModalData(modalType: ViewModalTypes, eventData: any) {
+    private createModalData(modalType: ViewModalTypes, eventData: any): ViewModalState {
         const modalData = cloneDeep(modals[modalType])
 
         if (eventData === undefined) {
@@ -172,7 +176,7 @@ export class GameProgressView extends View {
         if (modalType === ViewModalTypes.CURRENT_PLAYER_MODAL) {
             const data = eventData as {
                 currentPlayerColor: PlayerColors
-            } 
+            }
 
             if (data.currentPlayerColor === App.getUserInfo().color) {
                 modalData.headerList[0].content = locale.get('yourTurn')
@@ -180,7 +184,6 @@ export class GameProgressView extends View {
                 modalData.headerList[0].content = PlayerColorNameMap[data.currentPlayerColor] + locale.get('otherPlayerTurnSuffix')
             }
             modalData.containerClasslist.push(`sidemodal-current-player__${data.currentPlayerColor}`)
-        
         }
 
         if (modalType === ViewModalTypes.GAME_OVER_MODAL) {
@@ -201,17 +204,18 @@ export class GameProgressView extends View {
         return modalData
     }
 
-    private renderModal(modal: ViewModalState) {
-        console.log(modal);
-        
-        const modalsContainer = document.getElementById("modalsContainer")!
+    private renderModal(modal: ViewModalState): void {
+        console.log(modal)
+        // modalsContainer should always exist
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const modalsContainer = document.getElementById('modalsContainer')!
 
         const modalContainer = createElement<HTMLDivElement>('div', ['sidemodal', ...modal.containerClasslist], '')
         modalContainer.id = modal.id
         const modalInner = createElement<HTMLDivElement>('div', ['sidemodal-inner'], '')
         const modalHeader = createElement<HTMLDivElement>('div', ['sidemodal-header'], '')
         const modalContent = createElement<HTMLDivElement>('div', ['sidemodal-content'], '')
-        
+
         const modalHeaderElements = [] as HTMLElement[]
         const modalContentElements = [] as HTMLElement[]
 

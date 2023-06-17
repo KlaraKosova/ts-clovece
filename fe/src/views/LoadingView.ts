@@ -1,5 +1,5 @@
-import { createElement } from "@/utils/domHelpers";
-import { View } from "./View";
+import { createElement } from '@/utils/domHelpers'
+import { View } from './View'
 
 export class LoadingView extends View {
     public render(): void {

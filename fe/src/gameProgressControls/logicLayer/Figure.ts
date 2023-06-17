@@ -1,9 +1,8 @@
-import {FigureDTO} from "@/types/dtos/FigureDTO";
-import cloneDeep from "lodash/cloneDeep";
-import {FieldDTO} from "@/types/dtos/FieldDTO";
-import {Field} from "@/gameProgressControls/logicLayer/Field";
-import {objectCompare} from "@/utils/common";
-import { HasDTO } from "../HasDTO";
+import { type FigureDTO } from '@/types/dtos/FigureDTO'
+import cloneDeep from 'lodash/cloneDeep'
+import { type FieldDTO } from '@/types/dtos/FieldDTO'
+import { objectCompare } from '@/utils/common'
+import { type HasDTO } from '../HasDTO'
 
 export class Figure implements HasDTO<FigureDTO> {
     private dto: FigureDTO
@@ -14,19 +13,19 @@ export class Figure implements HasDTO<FigureDTO> {
         return cloneDeep(this.dto)
     }
 
-    public setDTO(dto: FigureDTO) {
+    public setDTO(dto: FigureDTO): void {
         this.dto = cloneDeep(dto)
     }
 
-    public getField() {
+    public getField(): FieldDTO {
         return this.field
     }
 
-    public setField(field: FieldDTO) {
+    public setField(field: FieldDTO): void {
         this.field = field
     }
 
-    public setPath(path: FieldDTO[]) {
+    public setPath(path: FieldDTO[]): void {
         this.path = cloneDeep(path)
     }
 
@@ -34,7 +33,7 @@ export class Figure implements HasDTO<FigureDTO> {
         if (this.field.isStart) {
             return diceThrow === 6 ? this.path[0] : null
         }
-        const currentIndex = this.path.findIndex(f => objectCompare(f, this.field));
+        const currentIndex = this.path.findIndex(f => objectCompare(f, this.field))
         return this.path[currentIndex + diceThrow] || null
     }
 }

@@ -1,19 +1,19 @@
-import { GameElement } from "./base/GameElement";
-import Consts from "../../utils/svgBoardConstants"
-import { Runner, Svg } from "@svgdotjs/svg.js";
+import { GameElement } from './base/GameElement'
+import Consts from '../../utils/svgBoardConstants'
+import { Runner, type Svg } from '@svgdotjs/svg.js'
 
 export class Loading extends GameElement {
     private animationRunners: Runner[]
 
     constructor(draw: Svg) {
-        super(draw);
+        super(draw)
         this.animationRunners = []
         for (let i = 0; i < 3; i++) {
             this.animationRunners[i] = new Runner()
         }
     }
 
-    public render() {
+    public render(): void {
         for (let i = 0; i < 3; i++) {
             this.svg.createChild({
                 type: 'circle',
@@ -24,7 +24,7 @@ export class Loading extends GameElement {
         }
     }
 
-    public runAnimation() {
+    public runAnimation(): void {
         for (let i = 0; i < 3; i++) {
             this.animationRunners[i] = this.svg.getNthChild(i + 1)
                 .animate({
@@ -39,10 +39,10 @@ export class Loading extends GameElement {
         }
     }
 
-    clear() {
+    clear(): void {
         for (let i = 0; i < 3; i++) {
             this.animationRunners[i].finish()
         }
-        super.clear();
+        super.clear()
     }
 }

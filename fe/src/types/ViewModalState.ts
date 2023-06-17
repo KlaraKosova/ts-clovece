@@ -1,11 +1,11 @@
-type ElementState = {
+interface ElementState {
     tag: keyof HTMLElementTagNameMap
     content: string
     classList: string[]
     dataset?: Record<string, string>
 }
 
-export type ViewModalState = {
+export interface ViewModalState {
     id: string
     headerList: ElementState[]
     containerClasslist: string[]

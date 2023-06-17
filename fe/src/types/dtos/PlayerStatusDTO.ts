@@ -1,7 +1,7 @@
-import { PlayerColors } from "../PlayerColors"
-import { FieldDTO } from "./FieldDTO"
+import { type PlayerColors } from '../PlayerColors'
+import { type FieldDTO } from './FieldDTO'
 
-export type PlayerStatusDTO = {
+export interface PlayerStatusDTO {
     color: PlayerColors
     userId: string
     figures: FieldDTO[]

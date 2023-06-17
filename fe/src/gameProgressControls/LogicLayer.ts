@@ -1,20 +1,20 @@
-import {GameProgressDTO} from "@/types/dtos/GameProgressDTO";
-import cloneDeep from "lodash/cloneDeep";
-import {FieldDTO} from "@/types/dtos/FieldDTO";
-import {FigureDTO} from "@/types/dtos/FigureDTO";
-import {PlayerColors, PlayersOrder} from "@/types/PlayerColors";
-import {Field} from "@/gameProgressControls/logicLayer/Field";
-import {Figure} from "@/gameProgressControls/logicLayer/Figure";
-import {UserInfo} from "@/types/UserInfo";
-import {objectCompare} from "@/utils/common";
-import { GameProgressUpdateDTO } from "@/types/dtos/GameProgressUpdateDTO";
-import { HasDTO } from "./HasDTO";
-import { defaultGameProgressDTO } from "@/utils/constants";
+import { type GameProgressDTO } from '@/types/dtos/GameProgressDTO'
+import cloneDeep from 'lodash/cloneDeep'
+import { type FieldDTO } from '@/types/dtos/FieldDTO'
+import { type FigureDTO } from '@/types/dtos/FigureDTO'
+import { type PlayerColors, PlayersOrder } from '@/types/PlayerColors'
+import { Field } from '@/gameProgressControls/logicLayer/Field'
+import { Figure } from '@/gameProgressControls/logicLayer/Figure'
+import { type UserInfo } from '@/types/UserInfo'
+import { objectCompare } from '@/utils/common'
+import { type GameProgressUpdateDTO } from '@/types/dtos/GameProgressUpdateDTO'
+import { type HasDTO } from './HasDTO'
+import { defaultGameProgressDTO } from '@/utils/constants'
 
 export class LogicLayer implements HasDTO<GameProgressDTO> {
     private dto: GameProgressDTO
-    private user: UserInfo
-    private mainFields: Field[]
+    private readonly user: UserInfo
+    private readonly mainFields: Field[]
     private startFields: Record<PlayerColors, Field[]>
     private homeFields: Record<PlayerColors, Field[]>
     private figures: Record<PlayerColors, Figure[]>
@@ -34,7 +34,7 @@ export class LogicLayer implements HasDTO<GameProgressDTO> {
                 color:
                     i % 10 === 0 ? (`${Math.floor(i / 10)}` as PlayerColors) : null,
                 isHome: false,
-                isStart: false,
+                isStart: false
             })
         }
 
@@ -56,7 +56,7 @@ export class LogicLayer implements HasDTO<GameProgressDTO> {
                     index: i,
                     color: playerColor,
                     isHome: true,
-                    isStart: false,
+                    isStart: false
                 })
 
                 this.startFields[playerColor][i] = new Field()
@@ -64,14 +64,14 @@ export class LogicLayer implements HasDTO<GameProgressDTO> {
                     index: i,
                     color: playerColor,
                     isHome: false,
-                    isStart: true,
+                    isStart: true
                 })
 
                 path.push({
                     index: i,
                     color: playerColor,
                     isHome: true,
-                    isStart: false,
+                    isStart: false
                 })
             }
 
@@ -81,29 +81,30 @@ export class LogicLayer implements HasDTO<GameProgressDTO> {
                 this.figures[playerColor][i].setField(this.startFields[playerColor][i].getDTO())
                 this.figures[playerColor][i].setPath(path)
             }
-        });
+        })
 
         this.setDTO(defaultGameProgressDTO)
     }
-    public setDTO(dto: GameProgressDTO) {
+
+    public setDTO(dto: GameProgressDTO): void {
         this.dto = cloneDeep(dto)
 
         PlayersOrder.forEach((playerColor, index) => {
             for (let i = 0; i < 4; i++) {
                 this.figures[playerColor][i].setField(this.dto.playerStatuses[playerColor].figures[i])
             }
-        });
+        })
     }
 
     public getDTO(): GameProgressDTO {
         return cloneDeep(this.dto)
     }
 
-    public getCurrentPlayerId() {
+    public getCurrentPlayerId(): string {
         return this.dto.currentPlayerId
     }
 
-    public getPlayerColorById(id: string) {
+    public getPlayerColorById(id: string): PlayerColors {
         for (const color of PlayersOrder) {
             if (this.dto.playerStatuses[color].userId === id) {
                 return color
@@ -113,15 +114,15 @@ export class LogicLayer implements HasDTO<GameProgressDTO> {
         throw new Error("Player ID doesn't exist")
     }
 
-    public getDiceSequence() {
+    public getDiceSequence(): number[] {
         return [...this.dto.lastDiceSequence]
     }
 
-    public getDiceResult() {
+    public getDiceResult(): number {
         return this.dto.lastDiceSequence[this.dto.lastDiceSequence.length - 1]
     }
 
-    public getAvailable() {
+    public getAvailable(): ({ fields: FieldDTO[], figures: FigureDTO[], homeMovesOnly: boolean }) {
         const result = {
             fields: [] as FieldDTO[],
             figures: [] as FigureDTO[],
@@ -138,11 +139,11 @@ export class LogicLayer implements HasDTO<GameProgressDTO> {
             const alreadyIncluded = result.fields.find(f => objectCompare(f, nextField))
             if (nextField && !alreadyIncluded) {
                 const figure = this.getFigureByFieldDTO(nextField)
-                
+
                 // figures at home should not be eliminated not even by figures of the same color
-                // so do nothing 
+                // so do nothing
                 /* if (nextField.isHome && figure) {
-                    
+
                 } */
 
                 if (nextField.isHome && !figure) {
@@ -157,7 +158,7 @@ export class LogicLayer implements HasDTO<GameProgressDTO> {
                     }
                 }
 
-                if (!nextField.isHome || !currentFigure.getField().isHome ) {
+                if (!nextField.isHome || !currentFigure.getField().isHome) {
                     result.homeMovesOnly = false
                 }
             }
@@ -169,7 +170,7 @@ export class LogicLayer implements HasDTO<GameProgressDTO> {
     public getUpdates(playerColor: PlayerColors, data: { field: FieldDTO | null, figure: FigureDTO | null }): GameProgressUpdateDTO[] {
         const result = [] as GameProgressUpdateDTO[]
 
-        let destFieldDTO: FieldDTO
+        let destFieldDTO: FieldDTO | null = null
         let srcFigure = null as Figure | null
         let destFigure = null as Figure | null
 
@@ -177,28 +178,27 @@ export class LogicLayer implements HasDTO<GameProgressDTO> {
             destFieldDTO = data.field
             srcFigure = this.getFigureByNextFieldDTO(data.field, playerColor)
             destFigure = this.getFigureByFieldDTO(data.field)
-        } else {
+        } else if (data.figure) {
             destFigure = this.getFigureByFigureDTO(data.figure)
             destFieldDTO = destFigure.getField()
             srcFigure = this.getFigureByNextFieldDTO(destFieldDTO, playerColor)
         }
 
-        if (!srcFigure) {
-            throw new Error("should not happen")
+        if (!srcFigure || !destFieldDTO) {
+            throw new Error('should not happen')
         }
 
         if (destFigure) {
             const startField = this.getFreeStartField(destFigure.getDTO().color)
             result.push({
-                type: "KICK",
+                type: 'KICK',
                 prevField: srcFigure.getField(),
                 nextField: destFieldDTO,
                 figure: srcFigure.getDTO()
             })
 
-
             result.push({
-                type: "MOVE",
+                type: 'MOVE',
                 prevField: destFigure.getField(),
                 nextField: startField.getDTO(),
                 figure: destFigure.getDTO()
@@ -208,7 +208,7 @@ export class LogicLayer implements HasDTO<GameProgressDTO> {
             destFigure.setField(startField.getDTO())
         } else {
             result.push({
-                type: "MOVE",
+                type: 'MOVE',
                 prevField: srcFigure.getField(),
                 nextField: destFieldDTO,
                 figure: srcFigure.getDTO()
@@ -237,13 +237,15 @@ export class LogicLayer implements HasDTO<GameProgressDTO> {
                 return playerColor
             }
         }
+
+        throw new Error(`Current player with ID ${this.dto.currentPlayerId} does not exist`)
     }
 
-    private getFigureByFieldDTO(field: FieldDTO): Figure | null {        
+    private getFigureByFieldDTO(field: FieldDTO): Figure | null {
         for (const playerColor of PlayersOrder) {
             for (let i = 0; i < 4; i++) {
                 const figure = this.figures[playerColor][i]
-                
+
                 if (objectCompare(figure.getField(), field)) {
                     return figure
                 }
@@ -279,23 +281,13 @@ export class LogicLayer implements HasDTO<GameProgressDTO> {
         return null
     }
 
-    private getFieldByFieldDTO(field: FieldDTO): Field {
-        if (field.isHome) {
-            return this.homeFields[field.color][field.index]
-        }
-        if (field.isStart) {
-            return this.startFields[field.color][field.index]
-        }
-        return this.mainFields[field.index]
-    }
-
     private getFigureByFigureDTO(figure: FigureDTO): Figure {
         return this.figures[figure.color][figure.index]
     }
 
-    private getFreeStartField(color: PlayerColors) {
-        // TODO refactor this
-        const startFields = [...this.startFields[color]] as (Field | null)[]
+    private getFreeStartField(color: PlayerColors): Field {
+    // TODO refactor this
+        const startFields = [...this.startFields[color]] as Array<Field | null>
 
         for (let i = 0; i < 4; i++) {
             const figure = this.figures[color][i]
@@ -305,7 +297,10 @@ export class LogicLayer implements HasDTO<GameProgressDTO> {
                     continue
                 }
                 const figureFieldDTO = figure.getField()
-                const startFieldDTO = startFields[j].getDTO()
+
+                // skipped by continue statement
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                const startFieldDTO = startFields[j]!.getDTO()
 
                 if (objectCompare(figureFieldDTO, startFieldDTO)) {
                     startFields[j] = null
@@ -313,6 +308,9 @@ export class LogicLayer implements HasDTO<GameProgressDTO> {
             }
         }
 
+        // at least one field is always not null
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
+        // @ts-ignore
         return startFields[0] || startFields[1] || startFields[2] || startFields[3]
     }
 }
