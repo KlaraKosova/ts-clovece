@@ -1,15 +1,30 @@
-import { GameElement } from './base/GameElement'
-import Consts from '../../utils/svgBoardConstants'
+import { SvgComponent } from './base/SvgComponent'
+import Consts from '../utils/svgBoardConstants'
 import { Runner, type Svg } from '@svgdotjs/svg.js'
+import { ViewNames } from '@/types/ViewName'
+import { type Coordinates } from '@/types/Coordinates'
 
-export class Loading extends GameElement {
+export class Loading extends SvgComponent {
     private animationRunners: Runner[]
+    private readonly containerSize: Coordinates
 
-    constructor(draw: Svg) {
+    constructor(draw: Svg, viewType: ViewNames) {
         super(draw)
         this.animationRunners = []
         for (let i = 0; i < 3; i++) {
             this.animationRunners[i] = new Runner()
+        }
+
+        if (viewType === ViewNames.LOADING || viewType === ViewNames.GAME_WAITING) {
+            this.containerSize = {
+                x: Consts.LOADING_VIEW.SIZE.X,
+                y: Consts.LOADING_VIEW.SIZE.Y
+            }
+        } else {
+            this.containerSize = {
+                x: Consts.BOARD.SIZE.X,
+                y: Consts.BOARD.SIZE.Y
+            }
         }
     }
 
@@ -17,7 +32,7 @@ export class Loading extends GameElement {
         for (let i = 0; i < 3; i++) {
             this.svg.createChild({
                 type: 'circle',
-                center: { x: Consts.BOARD.SIZE / 2 - 30, y: Consts.BOARD.SIZE / 2 },
+                center: { x: this.containerSize.x / 2 - 30, y: this.containerSize.y / 2 },
                 diameter: 5,
                 color: '#fff'
             })
@@ -35,7 +50,7 @@ export class Loading extends GameElement {
                     times: Infinity,
                     wait: 1150
                 })
-                .center((Consts.BOARD.SIZE / 2 + 30) * Consts.K, (Consts.BOARD.SIZE / 2) * Consts.K)
+                .center((this.containerSize.x / 2 + 30) * Consts.K, (this.containerSize.y / 2) * Consts.K)
         }
     }
 

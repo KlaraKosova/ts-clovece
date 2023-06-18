@@ -39,8 +39,17 @@ export default {
         SUCCESS_COLOR: '#108c0e',
         FAILURE_COLOR: '#ed2121'
     },
+    LOADING_VIEW: {
+        SIZE: {
+            X: 100,
+            Y: 15
+        }
+    },
     BOARD: {
-        SIZE: 315,
+        SIZE: {
+            X: 315,
+            Y: 315
+        },
         FIELDS: {
             OUTER_SIZE: 20,
             INNER_SIZE: 18,
@@ -83,8 +92,8 @@ export default {
                 Y: 120
             },
             OUTER_SIZE: {
-                X: 110,
-                Y: 130
+                X: 105,
+                Y: 125
             },
             BORDER_RADIUS: 10,
             ELEMENT_SCALE: 8,

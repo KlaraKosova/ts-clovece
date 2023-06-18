@@ -1,7 +1,7 @@
 import { type Svg } from '@svgdotjs/svg.js'
 import { SvgElement } from './SvgElement'
 
-export abstract class GameElement {
+export abstract class SvgComponent {
     protected svg: SvgElement
     constructor(draw: Svg) {
         this.svg = new SvgElement(draw)

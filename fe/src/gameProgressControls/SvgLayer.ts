@@ -1,18 +1,19 @@
 import { type Svg } from '@svgdotjs/svg.js'
 import { type GameElementsDict } from '@/types/GameElementsDict'
 import { type PlayerColors, PlayersOrder } from '@/types/PlayerColors'
-import { StaticBackground } from './svgLayer/StaticBackground'
-import { Overlay } from './svgLayer/Overlay'
-import { DicePlayButton } from './svgLayer/DicePlayButton'
-import { Dice } from './svgLayer/Dice'
-import { Loading } from './svgLayer/Loading'
-import { Field } from './svgLayer/Field'
-import { Figure } from './svgLayer/Figure'
+import { StaticBackground } from '../svgComponents/StaticBackground'
+import { Overlay } from '../svgComponents/Overlay'
+import { DicePlayButton } from '../svgComponents/DicePlayButton'
+import { Dice } from '../svgComponents/Dice'
+import { Loading } from '../svgComponents/Loading'
+import { Field } from '../svgComponents/Field'
+import { Figure } from '../svgComponents/Figure'
 import { type GameProgressDTO } from '@/types/dtos/GameProgressDTO'
 import { type FieldDTO } from '@/types/dtos/FieldDTO'
 import { type FigureDTO } from '@/types/dtos/FigureDTO'
 import { type GameProgressUpdateDTO } from '@/types/dtos/GameProgressUpdateDTO'
-import { WinnerModal } from './svgLayer/WinnerModal'
+import { WinnerModal } from '../svgComponents/WinnerModal'
+import { ViewNames } from '@/types/ViewName'
 
 export class SvgLayer {
     private readonly draw: Svg
@@ -87,7 +88,7 @@ export class SvgLayer {
             OVERLAY: new Overlay(this.draw),
             DICE: new Dice(this.draw),
             DICE_PLAY_BUTTON: new DicePlayButton(this.draw),
-            LOADING: new Loading(this.draw),
+            LOADING: new Loading(this.draw, ViewNames.GAME_PROGRESS),
             WINNER_MODAL: new WinnerModal(this.draw)
         }
     }

@@ -33,7 +33,7 @@ export class GameProgressView extends View {
         const color = App.getUserInfo().color
         document.body.style.backgroundColor = Consts.COLORS[color].FIGURE_HIGHLIGHT
 
-        const draw = SVG().addTo('#svgContainer').size(Consts.BOARD.SIZE * Consts.K, Consts.BOARD.SIZE * Consts.K)
+        const draw = SVG().addTo('#svgContainer').size(Consts.BOARD.SIZE.X * Consts.K, Consts.BOARD.SIZE.Y * Consts.K)
         this.state = new State(draw, App.getUserInfo())
         this.state.renderInitial()
     }

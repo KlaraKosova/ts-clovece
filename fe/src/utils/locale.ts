@@ -155,6 +155,14 @@ class Locale {
             cs: 'Vytvořit',
             en: 'Create'
         },
+        loading: {
+            cs: 'Načítání',
+            en: 'Loading'
+        },
+        waitingForOtherPlayers: {
+            cs: 'Čekání na ostatní hráče',
+            en: 'Waiting for other players'
+        },
         colors: {
             red: {
                 cs: 'Červený',

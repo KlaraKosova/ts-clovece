@@ -142,6 +142,7 @@ export class State {
         }
 
         const available = this.logic.getAvailable()
+        console.log(available)
         if (available.fields.length > 0) {
             if (available.homeMovesOnly) {
                 ModalEventBusInstance.publish(ModalEventTypes.SHOW_HOME_MOVES_ONLY_MODAL)

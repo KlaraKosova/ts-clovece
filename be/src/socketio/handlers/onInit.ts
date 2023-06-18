@@ -32,7 +32,7 @@ export default async function (io: ServerIO, socket: SocketIO, data: UserInfo | 
                 socket.emit("REDIRECT_GAME_PROGRESS")
             } else {
                 console.log('Socket: emit redirectGameWait')
-                socket.emit("REDIRECT_GAME_WAIT", data)
+                socket.emit("REDIRECT_GAME_WAIT", { ...data, players: result.players})
             }
             await client.disconnect()
             return

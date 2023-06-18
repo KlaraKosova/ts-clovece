@@ -98,7 +98,7 @@ class MainFieldsGenerator {
                 if (j !== 0) {
                     this[this.moveDirection](this.moveAxis, true)
                 }
-                centers.push({
+                result.push({
                     x: this.currentCoordinates.x,
                     y: this.currentCoordinates.y
                 })
@@ -108,13 +108,13 @@ class MainFieldsGenerator {
                 this.flipDirection()
             }
             this[this.moveDirection](this.moveAxis, true)
-            centers.push({
+            result.push({
                 x: this.currentCoordinates.x,
                 y: this.currentCoordinates.y
             })
             for (let j = 0; j < 3; j++) {
                 this[this.moveDirection](this.moveAxis, j !== 3)
-                centers.push({
+                result.push({
                     x: this.currentCoordinates.x,
                     y: this.currentCoordinates.y
                 })
@@ -124,7 +124,7 @@ class MainFieldsGenerator {
                 this.flipDirection()
             }
             this[this.moveDirection](this.moveAxis, true)
-            centers.push({
+            result.push({
                 x: this.currentCoordinates.x,
                 y: this.currentCoordinates.y
             })

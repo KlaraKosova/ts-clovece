@@ -3,7 +3,8 @@ import {GameProgress, GamePreview, UserInfo, GameProgressUpdate} from '../types'
 
 export interface ServerToClientEvents {
     REDIRECT_GAME_SELECT: () => void,
-    REDIRECT_GAME_WAIT: (data: UserInfo) => void,
+    REDIRECT_GAME_WAIT: (data: UserInfo & { players: number }) => void,
+    GAME_WAIT_UPDATE: (data: { players: number }) => void
     GAME_SELECT_RESPONSE: (data: { games: GamePreview[] }) => void,
     REDIRECT_GAME_PROGRESS: () => void,
     GAME_PROGRESS_RESPONSE: (data: GameProgress) => void,

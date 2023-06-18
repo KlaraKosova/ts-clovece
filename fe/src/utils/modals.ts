@@ -68,7 +68,7 @@ export const modals: Record<ViewModalTypes, ViewModalState> = {
             {
                 tag: 'div',
                 content: locale.get('gameOver'),
-                classList: []
+                classList: ['mb-1']
             },
             {
                 tag: 'button',

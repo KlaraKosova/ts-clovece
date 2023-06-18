@@ -1,14 +1,14 @@
-import { GameElement } from './base/GameElement'
+import { SvgComponent } from './base/SvgComponent'
 import { Runner, type Svg } from '@svgdotjs/svg.js'
-import Consts from '../../utils/svgBoardConstants'
-import { centers, homeCenters, startCenters } from '../../utils/fieldCenters'
+import Consts from '../utils/svgBoardConstants'
+import { centers, homeCenters, startCenters } from '../utils/fieldCenters'
 import { type HasHighlightAnimation } from './base/HasHighlightAnimation'
-import { type Coordinates } from '../../types/Coordinates'
-import { type FieldDTO } from '../../types/dtos/FieldDTO'
+import { type Coordinates } from '../types/Coordinates'
+import { type FieldDTO } from '../types/dtos/FieldDTO'
 import { cloneDeep } from 'lodash'
-import { type HasDTO } from '../HasDTO'
+import { type HasDTO } from '../gameProgressControls/HasDTO'
 
-export class Field extends GameElement implements HasHighlightAnimation, HasDTO<FieldDTO> {
+export class Field extends SvgComponent implements HasHighlightAnimation, HasDTO<FieldDTO> {
     private readonly color: { front: string, back: string }
     private readonly center: Coordinates
     private readonly text: string

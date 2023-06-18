@@ -39,7 +39,8 @@ export default async function (io: Server, socket: SocketIO, data: { name: strin
     socket.emit("REDIRECT_GAME_WAIT", {
         gameId: result.insertedId.toString(),
         userId: userId,
-        color: PlayersOrder[0]
+        color: PlayersOrder[0],
+        players: 1
     })
 
     const cursor = games.find({

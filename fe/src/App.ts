@@ -5,7 +5,7 @@ import { LoadingView } from './views/LoadingView'
 import { type View } from './views/View'
 import { SocketIOClientInstance } from './socketio/SocketClient'
 import { type UserInfo } from './types/UserInfo'
-import { type ViewName } from './types/ViewName'
+import { ViewNames } from './types/ViewName'
 import { PlayersOrder } from './types/PlayerColors'
 import { locale } from './utils/locale'
 import { createElement } from './utils/domHelpers'
@@ -13,7 +13,7 @@ import { createElement } from './utils/domHelpers'
 class App {
     private userInfo: UserInfo | null = null
     private currentView: View
-    private readonly viewsDict: Record<ViewName, View>
+    private readonly viewsDict: Record<ViewNames, View>
 
     constructor() {
         this.viewsDict = {
@@ -71,7 +71,7 @@ class App {
 
             SocketIOClientInstance.socket.emit('INIT', this.userInfo)
         } else {
-            this.renderNewView('GAME_SELECT')
+            this.renderNewView(ViewNames.GAME_SELECT)
         }
     }
 
@@ -81,25 +81,27 @@ class App {
         SocketIOClientInstance.socket.on('REDIRECT_GAME_PROGRESS', this.onRedirectGameProgress.bind(this))
     }
 
-    private onRedirectGameWait(data: UserInfo): void {
-        console.log('onRedirectGameWait')
+    private onRedirectGameWait(data: UserInfo & { players: number }): void {
+        console.log('onRedirectGameWait', data)
         this.userInfo = data
         localStorage.setItem('user', JSON.stringify(this.userInfo))
-        this.renderNewView('GAME_WAITING')
+        this.renderNewView(ViewNames.GAME_WAITING);
+
+        (this.currentView as GameWaitingView).setPlayers(data.players)
     }
 
     private onRedirectGameSelect(): void {
         console.log('onRedirectGameSelect')
         localStorage.removeItem('user')
-        this.renderNewView('GAME_SELECT')
+        this.renderNewView(ViewNames.GAME_SELECT)
     }
 
     private onRedirectGameProgress(): void {
         console.log('onRedirectGameProgress')
-        this.renderNewView('GAME_PROGRESS')
+        this.renderNewView(ViewNames.GAME_PROGRESS)
     }
 
-    private renderNewView(view: ViewName): void {
+    private renderNewView(view: ViewNames): void {
         this.currentView.unmount()
         this.currentView = this.viewsDict[view]
         this.currentView.mount()

@@ -1,6 +1,6 @@
-import { GameElement } from './base/GameElement'
-import Consts from '../../utils/svgBoardConstants'
-import { delay } from '../../utils/common'
+import { SvgComponent } from './base/SvgComponent'
+import Consts from '../utils/svgBoardConstants'
+import { delay } from '../utils/common'
 import { type Svg } from '@svgdotjs/svg.js'
 
 const dotsConfig = [
@@ -36,7 +36,7 @@ const dotsConfig = [
     ]
 ]
 
-export class Dice extends GameElement {
+export class Dice extends SvgComponent {
     constructor(draw: Svg) {
         super(draw)
         this.svg.setDataset({ dice: true })
@@ -52,14 +52,14 @@ export class Dice extends GameElement {
     private drawDots(dots: number): void {
         this.svg.createChild({
             type: 'rect',
-            center: { x: Consts.BOARD.SIZE / 2, y: Consts.BOARD.SIZE / 2 },
+            center: { x: Consts.BOARD.SIZE.X / 2, y: Consts.BOARD.SIZE.Y / 2 },
             size: { x: Consts.BOARD.DICE.OUTER_SIZE, y: Consts.BOARD.DICE.OUTER_SIZE },
             color: '#000',
             radius: 10
         })
         this.svg.createChild({
             type: 'rect',
-            center: { x: Consts.BOARD.SIZE / 2, y: Consts.BOARD.SIZE / 2 },
+            center: { x: Consts.BOARD.SIZE.X / 2, y: Consts.BOARD.SIZE.Y / 2 },
             size: { x: Consts.BOARD.DICE.INNER_SIZE, y: Consts.BOARD.DICE.INNER_SIZE },
             color: '#fff',
             radius: 10
@@ -74,8 +74,8 @@ export class Dice extends GameElement {
                         diameter: 16,
                         color: '#000',
                         center: {
-                            x: Consts.BOARD.SIZE / 2 - Consts.BOARD.DICE.DOT_SIZE + Consts.BOARD.DICE.DOT_SIZE * j,
-                            y: Consts.BOARD.SIZE / 2 - Consts.BOARD.DICE.DOT_SIZE + Consts.BOARD.DICE.DOT_SIZE * i
+                            x: Consts.BOARD.SIZE.X / 2 - Consts.BOARD.DICE.DOT_SIZE + Consts.BOARD.DICE.DOT_SIZE * j,
+                            y: Consts.BOARD.SIZE.Y / 2 - Consts.BOARD.DICE.DOT_SIZE + Consts.BOARD.DICE.DOT_SIZE * i
                         }
                     })
                 }

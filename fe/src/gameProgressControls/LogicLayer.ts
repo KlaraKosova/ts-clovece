@@ -139,6 +139,7 @@ export class LogicLayer implements HasDTO<GameProgressDTO> {
             const alreadyIncluded = result.fields.find(f => objectCompare(f, nextField))
             if (nextField && !alreadyIncluded) {
                 const figure = this.getFigureByFieldDTO(nextField)
+                let fieldPushed = false
 
                 // figures at home should not be eliminated not even by figures of the same color
                 // so do nothing
@@ -148,17 +149,19 @@ export class LogicLayer implements HasDTO<GameProgressDTO> {
 
                 if (nextField.isHome && !figure) {
                     result.fields.push(nextField)
+                    fieldPushed = true
                 }
 
                 if (!nextField.isHome) {
                     result.fields.push(nextField)
+                    fieldPushed = true
 
                     if (figure) {
                         result.figures.push(figure.getDTO())
                     }
                 }
 
-                if (!nextField.isHome || !currentFigure.getField().isHome) {
+                if (fieldPushed && (!nextField.isHome || !currentFigure.getField().isHome)) {
                     result.homeMovesOnly = false
                 }
             }
@@ -185,7 +188,7 @@ export class LogicLayer implements HasDTO<GameProgressDTO> {
         }
 
         if (!srcFigure || !destFieldDTO) {
-            throw new Error('should not happen')
+            throw new Error(`Invalid move, data: ${JSON.stringify(data)}`)
         }
 
         if (destFigure) {

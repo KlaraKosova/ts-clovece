@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@svgdotjs/svg.js": "^3.1.2",
+    "flag-icons": "^6.7.0",
     "lodash": "^4.17.21",
     "slim-select": "^2.5.0",
     "socket.io": "^4.6.2",

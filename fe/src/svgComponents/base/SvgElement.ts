@@ -1,8 +1,8 @@
 import { type G, type Svg, type Element, type Circle, type Rect, type Text, type Tspan, type Path, type Ellipse } from '@svgdotjs/svg.js'
-import Consts from '../../../utils/svgBoardConstants'
-import { camelToKebabCase, delay } from '../../../utils/common'
+import Consts from '../../utils/svgBoardConstants'
+import { camelToKebabCase, delay } from '../../utils/common'
 import * as path from 'path'
-import { type Coordinates } from '../../../types/Coordinates'
+import { type Coordinates } from '../../types/Coordinates'
 
 export class SvgElement {
     private readonly draw: Svg

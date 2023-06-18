@@ -1,10 +1,10 @@
-import { GameElement } from './base/GameElement'
-import Consts from '../../utils/svgBoardConstants'
+import { SvgComponent } from './base/SvgComponent'
+import Consts from '../utils/svgBoardConstants'
 import { Runner, type Svg } from '@svgdotjs/svg.js'
 import { type PlayerColors } from '@/types/PlayerColors'
 import { delay } from '@/utils/common'
 
-export class WinnerModal extends GameElement {
+export class WinnerModal extends SvgComponent {
     private animationRunners: Runner[]
     private winnerColor: PlayerColors | null = null
     private playerColor: PlayerColors | null = null
@@ -27,7 +27,7 @@ export class WinnerModal extends GameElement {
 
     public render(): void {
         if (this.winnerColor === null || this.playerColor === null) {
-            throw new Error('debug')
+            throw new Error('Winner of current player color not set')
         }
 
         const frameColor = this.winnerColor === this.playerColor ? Consts.COLORS.SUCCESS_COLOR : Consts.COLORS.FAILURE_COLOR
@@ -41,8 +41,8 @@ export class WinnerModal extends GameElement {
         this.svg.createChild({
             type: 'rect',
             center: {
-                x: Consts.BOARD.SIZE / 2,
-                y: Consts.BOARD.SIZE / 2
+                x: Consts.BOARD.SIZE.X / 2,
+                y: Consts.BOARD.SIZE.Y / 2
             },
             color: frameColor,
             radius: Consts.BOARD.WINNER_MODAL.BORDER_RADIUS,
@@ -55,8 +55,8 @@ export class WinnerModal extends GameElement {
         this.svg.createChild({
             type: 'rect',
             center: {
-                x: Consts.BOARD.SIZE / 2,
-                y: Consts.BOARD.SIZE / 2
+                x: Consts.BOARD.SIZE.X / 2,
+                y: Consts.BOARD.SIZE.Y / 2
             },
             color: '#fff',
             radius: Consts.BOARD.WINNER_MODAL.BORDER_RADIUS,

@@ -66,3 +66,17 @@ body {
         color: white;
     }
 }
+
+.loading-container {
+    border-radius: 10px;
+    width: 80%;
+    min-height: 70%;
+    margin: 2rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.mb-1{
+    margin-bottom: 1rem;
+}

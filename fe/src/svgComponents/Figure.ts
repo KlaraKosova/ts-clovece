@@ -1,16 +1,16 @@
 import { Runner, type Svg } from '@svgdotjs/svg.js'
-import { GameElement } from './base/GameElement'
-import Consts from '../../utils/svgBoardConstants'
-import { centers, homeCenters, startCenters } from '../../utils/fieldCenters'
+import { SvgComponent } from './base/SvgComponent'
+import Consts from '../utils/svgBoardConstants'
+import { centers, homeCenters, startCenters } from '../utils/fieldCenters'
 import { type HasHighlightAnimation } from './base/HasHighlightAnimation'
 import { type Field } from './Field'
-import { coordinatesDiff } from '../../utils/common'
-import { type FigureDTO } from '../../types/dtos/FigureDTO'
-import { type Coordinates } from '../../types/Coordinates'
+import { coordinatesDiff } from '../utils/common'
+import { type FigureDTO } from '../types/dtos/FigureDTO'
+import { type Coordinates } from '../types/Coordinates'
 import { cloneDeep } from 'lodash'
-import { type HasDTO } from '../HasDTO'
+import { type HasDTO } from '../gameProgressControls/HasDTO'
 
-export class Figure extends GameElement implements HasHighlightAnimation, HasDTO<FigureDTO> {
+export class Figure extends SvgComponent implements HasHighlightAnimation, HasDTO<FigureDTO> {
     private field: Field
     private dto: FigureDTO
     private animationRunners = [] as Runner[]
