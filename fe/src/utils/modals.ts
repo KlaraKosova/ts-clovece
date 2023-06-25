@@ -73,7 +73,8 @@ export const modals: Record<ViewModalTypes, ViewModalState> = {
             {
                 tag: 'button',
                 content: locale.get('newGame'),
-                classList: ['btn', 'btn-success', 'btn-full']
+                classList: ['btn', 'btn-success', 'btn-full'],
+                dataset: { nextGameButton: 'true' }
             }
         ],
         containerClasslist: [],

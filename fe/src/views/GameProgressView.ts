@@ -63,7 +63,8 @@ export class GameProgressView extends View {
             figure: null,
             dice: false,
             playButton: false,
-            nextPlayerButton: false
+            nextPlayerButton: false,
+            nextGameButton: false
         }
         for (let i = 0; i < event.composedPath().length; i++) {
             const element = event.composedPath()[i]
@@ -72,6 +73,7 @@ export class GameProgressView extends View {
                 result.dice = result.dice || !!dataset.dice
                 result.playButton = result.playButton || !!dataset.playButton
                 result.nextPlayerButton = result.nextPlayerButton || !!dataset.nextPlayerButton
+                result.nextGameButton = result.nextGameButton || !!dataset.nextGameButton
 
                 if (element.classList.contains('field') &&
                     dataset.index &&
@@ -128,6 +130,7 @@ export class GameProgressView extends View {
 
     public mount(): void {
         super.mount()
+        // this.rootElem.
         console.log('emit GAME_PROGRESS_REQUEST')
 
         SocketIOClientInstance.socket.emit('GAME_PROGRESS_REQUEST')

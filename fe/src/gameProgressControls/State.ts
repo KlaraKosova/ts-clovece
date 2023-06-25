@@ -88,6 +88,9 @@ export class State {
             case SvgBoardStates.HOME_MOVES_ONLY:
                 handlePromise = this.handleDocumentClick_homeMovesOnlyState(data)
                 break
+            case SvgBoardStates.WINNER_MODAL:
+                this.handleDocumentClick_winnerModalState(data)
+                break
         }
 
         if (handlePromise !== undefined) {
@@ -189,6 +192,15 @@ export class State {
         }
 
         ModalEventBusInstance.publish(ModalEventTypes.CLEAR_ALL)
+    }
+
+    private handleDocumentClick_winnerModalState(data: DocumentClickData): void {
+        if (!data.nextGameButton) {
+            return
+        }
+
+        localStorage.removeItem('user')
+        location.reload()
     }
 
     private handleEmptyUpdates(): void {

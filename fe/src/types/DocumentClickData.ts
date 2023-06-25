@@ -7,4 +7,5 @@ export interface DocumentClickData {
     dice: boolean
     playButton: boolean
     nextPlayerButton: boolean
+    nextGameButton: boolean
 }

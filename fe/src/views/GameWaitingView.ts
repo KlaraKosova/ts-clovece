@@ -5,7 +5,7 @@ import { SVG } from '@svgdotjs/svg.js'
 import Consts from '@/utils/svgBoardConstants'
 import { Loading } from '@/svgComponents/Loading'
 import { ViewNames } from '@/types/ViewName'
-import {SocketIOClientInstance} from "@/socketio/SocketClient";
+import { SocketIOClientInstance } from '@/socketio/SocketClient'
 
 export class GameWaitingView extends View {
     private players: number = 1
@@ -42,18 +42,18 @@ export class GameWaitingView extends View {
         container.textContent = `${locale.get('players')}: ${this.players}/4`
     }
 
-    private handleGameWaitUpdate(data: { players: number}) {
+    private handleGameWaitUpdate(data: { players: number }): void {
         this.setPlayers(data.players)
     }
 
-    protected registerSocketListeners() {
+    protected registerSocketListeners(): void {
         super.registerSocketListeners()
 
         SocketIOClientInstance.socket.on('GAME_WAIT_UPDATE', this.handleGameWaitUpdate.bind(this))
     }
 
-    protected removeSocketListeners() {
-        super.removeSocketListeners();
+    protected removeSocketListeners(): void {
+        super.removeSocketListeners()
 
         SocketIOClientInstance.socket.off('GAME_WAIT_UPDATE')
     }
