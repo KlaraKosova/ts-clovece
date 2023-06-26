@@ -1,0 +1,90 @@
+@import './variables.scss';
+
+#modalsContainer {
+    position: absolute;
+    top: 6rem;
+    right: 1rem;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.sidemodal {
+    width: 15rem;
+    color: $base-color;
+    background-color: $base-bg-color-transparent;
+    border-left: 7px solid $base-border-color;
+    margin-bottom: 0.5rem;
+
+    border-radius: 10px;
+    box-shadow: 3px 3px 3px $shadow-color;
+
+    &-danger {
+        color: $danger-color;
+        background-color: $danger-bg-color-transparent;
+        border-left-color: $danger-border-color;
+    }
+
+    &-success {
+        color: $success-color;
+        background-color: $success-bg-color-transparent;
+        border-left-color: $success-border-color;
+    }
+
+    &-inner {
+        padding: 1rem;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    &-header {
+        display: flex;
+        font-size: 1.25rem;
+
+        margin-bottom: 1rem;
+        margin-top: 1rem;
+
+        &__text {
+            font-size: inherit;
+            margin: 0;
+        }
+
+        &__icon-left {
+            margin-right: 1rem;
+        }
+    }
+
+    &-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
+
+    &-current-player {
+        background-color: rgba(white, $transparency);
+        &__0 {
+            color: $current-player-RED-color;
+            border-left-color: $current-player-RED-border-color;
+        }
+
+        &__1 {
+            color: $current-player-YELLOW-color;
+            border-left-color: $current-player-YELLOW-border-color;
+        }
+
+        &__2 {
+            color: $current-player-GREEN-color;
+            border-left-color: $current-player-GREEN-border-color;
+        }
+
+        &__3 {
+            color: $current-player-BLUE-color;
+            border-left-color: $current-player-BLUE-border-color;
+        }
+    }
+}

@@ -69,11 +69,14 @@ export default async function (io: ServerIO, socket: SocketIO, data: { gameId: s
     socket.emit("REDIRECT_GAME_WAIT", {
         gameId: data.gameId,
         userId: userId,
-        color: newPlayerColor
+        color: newPlayerColor,
+        players: updatedGame.players
     })
 
     if (updatedGame.players === 4) {
         io.to(data.gameId).emit('REDIRECT_GAME_PROGRESS')
+    } else {
+        socket.to(data.gameId).emit('GAME_WAIT_UPDATE', { players: updatedGame.players })
     }
 
     const cursor = games.find({

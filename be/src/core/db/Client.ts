@@ -1,8 +1,5 @@
 import { MongoClient, Db, Collection } from "mongodb";
-
-import dotenv from "dotenv";
 import { DBCollectionError, DBConnectionError } from "./Error.js";
-dotenv.config();
 
 class Client {
     private client: MongoClient;

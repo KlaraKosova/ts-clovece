@@ -22,19 +22,25 @@ export default async function (io: ServerIO, socket: SocketIO, updates: GameProg
     }
 
     console.log(socket.data)
+    const lastDiceThrow = game.lastDiceSequence[game.lastDiceSequence.length - 1]
     const currentPlayerIndex = PlayersOrder.indexOf(socket.data.color!)
-    const nextPlayerColor = PlayersOrder[(currentPlayerIndex + 1) % 4]
+    const nextPlayerColor = lastDiceThrow === 6? socket.data.color! : PlayersOrder[(currentPlayerIndex + 1) % 4]
     const nextPlayer = game.playerStatuses[nextPlayerColor]
     const statuses = game.playerStatuses
 
     console.log('currentPlayerIndex', currentPlayerIndex)
     console.log('nextPlayerColor', nextPlayerColor)
     console.log('nextPlayer', nextPlayer)
+    console.log('updates', updates)
 
 
     const reversedUpdates = [...updates].reverse()
+    for (const update of updates) {
+        const figure = update.figure
 
-    for (let i = 0; i < 4; i++) {
+        statuses[figure.color].figures[figure.index] = update.nextField
+    }
+    /* for (let i = 0; i < 4; i++) {
         const color = PlayersOrder[i]
         for (let j = 0; j < 4; j++) {
             for (const move of reversedUpdates) {
@@ -43,7 +49,7 @@ export default async function (io: ServerIO, socket: SocketIO, updates: GameProg
                 }
             }
         }
-    }
+    } */
 
     const updatedData: Partial<GameProgress> = {
         currentPlayerId: nextPlayer.userId,
@@ -70,7 +76,7 @@ export default async function (io: ServerIO, socket: SocketIO, updates: GameProg
         console.log("!!!!!!!!!!!!!!! WINNER !!!!!!!!!!!!!!!!!!!!");
         console.log(socket.data.userId, socket.data.color);
 
-        socket.to(socket.data.gameId!).emit("GAME_WINNER", { winnerId: socket.data.userId! })
+        io.to(socket.data.gameId!).emit("GAME_WINNER", { winnerId: socket.data.userId! })
         await client.disconnect()
         return
     }

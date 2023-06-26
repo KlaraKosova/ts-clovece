@@ -5,6 +5,12 @@ module.exports = {
   entry: './src/index.ts',
   mode: 'development',
   devtool: 'inline-source-map',
+  resolve: {
+    extensions: [".js", ".ts", ".jsx", ".tsx"],
+    alias: {
+      "@": path.resolve(__dirname, "src/"),
+    },
+  },
   module: {
     rules: [
       {
@@ -12,14 +18,26 @@ module.exports = {
         use: 'ts-loader',
         exclude: /node_modules/,
       },
+      {
+        test: /\.s[ac]ss$/i,
+        use: [
+          "style-loader",
+          "css-loader",
+          "sass-loader",
+        ],
+      },
+      {
+        test: /\.css$/i,
+        use: [
+          "style-loader",
+          "css-loader",
+        ],
+      },
     ],
   },
   plugins: [
     new Dotenv()
   ],
-  resolve: {
-    extensions: [ '.tsx', '.ts', '.js' ],
-  },
   output: {
     filename: 'index.js',
     path: path.resolve(__dirname, 'dist'),
