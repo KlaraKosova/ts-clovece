@@ -2,8 +2,10 @@ import App from './App'
 import { SocketIOClientInstance } from './socketio/SocketClient'
 import './resources/sass/styles.scss'
 import '../node_modules/flag-icons/css/flag-icons.min.css'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import dotenv from 'dotenv/config'
+import { checkEnv } from './utils/common'
+import env from '../config'
+
+checkEnv(env)
 
 SocketIOClientInstance.socket.on('connect', () => {
     App.init()

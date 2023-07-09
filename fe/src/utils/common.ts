@@ -49,3 +49,19 @@ export function coordinatesDiff(a: Coordinates, b: Coordinates): Coordinates {
         y: a.y - b.y
     }
 }
+
+export function checkEnv(config: any): void {
+    if (typeof config !== 'object') {
+        throw new Error('Incorrect top level .env format')
+    }
+
+    if (typeof config.socketServerUrl !== 'string') {
+        throw new Error("Incorrect .env format - property 'socketServerUrl'")
+    }
+    if (typeof config.defaultLocale !== 'string') {
+        throw new Error("Incorrect .env format - property 'defaultLocale'")
+    }
+    if (!['en', 'cs'].includes(config.defaultLocale)) {
+        throw new Error("Incorrect .env format - incorrect 'defaultLocale' value")
+    }
+}

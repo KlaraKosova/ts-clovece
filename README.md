@@ -7,7 +7,7 @@ Multiplayer board game "Člověče, nezlob se" using Websockets and MongoDB.
 ```
 path/to/cloned/repository> cd fe
 
-path/to/cloned/repository/fe> cp .env.example .env
+path/to/cloned/repository/fe> cp config.example.js config.js
 # (optionally) edit .env
 path/to/cloned/repository/fe> npm install
 path/to/cloned/repository/fe> npm run dev
@@ -17,7 +17,7 @@ path/to/cloned/repository/fe> npm run dev
 ```
 path/to/cloned/repository> cd be
 
-path/to/cloned/repository/be> cp .env.example .env
+path/to/cloned/repository/be> cp config.example.js config.js
 # (optionally) edit .env
 path/to/cloned/repository/be> npm install
 path/to/cloned/repository/be> npm run dev
@@ -26,7 +26,9 @@ path/to/cloned/repository/be> npm run dev
 ## Issues / bugs
 
 - Didn't manage to use [Slim Select](https://slimselectjs.com/) via npm, used CDN instead
-- Comments in `.env` are not ignored and are loaded as part of the value. **TODO: use other configuration option** (JSON/js/...)
+- ~~Comments in `.env` are not ignored and are loaded as part of the value. **TODO: use other configuration option** (JSON/js/...)~~
+
+    :heavy_check_mark: `.env` files removed, replaced by `config.js` files for both FE and BE.
 - Unicode flag characters not displaying correctly in some browsers on some platforms
 
   - Incorrect: Chrome 114.0.5735.134, Windows 10
