@@ -1,6 +1,7 @@
 import { type AppSettings } from '@/types/AppSettings'
 import { type RecursiveRecord } from '@/types/utils'
 import { cloneDeep } from 'lodash'
+import env from '../../config'
 
 class Locale {
     private readonly lang: string
@@ -21,9 +22,9 @@ class Locale {
         if (settings) {
             const langValid = ['en', 'cs'].includes(settings.lang)
 
-            this.lang = langValid ? settings.lang : process.env.DEFAULT_LOCALE || 'en'
+            this.lang = langValid ? settings.lang : env.defaultLocale
         } else {
-            this.setLang(process.env.DEFAULT_LOCALE || 'en')
+            this.setLang(env.defaultLocale)
         }
     }
 

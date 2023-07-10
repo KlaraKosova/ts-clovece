@@ -1,12 +1,13 @@
 import { io } from 'socket.io-client'
 import { type SocketIO } from './types'
+import env from '../../config'
 
 class SocketClient {
     private static instance: SocketClient | null
     public socket: SocketIO
 
     private constructor() {
-        this.socket = io(process.env.SOCKET_SERVER_URL || 'http://localhost:3001', {})
+        this.socket = io(env.socketServerUrl, {})
     }
 
     public static getInstance(): SocketClient {

@@ -1,15 +1,16 @@
 import { MongoClient, Db, Collection } from "mongodb";
 import { DBCollectionError, DBConnectionError } from "./Error.js";
+import config from "../../../config.js";
 
 class Client {
     private client: MongoClient;
     private db = null as Db | null;
 
     private constructor() {
-        if (!process.env.MONGODB_CONNECTION_STRING) {
+        if (!config.mongodbConnectionString) {
             throw new DBConnectionError('')
         }
-        this.client = new MongoClient(process.env.MONGODB_CONNECTION_STRING)
+        this.client = new MongoClient(config.mongodbConnectionString)
 
     }
     static async getClient(): Promise<Client> {
@@ -17,13 +18,13 @@ class Client {
 
         try {
             await client.client.connect();
-            client.db = client.client.db(process.env.MONGODB_DATABASE_NAME)
+            client.db = client.client.db(config.mongodbDatabaseName)
             console.log("Connected successfully to the DB");
         } catch (e) {
             await client.client.close();
             console.log(e);
 
-            throw new DBConnectionError(process.env.MONGODB_CONNECTION_STRING!)
+            throw new DBConnectionError(config.mongodbConnectionString!)
         }
 
         return client

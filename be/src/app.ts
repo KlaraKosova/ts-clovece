@@ -4,13 +4,15 @@ import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import cors from 'cors'
-import dotenv from 'dotenv'
+import { checkEnv } from "./helpers";
+import config from '../config'
 import('./socketio/io')
 
-dotenv.config()
+
+checkEnv(config)
 const app = express();
 
-app.use(cors({ origin: process.env.FRONTEND_URL }))
+app.use(cors({ origin: config.frontendUrl }))
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
