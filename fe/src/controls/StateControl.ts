@@ -1,7 +1,7 @@
 import { type Svg } from '@svgdotjs/svg.js'
-import { SvgLayer } from '@/gameProgressControls/SvgLayer'
+import { SvgControl } from './SvgControl'
 import { SvgBoardStates } from '@/types/SvgBoardStates'
-import { LogicLayer } from '@/gameProgressControls/LogicLayer'
+import { LogicControl } from './LogicControl'
 import { type GameProgressDTO } from '@/types/dtos/GameProgressDTO'
 import { type UserInfo } from '@/types/UserInfo'
 import { type DocumentClickData } from '@/types/DocumentClickData'
@@ -9,21 +9,21 @@ import { objectCompare } from '@/utils/common'
 import { SocketIOClientInstance } from '@/socketio/SocketClient'
 import { type GameProgressUpdateDTO } from '@/types/dtos/GameProgressUpdateDTO'
 import { PromiseInspectorInstance } from '@/utils/PromiseInspector'
-import { ModalEventBusInstance } from '@/gameProgressControls/modals/ModalEventBus'
+import { ModalEventBusInstance } from './modals/ModalEventBus'
 import { ModalEventTypes } from '@/types/ModalEventBusEventTypes'
 import { type PlayerColors } from '@/types/PlayerColors'
 
-export class State {
+export class StateControl {
     private boardState: SvgBoardStates
-    private readonly svg: SvgLayer
-    private readonly logic: LogicLayer
+    private readonly svg: SvgControl
+    private readonly logic: LogicControl
     private readonly user: UserInfo
 
     constructor(draw: Svg, user: UserInfo) {
         this.boardState = SvgBoardStates.LOADING
 
-        this.svg = new SvgLayer(draw)
-        this.logic = new LogicLayer(user)
+        this.svg = new SvgControl(draw)
+        this.logic = new LogicControl(user)
         this.user = user
     }
 

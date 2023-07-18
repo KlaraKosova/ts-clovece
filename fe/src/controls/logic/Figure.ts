@@ -2,7 +2,7 @@ import { type FigureDTO } from '@/types/dtos/FigureDTO'
 import cloneDeep from 'lodash/cloneDeep'
 import { type FieldDTO } from '@/types/dtos/FieldDTO'
 import { objectCompare } from '@/utils/common'
-import { type HasDTO } from '../HasDTO'
+import { type HasDTO } from '../../types/dtos/HasDTO'
 
 export class Figure implements HasDTO<FigureDTO> {
     private dto: FigureDTO

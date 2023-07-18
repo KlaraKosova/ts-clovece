@@ -7,9 +7,9 @@ import { type DocumentClickData } from '../types/DocumentClickData'
 import { type PlayerColors } from '../types/PlayerColors'
 import { type GameProgressDTO } from '../types/dtos/GameProgressDTO'
 import { type GameProgressUpdateDTO } from '../types/dtos/GameProgressUpdateDTO'
-import { State } from '../gameProgressControls/State'
+import { StateControl } from '../controls/StateControl'
 import { ViewModalTypes } from '@/types/ViewModalTypes'
-import { ModalEventBusInstance } from '@/gameProgressControls/modals/ModalEventBus'
+import { ModalEventBusInstance } from '@/controls/modals/ModalEventBus'
 import { ModalEventTypes } from '@/types/ModalEventBusEventTypes'
 import { createElement } from '@/utils/domHelpers'
 import { type ViewModalState } from '@/types/ViewModalState'
@@ -19,7 +19,7 @@ import { PlayerColorNameMap } from '@/utils/constants'
 import { locale } from '@/utils/locale'
 
 export class GameProgressView extends View {
-    private state: State
+    private state: StateControl
 
     public render(): void {
         const mainContainer = createElement('div', ['game-progress-container'])
@@ -34,7 +34,7 @@ export class GameProgressView extends View {
         document.body.style.backgroundColor = Consts.COLORS[color].FIGURE_HIGHLIGHT
 
         const draw = SVG().addTo('#svgContainer').size(Consts.BOARD.SIZE.X * Consts.K, Consts.BOARD.SIZE.Y * Consts.K)
-        this.state = new State(draw, App.getUserInfo())
+        this.state = new StateControl(draw, App.getUserInfo())
         this.state.renderInitial()
     }
 

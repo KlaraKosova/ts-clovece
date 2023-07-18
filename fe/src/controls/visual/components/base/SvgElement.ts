@@ -1,12 +1,11 @@
 import { type G, type Svg, type Element, type Circle, type Rect, type Text, type Tspan, type Path, type Ellipse } from '@svgdotjs/svg.js'
-import Consts from '../../utils/svgBoardConstants'
-import { camelToKebabCase, delay } from '../../utils/common'
-import * as path from 'path'
-import { type Coordinates } from '../../types/Coordinates'
+import Consts from '@/utils/svgBoardConstants'
+import { camelToKebabCase, delay } from '@/utils/common'
+import { type Coordinates } from '@/types/Coordinates'
 
 export class SvgElement {
     private readonly draw: Svg
-    protected group: G
+    protected readonly group: G
     constructor(draw: Svg) {
         this.draw = draw
         this.group = draw.group()
@@ -211,5 +210,9 @@ export class SvgElement {
     destroy(): void {
         this.removeChildren()
         this.group.remove()
+    }
+
+    addTo(group: G): void {
+        this.group.addTo(group)
     }
 }

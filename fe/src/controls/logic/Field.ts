@@ -1,6 +1,6 @@
 import { type FieldDTO } from '@/types/dtos/FieldDTO'
 import cloneDeep from 'lodash/cloneDeep'
-import { type HasDTO } from '../HasDTO'
+import { type HasDTO } from '../../types/dtos/HasDTO'
 
 export class Field implements HasDTO<FieldDTO> {
     private dto: FieldDTO

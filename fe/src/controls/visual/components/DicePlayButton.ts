@@ -1,6 +1,6 @@
 import { SvgComponent } from './base/SvgComponent'
 import { type Svg } from '@svgdotjs/svg.js'
-import Consts from '../utils/svgBoardConstants'
+import Consts from '@/utils/svgBoardConstants'
 
 export class DicePlayButton extends SvgComponent {
     constructor(draw: Svg) {

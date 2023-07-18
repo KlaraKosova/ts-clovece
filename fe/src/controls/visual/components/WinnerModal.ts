@@ -1,5 +1,5 @@
 import { SvgComponent } from './base/SvgComponent'
-import Consts from '../utils/svgBoardConstants'
+import Consts from '@/utils/svgBoardConstants'
 import { Runner, type Svg } from '@svgdotjs/svg.js'
 import { type PlayerColors } from '@/types/PlayerColors'
 import { delay } from '@/utils/common'

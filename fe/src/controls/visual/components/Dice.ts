@@ -1,6 +1,6 @@
 import { SvgComponent } from './base/SvgComponent'
-import Consts from '../utils/svgBoardConstants'
-import { delay } from '../utils/common'
+import Consts from '@/utils/svgBoardConstants'
+import { delay } from '@/utils/common'
 import { type Svg } from '@svgdotjs/svg.js'
 
 const dotsConfig = [

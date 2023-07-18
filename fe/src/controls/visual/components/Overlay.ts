@@ -1,5 +1,5 @@
 import { SvgComponent } from './base/SvgComponent'
-import Consts from '../utils/svgBoardConstants'
+import Consts from '@/utils/svgBoardConstants'
 
 export class Overlay extends SvgComponent {
     public render(): void {

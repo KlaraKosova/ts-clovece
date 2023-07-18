@@ -3,15 +3,15 @@ import cloneDeep from 'lodash/cloneDeep'
 import { type FieldDTO } from '@/types/dtos/FieldDTO'
 import { type FigureDTO } from '@/types/dtos/FigureDTO'
 import { type PlayerColors, PlayersOrder } from '@/types/PlayerColors'
-import { Field } from '@/gameProgressControls/logicLayer/Field'
-import { Figure } from '@/gameProgressControls/logicLayer/Figure'
+import { Field } from './logic/Field'
+import { Figure } from './logic/Figure'
 import { type UserInfo } from '@/types/UserInfo'
 import { objectCompare } from '@/utils/common'
 import { type GameProgressUpdateDTO } from '@/types/dtos/GameProgressUpdateDTO'
-import { type HasDTO } from './HasDTO'
+import { type HasDTO } from '../types/dtos/HasDTO'
 import { defaultGameProgressDTO } from '@/utils/constants'
 
-export class LogicLayer implements HasDTO<GameProgressDTO> {
+export class LogicControl implements HasDTO<GameProgressDTO> {
     private dto: GameProgressDTO
     private readonly user: UserInfo
     private readonly mainFields: Field[]
