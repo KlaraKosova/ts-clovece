@@ -38,6 +38,8 @@ path/to/cloned/repository/be> npm run dev
   - Correct: Firefox 114.0.1, Windows 10
   
     ![Correct](/docs/icons_firefox.PNG)
-- Ovelaying fields/figures caused by creating some figures before certain fields
+- ~~Ovelaying fields/figures caused by creating some figures before certain fields~~
 
-    ![Wrong layers](/docs/layers_bug.PNG)
+    ~~![Wrong layers](/docs/layers_bug.PNG)~~
+
+    :heavy_check_mark: implemented using `SvgLayerControl` class

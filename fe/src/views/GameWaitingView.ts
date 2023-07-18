@@ -3,7 +3,7 @@ import { View } from './View'
 import { locale } from '@/utils/locale'
 import { SVG } from '@svgdotjs/svg.js'
 import Consts from '@/utils/svgBoardConstants'
-import { Loading } from '@/svgComponents/Loading'
+import { Loading } from '../controls/visual/components/Loading'
 import { ViewNames } from '@/types/ViewName'
 import { SocketIOClientInstance } from '@/socketio/SocketClient'
 

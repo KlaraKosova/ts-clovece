@@ -2,7 +2,7 @@ import { createElement } from '@/utils/domHelpers'
 import { View } from './View'
 import { SVG } from '@svgdotjs/svg.js'
 import Consts from '@/utils/svgBoardConstants'
-import { Loading } from '@/svgComponents/Loading'
+import { Loading } from '../controls/visual/components/Loading'
 import { locale } from '@/utils/locale'
 import { ViewNames } from '@/types/ViewName'
 

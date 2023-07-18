@@ -1,5 +1,5 @@
 import { SvgComponent } from './base/SvgComponent'
-import Consts from '../utils/svgBoardConstants'
+import Consts from '@/utils/svgBoardConstants'
 import { Runner, type Svg } from '@svgdotjs/svg.js'
 import { ViewNames } from '@/types/ViewName'
 import { type Coordinates } from '@/types/Coordinates'

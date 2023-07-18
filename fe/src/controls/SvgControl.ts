@@ -1,31 +1,41 @@
 import { type Svg } from '@svgdotjs/svg.js'
 import { type GameElementsDict } from '@/types/GameElementsDict'
-import { type PlayerColors, PlayersOrder } from '@/types/PlayerColors'
-import { StaticBackground } from '../svgComponents/StaticBackground'
-import { Overlay } from '../svgComponents/Overlay'
-import { DicePlayButton } from '../svgComponents/DicePlayButton'
-import { Dice } from '../svgComponents/Dice'
-import { Loading } from '../svgComponents/Loading'
-import { Field } from '../svgComponents/Field'
-import { Figure } from '../svgComponents/Figure'
+import { PlayerColors, PlayersOrder } from '@/types/PlayerColors'
+import { StaticBackground } from './visual/components/StaticBackground'
+import { Overlay } from './visual/components/Overlay'
+import { DicePlayButton } from './visual/components/DicePlayButton'
+import { Dice } from './visual/components/Dice'
+import { Loading } from './visual/components/Loading'
+import { Field } from './visual/components/Field'
+import { Figure } from './visual/components/Figure'
 import { type GameProgressDTO } from '@/types/dtos/GameProgressDTO'
 import { type FieldDTO } from '@/types/dtos/FieldDTO'
 import { type FigureDTO } from '@/types/dtos/FigureDTO'
 import { type GameProgressUpdateDTO } from '@/types/dtos/GameProgressUpdateDTO'
-import { WinnerModal } from '../svgComponents/WinnerModal'
+import { WinnerModal } from './visual/components/WinnerModal'
 import { ViewNames } from '@/types/ViewName'
+import { SvgLayersControl } from './SvgLayersControl'
+import { LayerNames } from '@/types/LayerNames'
 
-export class SvgLayer {
+export class SvgControl {
     private readonly draw: Svg
     private gameElementsDict: GameElementsDict
+    private readonly layerControl: SvgLayersControl
 
     constructor(draw: Svg) {
         this.draw = draw
+        this.layerControl = new SvgLayersControl(draw)
         this.init()
     }
 
     private init(): void {
         const background = new StaticBackground(this.draw)
+        const overlay = new Overlay(this.draw)
+        const dice = new Dice(this.draw)
+        const dicePlayButton = new DicePlayButton(this.draw)
+        const loading = new Loading(this.draw, ViewNames.GAME_PROGRESS)
+        const winnerModal = new WinnerModal(this.draw)
+
         const startFields = {} as Record<PlayerColors, Field[]>
         const homeFields = {} as Record<PlayerColors, Field[]>
         const figures = {} as Record<PlayerColors, Figure[]>
@@ -39,6 +49,8 @@ export class SvgLayer {
                 isHome: false,
                 isStart: false
             })
+
+            this.layerControl.addToLayer(LayerNames.FIELDS, mainFields[i])
         }
 
         PlayersOrder.forEach((playerColor, index) => {
@@ -70,10 +82,26 @@ export class SvgLayer {
                 homeFields[playerColor].push(homeField)
                 startFields[playerColor].push(startField)
                 path.push(homeField)
+                this.layerControl.addToLayer(LayerNames.FIELDS, homeField)
+                this.layerControl.addToLayer(LayerNames.FIELDS, startField)
             }
 
             for (let i = 0; i < 4; i++) {
                 const figure = new Figure(this.draw, { color: playerColor, index: i }, startFields[playerColor][i])
+                switch (playerColor) {
+                    case PlayerColors.RED:
+                        this.layerControl.addToLayer(LayerNames.FIGURES_RED, figure)
+                        break
+                    case PlayerColors.YELLOW:
+                        this.layerControl.addToLayer(LayerNames.FIGURES_YELLOW, figure)
+                        break
+                    case PlayerColors.BLUE:
+                        this.layerControl.addToLayer(LayerNames.FIGURES_BLUE, figure)
+                        break
+                    case PlayerColors.GREEN:
+                        this.layerControl.addToLayer(LayerNames.FIGURES_GREEN, figure)
+                        break
+                }
                 figure.setPath(path)
                 figures[playerColor].push(figure)
             }
@@ -85,12 +113,20 @@ export class SvgLayer {
             START_FIELDS: startFields,
             HOME_FIELDS: homeFields,
             FIGURES: figures,
-            OVERLAY: new Overlay(this.draw),
-            DICE: new Dice(this.draw),
-            DICE_PLAY_BUTTON: new DicePlayButton(this.draw),
-            LOADING: new Loading(this.draw, ViewNames.GAME_PROGRESS),
-            WINNER_MODAL: new WinnerModal(this.draw)
+            OVERLAY: overlay,
+            DICE: dice,
+            DICE_PLAY_BUTTON: dicePlayButton,
+            LOADING: loading,
+            WINNER_MODAL: winnerModal
         }
+
+        this.layerControl.addToLayer(LayerNames.BACKGROUND, background)
+        this.layerControl.addToLayer(LayerNames.OVERLAY, overlay)
+        this.layerControl.addToLayer(LayerNames.DICE_BUTTONS_MODALS, dice)
+        this.layerControl.addToLayer(LayerNames.DICE_BUTTONS_MODALS, dicePlayButton)
+        this.layerControl.addToLayer(LayerNames.OVERLAY, overlay)
+        this.layerControl.addToLayer(LayerNames.DICE_BUTTONS_MODALS, winnerModal)
+        this.layerControl.addToLayer(LayerNames.DICE_BUTTONS_MODALS, loading)
     }
 
     public loadedProgressState(game: GameProgressDTO): void {
@@ -203,6 +239,8 @@ export class SvgLayer {
         for (const update of updates) {
             const figure = this.getFigureByFigureDTO(update.figure)
             const nextField = this.getFieldByFieldDTO(update.nextField)
+
+            this.layerControl.raiseFigures(update.figure.color)
 
             if (update.type === 'MOVE') {
                 await figure.animateMoveSequence(nextField)
