@@ -1,13 +1,13 @@
 
 import { type PlayerColors } from './PlayerColors'
-import { type StaticBackground } from '@/visuals/components/StaticBackground'
-import { type Field } from '@/visuals/components/Field'
-import { type Figure } from '@/visuals/components/Figure'
-import { type Overlay } from '@/visuals/components/Overlay'
-import { type Dice } from '@/visuals/components/Dice'
-import { type DicePlayButton } from '@/visuals/components/DicePlayButton'
-import { type Loading } from '@/visuals/components/Loading'
-import { type WinnerModal } from '@/visuals/components/WinnerModal'
+import { type StaticBackground } from '@/controls/visual/components/StaticBackground'
+import { type Field } from '@/controls/visual/components/Field'
+import { type Figure } from '@/controls/visual/components/Figure'
+import { type Overlay } from '@/controls/visual/components/Overlay'
+import { type Dice } from '@/controls/visual/components/Dice'
+import { type DicePlayButton } from '@/controls/visual/components/DicePlayButton'
+import { type Loading } from '@/controls/visual/components/Loading'
+import { type WinnerModal } from '@/controls/visual/components/WinnerModal'
 
 export interface GameElementsDict {
     STATIC_BACKGROUND: StaticBackground
