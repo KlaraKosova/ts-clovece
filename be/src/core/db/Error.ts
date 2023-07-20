@@ -12,7 +12,7 @@ export class DBConnectionError extends DBError {
     dbErrorStatus = DbErrorStatus.CONNECTION_ERROR
 
     constructor(connectionString: string) {
-        super();
+        super()
         this.message = `Could not establish connection "${connectionString}"`
     }
 }
@@ -21,7 +21,7 @@ export class DBCollectionError extends DBError {
     dbErrorStatus = DbErrorStatus.COLLECTION_ERROR
 
     constructor(collectionName: string) {
-        super();
+        super()
         this.message = `Cannot access collection ${collectionName}`
     }
 }

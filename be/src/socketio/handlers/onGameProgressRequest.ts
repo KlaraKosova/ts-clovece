@@ -1,11 +1,11 @@
-import { ObjectId } from "mongodb";
-import { Server } from "socket.io";
-import Client from "../../core/db/Client";
-import { GameProgressDocument } from "../../types";
-import { SocketIO } from "../types";
+import { ObjectId } from 'mongodb'
+import type { Server } from 'socket.io'
+import Client from '../../core/db/Client'
+import type { GameProgressDocument } from '../../types'
+import type { SocketIO } from '../types'
 
-export default async function (io: Server, socket: SocketIO) {
-    console.log('Socket: onGameProgressRequest');
+export default async function (io: Server, socket: SocketIO): Promise<void> {
+    console.log('Socket: onGameProgressRequest')
 
     console.log(socket.data)
     const client = await Client.getClient()
@@ -19,10 +19,10 @@ export default async function (io: Server, socket: SocketIO) {
         // TODO
         return
     }
-    socket.emit("GAME_PROGRESS_RESPONSE", game)
+    socket.emit('GAME_PROGRESS_RESPONSE', game)
 
     console.log('-------------------------')
     console.log(socket.data)
     console.log(game)
-    client.disconnect()
+    await client.disconnect()
 }

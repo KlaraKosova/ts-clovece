@@ -1,4 +1,4 @@
-import { WithId } from "mongodb"
+import { type WithId } from 'mongodb'
 
 export const PlayerColors = {
     RED: '0',
@@ -10,14 +10,14 @@ export const PlayerColors = {
 export type PlayerColor = typeof PlayerColors[keyof typeof PlayerColors]
 export const PlayersOrder = [PlayerColors.RED, PlayerColors.YELLOW, PlayerColors.GREEN, PlayerColors.BLUE] as const
 export interface FieldDataset {
-    index: number,
-    isStart: boolean,
-    isHome: boolean,
+    index: number
+    isStart: boolean
+    isHome: boolean
     color: PlayerColor | null
 }
 
 export interface FigureDataset {
-    index: number,
+    index: number
     color: PlayerColor
 }
 
@@ -45,14 +45,14 @@ export interface GamePreview {
 }
 
 export interface UserInfo {
-    userId: string,
-    gameId: string,
+    userId: string
+    gameId: string
     color: PlayerColor
 }
 
 export interface GameProgressUpdate {
-    type: 'MOVE' | 'KICK',
-    prevField: FieldDataset,
-    nextField: FieldDataset,
+    type: 'MOVE' | 'KICK'
+    prevField: FieldDataset
+    nextField: FieldDataset
     figure: FigureDataset
 }

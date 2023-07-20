@@ -1,15 +1,15 @@
-import Client from "../../core/db/Client";
-import { ObjectId } from "mongodb";
-import { GameProgress, GameProgressDocument, GameProgressUpdate, PlayersOrder, UserInfo } from "../../types";
-import { ServerIO, SocketIO } from "../types";
-import { Server } from "socket.io";
-import { generateDiceSequence, objectCompare } from "../../helpers";
+import Client from '../../core/db/Client'
+import { ObjectId } from 'mongodb'
+import { type GameProgress, type GameProgressDocument, type GameProgressUpdate, PlayersOrder } from '../../types'
+import type { ServerIO, SocketIO } from '../types'
+import { generateDiceSequence } from '../../helpers'
 
-export default async function (io: ServerIO, socket: SocketIO, updates: GameProgressUpdate[]) {
+export default async function (io: ServerIO, socket: SocketIO, updates: GameProgressUpdate[]): Promise<void> {
     console.log('!!!!!!!!!!!!!!!!!!!!!!!Socket: on clientGameProgressUpdate')
     // console.log(data)
     // console.log(socket.data)
-    if (!socket.data) {
+    if (!socket.data || !socket.data.color || !socket.data.userId || !socket.data.gameId) {
+        // TODO throw
         return
     }
 
@@ -23,8 +23,8 @@ export default async function (io: ServerIO, socket: SocketIO, updates: GameProg
 
     console.log(socket.data)
     const lastDiceThrow = game.lastDiceSequence[game.lastDiceSequence.length - 1]
-    const currentPlayerIndex = PlayersOrder.indexOf(socket.data.color!)
-    const nextPlayerColor = lastDiceThrow === 6? socket.data.color! : PlayersOrder[(currentPlayerIndex + 1) % 4]
+    const currentPlayerIndex = PlayersOrder.indexOf(socket.data.color)
+    const nextPlayerColor = lastDiceThrow === 6 ? socket.data.color : PlayersOrder[(currentPlayerIndex + 1) % 4]
     const nextPlayer = game.playerStatuses[nextPlayerColor]
     const statuses = game.playerStatuses
 
@@ -33,8 +33,6 @@ export default async function (io: ServerIO, socket: SocketIO, updates: GameProg
     console.log('nextPlayer', nextPlayer)
     console.log('updates', updates)
 
-
-    const reversedUpdates = [...updates].reverse()
     for (const update of updates) {
         const figure = update.figure
 
@@ -67,20 +65,20 @@ export default async function (io: ServerIO, socket: SocketIO, updates: GameProg
 
     let winner = true
     for (let i = 0; i < 4; i++) {
-        const figure = updatedGame.playerStatuses[socket.data.color!].figures[i]
+        const figure = updatedGame.playerStatuses[socket.data.color].figures[i]
         if (!figure.isHome) {
             winner = false
         }
     }
     if (winner) {
-        console.log("!!!!!!!!!!!!!!! WINNER !!!!!!!!!!!!!!!!!!!!");
-        console.log(socket.data.userId, socket.data.color);
+        console.log('!!!!!!!!!!!!!!! WINNER !!!!!!!!!!!!!!!!!!!!')
+        console.log(socket.data.userId, socket.data.color)
 
-        io.to(socket.data.gameId!).emit("GAME_WINNER", { winnerId: socket.data.userId! })
+        io.to(socket.data.gameId).emit('GAME_WINNER', { winnerId: socket.data.userId })
         await client.disconnect()
         return
     }
 
-    io.to(socket.data.gameId!).emit("GAME_PROGRESS_UPDATE", { progress: updatedGame, updates: updates })
+    io.to(socket.data.gameId).emit('GAME_PROGRESS_UPDATE', { progress: updatedGame, updates })
     await client.disconnect()
 }

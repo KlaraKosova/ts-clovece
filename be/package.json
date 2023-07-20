@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "serve": "node ./bin/www",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q bin/www\""
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q bin/www\"",
+    "lint": "npx eslint ./src --ext .tsx,.ts"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
@@ -16,7 +17,8 @@
     "mongodb": "^4.7.0",
     "morgan": "~1.9.1",
     "socket.io": "^4.5.1",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "winston": "^3.10.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.3",
@@ -26,8 +28,16 @@
     "@types/mongodb": "^4.0.7",
     "@types/morgan": "^1.9.3",
     "@types/node": "^18.0.0",
+    "@types/uuid": "^9.0.2",
+    "@types/winston": "^2.4.4",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
     "concurrently": "^7.2.2",
+    "eslint": "^8.45.0",
+    "eslint-config-standard-with-typescript": "^36.1.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^16.0.1",
+    "eslint-plugin-promise": "^6.1.1",
     "nodemon": "^2.0.18",
-    "typescript": "^4.7.4"
+    "typescript": "^5.1.6"
   }
 }

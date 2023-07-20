@@ -1,13 +1,11 @@
-import {ServerIO, SocketIO} from "../types"
-import Client from "../../core/db/Client"
-import {ObjectId} from "mongodb"
-// @ts-ignore
-import {v4 as uuidv4} from 'uuid'
-import { generateDiceSequence} from "../../helpers";
-import { Server } from "socket.io"
-import { GameProgress, GameProgressDocument, PlayerColors, PlayersOrder, PlayerStatus } from "../../types"
+import type { ServerIO, SocketIO } from '../types'
+import Client from '../../core/db/Client'
+import { ObjectId } from 'mongodb'
+import { v4 as uuidv4 } from 'uuid'
+import { generateDiceSequence } from '../../helpers'
+import { type GameProgressDocument, PlayersOrder, type PlayerStatus } from '../../types'
 
-export default async function (io: ServerIO, socket: SocketIO, data: { gameId: string }) {
+export default async function (io: ServerIO, socket: SocketIO, data: { gameId: string }): Promise<void> {
     console.log('Socket: on joinGame')
     const client = await Client.getClient()
     const games = client.collection('games')
@@ -15,8 +13,8 @@ export default async function (io: ServerIO, socket: SocketIO, data: { gameId: s
 
     const game = await games.findOne({
         $and: [
-            { _id: new ObjectId(data.gameId)},
-            { players: { $lt: 4 }}
+            { _id: new ObjectId(data.gameId) },
+            { players: { $lt: 4 } }
         ]
     }) as GameProgressDocument | null
     if (!game) {
@@ -31,14 +29,14 @@ export default async function (io: ServerIO, socket: SocketIO, data: { gameId: s
     }
 
     const newPlayerColor = PlayersOrder[game.players]
-    const newPlayerStatus : PlayerStatus = {
+    const newPlayerStatus: PlayerStatus = {
         color: newPlayerColor,
-        userId: userId,
+        userId,
         figures: [
-            { index: 0, isStart: true, isHome: false, color: newPlayerColor},
-            { index: 1, isStart: true, isHome: false, color: newPlayerColor},
-            { index: 2, isStart: true, isHome: false, color: newPlayerColor},
-            { index: 3, isStart: true, isHome: false, color: newPlayerColor},
+            { index: 0, isStart: true, isHome: false, color: newPlayerColor },
+            { index: 1, isStart: true, isHome: false, color: newPlayerColor },
+            { index: 2, isStart: true, isHome: false, color: newPlayerColor },
+            { index: 3, isStart: true, isHome: false, color: newPlayerColor }
         ]
     }
 
@@ -46,15 +44,15 @@ export default async function (io: ServerIO, socket: SocketIO, data: { gameId: s
     updatedStatuses[newPlayerColor] = newPlayerStatus
 
     await games.updateOne({
-            _id: new ObjectId(data.gameId)
-        },
-        {
-            $set: {
-                lastDiceSequence,
-                players: game.players + 1,
-                playerStatuses: updatedStatuses
-            },
+        _id: new ObjectId(data.gameId)
+    },
+    {
+        $set: {
+            lastDiceSequence,
+            players: game.players + 1,
+            playerStatuses: updatedStatuses
         }
+    }
     )
     const updatedGame = await games.findOne({
         _id: new ObjectId(data.gameId)
@@ -66,9 +64,9 @@ export default async function (io: ServerIO, socket: SocketIO, data: { gameId: s
     socket.data.color = newPlayerColor
 
     console.log('Socket: emit GameWait')
-    socket.emit("REDIRECT_GAME_WAIT", {
+    socket.emit('REDIRECT_GAME_WAIT', {
         gameId: data.gameId,
-        userId: userId,
+        userId,
         color: newPlayerColor,
         players: updatedGame.players
     })
@@ -91,7 +89,6 @@ export default async function (io: ServerIO, socket: SocketIO, data: { gameId: s
             players: Object.keys(game.playerStatuses).length
         }
     }).toArray()
-
 
     io.emit('GAME_SELECT_RESPONSE', { games: response })
 }

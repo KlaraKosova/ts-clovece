@@ -1,10 +1,9 @@
-import { Server } from "socket.io";
-import Client from "../../core/db/Client";
-import { PlayerColors } from "../../types";
-import { SocketIO } from "../types";
+import type { Server } from 'socket.io'
+import Client from '../../core/db/Client'
+import type { SocketIO } from '../types'
 
-export async function onGameSelectRequest(io: Server, socket: SocketIO) {
-    console.log("Socket: onGameSelectRequest");
+export async function onGameSelectRequest(io: Server, socket: SocketIO): Promise<void> {
+    console.log('Socket: onGameSelectRequest')
 
     const client = await Client.getClient()
     const games = client.collection('games')
@@ -22,9 +21,8 @@ export async function onGameSelectRequest(io: Server, socket: SocketIO) {
         }
     }).toArray()
 
-    console.log("Socket: emit gameSelectResponse");
+    console.log('Socket: emit gameSelectResponse')
 
-    socket.emit("GAME_SELECT_RESPONSE", { games: response })
+    socket.emit('GAME_SELECT_RESPONSE', { games: response })
     await client.disconnect()
-
 }
