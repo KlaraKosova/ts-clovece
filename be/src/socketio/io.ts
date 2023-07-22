@@ -6,6 +6,7 @@ import onNewGame from './handlers/onNewGame'
 import onClientGameProgressUpdate from './handlers/onClientGameProgressUpdate'
 import { onGameSelectRequest } from './handlers/onGameSelectRequest'
 import onGameProgressRequest from './handlers/onGameProgressRequest'
+import { logger } from '../core/logger/Logger'
 
 const io = new Server<SocketIO>(3001, {
     path: '/',
@@ -15,10 +16,12 @@ const io = new Server<SocketIO>(3001, {
 })
 
 io.on('connection', (socket: SocketIO) => {
-    console.log('Socket: connected')
+    logger.socketInfo(socket, 'connected')
+    // console.log('Socket: connected')
 
     socket.on('disconnect', async () => {
-        console.log('Socket: disconnected')
+        logger.socketInfo(socket, 'disconnected')
+        // console.log('Socket: disconnected')
     })
 
     socket.on('INIT', async (data) => {

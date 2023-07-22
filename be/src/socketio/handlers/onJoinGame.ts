@@ -4,9 +4,12 @@ import { ObjectId } from 'mongodb'
 import { v4 as uuidv4 } from 'uuid'
 import { generateDiceSequence } from '../../helpers'
 import { type GameProgressDocument, PlayersOrder, type PlayerStatus } from '../../types'
+import { logger } from '../../core/logger/Logger'
+import { GameNotFoundError } from '../../core/errors/socket/GameNotFoundError'
 
 export default async function (io: ServerIO, socket: SocketIO, data: { gameId: string }): Promise<void> {
-    console.log('Socket: on joinGame')
+    logger.socketInfo(socket, 'on joinGame', data)
+    // console.log('Socket: on joinGame')
     const client = await Client.getClient()
     const games = client.collection('games')
     const userId = uuidv4()
@@ -17,9 +20,9 @@ export default async function (io: ServerIO, socket: SocketIO, data: { gameId: s
             { players: { $lt: 4 } }
         ]
     }) as GameProgressDocument | null
+
     if (!game) {
-        // TODO
-        return
+        throw new GameNotFoundError(socket, data.gameId)
     }
 
     let lastDiceSequence = [] as number[]
@@ -63,7 +66,8 @@ export default async function (io: ServerIO, socket: SocketIO, data: { gameId: s
     socket.data.userId = userId
     socket.data.color = newPlayerColor
 
-    console.log('Socket: emit GameWait')
+    logger.socketInfo(socket, 'emit GameWait')
+    // console.log('Socket: emit GameWait')
     socket.emit('REDIRECT_GAME_WAIT', {
         gameId: data.gameId,
         userId,

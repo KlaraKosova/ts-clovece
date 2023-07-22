@@ -3,9 +3,11 @@ import Client from '../../core/db/Client'
 import { v4 as uuidv4 } from 'uuid'
 import type { Server } from 'socket.io'
 import { type GameProgress, PlayerColors, PlayersOrder } from '../../types'
+import { logger } from '../../core/logger/Logger'
 
 export default async function (io: Server, socket: SocketIO, data: { name: string }): Promise<void> {
-    console.log('Socket: on newGame')
+    logger.socketInfo(socket, 'on newGame', data)
+    // console.log('Socket: on newGame')
     const client = await Client.getClient()
     const games = client.collection('games')
     const userId = uuidv4()
@@ -34,7 +36,15 @@ export default async function (io: Server, socket: SocketIO, data: { name: strin
         gameId: result.insertedId.toString(),
         userId
     }
-    console.log('Socket: emit GameWait')
+
+    logger.socketInfo(socket, 'emit gameWait', {
+        gameId: result.insertedId.toString(),
+        userId,
+        color: PlayersOrder[0],
+        players: 1
+    })
+
+    // console.log('Socket: emit GameWait')
     await socket.join(result.insertedId.toString())
     socket.emit('REDIRECT_GAME_WAIT', {
         gameId: result.insertedId.toString(),
@@ -56,6 +66,7 @@ export default async function (io: Server, socket: SocketIO, data: { name: strin
         }
     }).toArray()
 
+    logger.socketInfo(socket, 'emit gameSelectResponse', { games: response })
     io.emit('GAME_SELECT_RESPONSE', { games: response })
     await client.disconnect()
 }

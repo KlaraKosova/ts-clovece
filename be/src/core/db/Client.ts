@@ -1,6 +1,7 @@
 import { MongoClient, type Db, type Collection } from 'mongodb'
-import { DBCollectionError, DBConnectionError } from './Error.js'
 import config from '../../../config.js'
+import { DBCollectionError } from '../errors/db/DBCollectionError.js'
+import { DBConnectionError } from '../errors/db/DBConnectionError.js'
 
 class Client {
     private readonly client: MongoClient
@@ -19,11 +20,9 @@ class Client {
         try {
             await client.client.connect()
             client.db = client.client.db(config.mongodbDatabaseName)
-            console.log('Connected successfully to the DB')
-        } catch (e) {
+            // console.log('Connected successfully to the DB')
+        } catch (e: any) {
             await client.client.close()
-            console.log(e)
-
             throw new DBConnectionError(config.mongodbConnectionString)
         }
 

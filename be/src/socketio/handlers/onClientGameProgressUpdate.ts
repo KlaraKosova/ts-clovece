@@ -3,35 +3,30 @@ import { ObjectId } from 'mongodb'
 import { type GameProgress, type GameProgressDocument, type GameProgressUpdate, PlayersOrder } from '../../types'
 import type { ServerIO, SocketIO } from '../types'
 import { generateDiceSequence } from '../../helpers'
+import { logger } from '../../core/logger/Logger'
+import { SocketDataError } from '../../core/errors/socket/SocketDataError'
+import { GameNotFoundError } from '../../core/errors/socket/GameNotFoundError'
 
 export default async function (io: ServerIO, socket: SocketIO, updates: GameProgressUpdate[]): Promise<void> {
-    console.log('!!!!!!!!!!!!!!!!!!!!!!!Socket: on clientGameProgressUpdate')
-    // console.log(data)
-    // console.log(socket.data)
+    // console.log('Socket: on clientGameProgressUpdate')
+    logger.socketInfo(socket, 'on clientGameProgressUpdate')
     if (!socket.data || !socket.data.color || !socket.data.userId || !socket.data.gameId) {
-        // TODO throw
-        return
+        throw new SocketDataError(socket, socket.data)
     }
 
     const client = await Client.getClient()
     const games = client.collection('games')
     const game = await games.findOne(new ObjectId(socket.data.gameId)) as GameProgressDocument | null
+
     if (!game) {
-        // TODO
-        return
+        throw new GameNotFoundError(socket, socket.data.gameId)
     }
 
-    console.log(socket.data)
     const lastDiceThrow = game.lastDiceSequence[game.lastDiceSequence.length - 1]
     const currentPlayerIndex = PlayersOrder.indexOf(socket.data.color)
     const nextPlayerColor = lastDiceThrow === 6 ? socket.data.color : PlayersOrder[(currentPlayerIndex + 1) % 4]
     const nextPlayer = game.playerStatuses[nextPlayerColor]
     const statuses = game.playerStatuses
-
-    console.log('currentPlayerIndex', currentPlayerIndex)
-    console.log('nextPlayerColor', nextPlayerColor)
-    console.log('nextPlayer', nextPlayer)
-    console.log('updates', updates)
 
     for (const update of updates) {
         const figure = update.figure
@@ -71,8 +66,7 @@ export default async function (io: ServerIO, socket: SocketIO, updates: GameProg
         }
     }
     if (winner) {
-        console.log('!!!!!!!!!!!!!!! WINNER !!!!!!!!!!!!!!!!!!!!')
-        console.log(socket.data.userId, socket.data.color)
+        logger.socketInfo(socket, 'emit gameWinner', { winnerId: socket.data.userId })
 
         io.to(socket.data.gameId).emit('GAME_WINNER', { winnerId: socket.data.userId })
         await client.disconnect()
