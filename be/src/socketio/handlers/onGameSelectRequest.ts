@@ -4,7 +4,6 @@ import type { SocketIO } from '../types'
 import { logger } from '../../core/logger/Logger'
 
 export async function onGameSelectRequest(io: Server, socket: SocketIO): Promise<void> {
-    // console.log('Socket: onGameSelectRequest')
     logger.socketInfo(socket, 'on gameSelectRequest')
 
     const client = await Client.getClient()
@@ -23,7 +22,6 @@ export async function onGameSelectRequest(io: Server, socket: SocketIO): Promise
         }
     }).toArray()
 
-    // console.log('Socket: emit gameSelectResponse')
     logger.socketInfo(socket, 'emit gameSelectResponse', { games: response })
 
     socket.emit('GAME_SELECT_RESPONSE', { games: response })

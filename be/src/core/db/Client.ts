@@ -20,7 +20,6 @@ class Client {
         try {
             await client.client.connect()
             client.db = client.client.db(config.mongodbDatabaseName)
-            // console.log('Connected successfully to the DB')
         } catch (e: any) {
             await client.client.close()
             throw new DBConnectionError(config.mongodbConnectionString)

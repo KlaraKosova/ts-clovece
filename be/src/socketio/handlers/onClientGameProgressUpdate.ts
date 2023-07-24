@@ -1,14 +1,16 @@
 import Client from '../../core/db/Client'
 import { ObjectId } from 'mongodb'
-import { type GameProgress, type GameProgressDocument, type GameProgressUpdate, PlayersOrder } from '../../types'
 import type { ServerIO, SocketIO } from '../types'
-import { generateDiceSequence } from '../../helpers'
 import { logger } from '../../core/logger/Logger'
 import { SocketDataError } from '../../core/errors/socket/SocketDataError'
 import { GameNotFoundError } from '../../core/errors/socket/GameNotFoundError'
+import { type GameProgressUpdateDTO } from '../../types/dtos/GameProgressUpdateDTO'
+import { PlayersOrder} from '../../types/PlayerColors'
+import { type GameProgressDTO } from '../../types/dtos/GameProgressDTO'
+import { type GameProgressDocument } from '../../types/GameProgressDocument'
+import { Game } from '../../logic/Game'
 
-export default async function (io: ServerIO, socket: SocketIO, updates: GameProgressUpdate[]): Promise<void> {
-    // console.log('Socket: on clientGameProgressUpdate')
+export default async function (io: ServerIO, socket: SocketIO, updates: GameProgressUpdateDTO[]): Promise<void> {
     logger.socketInfo(socket, 'on clientGameProgressUpdate')
     if (!socket.data || !socket.data.color || !socket.data.userId || !socket.data.gameId) {
         throw new SocketDataError(socket, socket.data)
@@ -16,38 +18,37 @@ export default async function (io: ServerIO, socket: SocketIO, updates: GameProg
 
     const client = await Client.getClient()
     const games = client.collection('games')
-    const game = await games.findOne(new ObjectId(socket.data.gameId)) as GameProgressDocument | null
+    const gameDocument = await games.findOne(new ObjectId(socket.data.gameId)) as GameProgressDocument | null
 
-    if (!game) {
+    if (!gameDocument) {
         throw new GameNotFoundError(socket, socket.data.gameId)
     }
+    const game = new Game()
+    game.setDTO(gameDocument)
 
-    const lastDiceThrow = game.lastDiceSequence[game.lastDiceSequence.length - 1]
+    const lastDiceThrow = gameDocument.lastDiceSequence[gameDocument.lastDiceSequence.length - 1]
     const currentPlayerIndex = PlayersOrder.indexOf(socket.data.color)
     const nextPlayerColor = lastDiceThrow === 6 ? socket.data.color : PlayersOrder[(currentPlayerIndex + 1) % 4]
-    const nextPlayer = game.playerStatuses[nextPlayerColor]
-    const statuses = game.playerStatuses
+    const nextPlayer = gameDocument.playerStatuses[nextPlayerColor]
+    const statuses = gameDocument.playerStatuses
+
+    const updatesValid = game.validateUpdates(updates)
+    if (!updatesValid) {
+        io.to(socket.data.gameId).emit('GAME_PROGRESS_UPDATE', { progress: gameDocument, updates: [] })
+        await client.disconnect()
+        return
+    }
 
     for (const update of updates) {
         const figure = update.figure
 
         statuses[figure.color].figures[figure.index] = update.nextField
     }
-    /* for (let i = 0; i < 4; i++) {
-        const color = PlayersOrder[i]
-        for (let j = 0; j < 4; j++) {
-            for (const move of reversedUpdates) {
-                if (objectCompare(statuses[color].figures[j], move.prevField)) {
-                    statuses[color].figures[j] = move.nextField
-                }
-            }
-        }
-    } */
 
-    const updatedData: Partial<GameProgress> = {
+    const updatedData: Partial<GameProgressDTO> = {
         currentPlayerId: nextPlayer.userId,
         playerStatuses: statuses,
-        lastDiceSequence: generateDiceSequence()
+        lastDiceSequence: game.generateDiceSequence()
     }
     await games.updateOne({
         _id: new ObjectId(socket.data.gameId)

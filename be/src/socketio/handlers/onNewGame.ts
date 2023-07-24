@@ -2,20 +2,22 @@ import type { SocketIO } from '../types'
 import Client from '../../core/db/Client'
 import { v4 as uuidv4 } from 'uuid'
 import type { Server } from 'socket.io'
-import { type GameProgress, PlayerColors, PlayersOrder } from '../../types'
 import { logger } from '../../core/logger/Logger'
+import {GameProgressDTO} from "../../types/dtos/GameProgressDTO";
+import {PlayerColors, PlayersOrder} from "../../types/PlayerColors";
 
 export default async function (io: Server, socket: SocketIO, data: { name: string }): Promise<void> {
     logger.socketInfo(socket, 'on newGame', data)
-    // console.log('Socket: on newGame')
     const client = await Client.getClient()
     const games = client.collection('games')
     const userId = uuidv4()
 
-    const newGame: Omit<GameProgress, '_id' | 'lastDiceSequence'> = {
+    // @ts-ignore
+    const newGame: Omit<GameProgressDTO, '_id' | 'lastDiceSequence'> = {
         name: data.name,
         players: 1,
         currentPlayerId: userId,
+        // @ts-ignore
         playerStatuses: {
             [PlayerColors.RED]: {
                 color: PlayersOrder[0],
@@ -44,7 +46,6 @@ export default async function (io: Server, socket: SocketIO, data: { name: strin
         players: 1
     })
 
-    // console.log('Socket: emit GameWait')
     await socket.join(result.insertedId.toString())
     socket.emit('REDIRECT_GAME_WAIT', {
         gameId: result.insertedId.toString(),

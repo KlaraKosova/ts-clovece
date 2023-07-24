@@ -17,11 +17,9 @@ const io = new Server<SocketIO>(3001, {
 
 io.on('connection', (socket: SocketIO) => {
     logger.socketInfo(socket, 'connected')
-    // console.log('Socket: connected')
 
     socket.on('disconnect', async () => {
         logger.socketInfo(socket, 'disconnected')
-        // console.log('Socket: disconnected')
     })
 
     socket.on('INIT', async (data) => {

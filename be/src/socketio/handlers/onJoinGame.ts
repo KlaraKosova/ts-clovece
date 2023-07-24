@@ -2,37 +2,39 @@ import type { ServerIO, SocketIO } from '../types'
 import Client from '../../core/db/Client'
 import { ObjectId } from 'mongodb'
 import { v4 as uuidv4 } from 'uuid'
-import { generateDiceSequence } from '../../helpers'
-import { type GameProgressDocument, PlayersOrder, type PlayerStatus } from '../../types'
 import { logger } from '../../core/logger/Logger'
 import { GameNotFoundError } from '../../core/errors/socket/GameNotFoundError'
+import { type GameProgressDocument } from '../../types/GameProgressDocument'
+import { PlayersOrder } from '../../types/PlayerColors'
+import { type PlayerStatusDTO } from '../../types/dtos/PlayerStatusDTO'
+import { Game } from '../../logic/Game'
 
 export default async function (io: ServerIO, socket: SocketIO, data: { gameId: string }): Promise<void> {
     logger.socketInfo(socket, 'on joinGame', data)
-    // console.log('Socket: on joinGame')
     const client = await Client.getClient()
     const games = client.collection('games')
     const userId = uuidv4()
 
-    const game = await games.findOne({
+    const gameDocument = await games.findOne({
         $and: [
             { _id: new ObjectId(data.gameId) },
             { players: { $lt: 4 } }
         ]
     }) as GameProgressDocument | null
 
-    if (!game) {
+    if (!gameDocument) {
         throw new GameNotFoundError(socket, data.gameId)
     }
 
     let lastDiceSequence = [] as number[]
-    if (game.players === 3) {
+    if (gameDocument.players === 3) {
+        const game = new Game()
         // vsichni hraci
-        lastDiceSequence = generateDiceSequence()
+        lastDiceSequence = game.generateDiceSequence()
     }
 
-    const newPlayerColor = PlayersOrder[game.players]
-    const newPlayerStatus: PlayerStatus = {
+    const newPlayerColor = PlayersOrder[gameDocument.players]
+    const newPlayerStatus: PlayerStatusDTO = {
         color: newPlayerColor,
         userId,
         figures: [
@@ -43,7 +45,7 @@ export default async function (io: ServerIO, socket: SocketIO, data: { gameId: s
         ]
     }
 
-    const updatedStatuses = game.playerStatuses
+    const updatedStatuses = gameDocument.playerStatuses
     updatedStatuses[newPlayerColor] = newPlayerStatus
 
     await games.updateOne({
@@ -52,7 +54,7 @@ export default async function (io: ServerIO, socket: SocketIO, data: { gameId: s
     {
         $set: {
             lastDiceSequence,
-            players: game.players + 1,
+            players: gameDocument.players + 1,
             playerStatuses: updatedStatuses
         }
     }
@@ -67,7 +69,6 @@ export default async function (io: ServerIO, socket: SocketIO, data: { gameId: s
     socket.data.color = newPlayerColor
 
     logger.socketInfo(socket, 'emit GameWait')
-    // console.log('Socket: emit GameWait')
     socket.emit('REDIRECT_GAME_WAIT', {
         gameId: data.gameId,
         userId,
